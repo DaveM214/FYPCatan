@@ -1,34 +1,58 @@
-Notes on Sridharan 2015 - Random ramblings on the paper as well thoughts on the project
+Notes on Sridharan 2015 - Notes on the paper and how it could apply to the project.
 
-The situations that are described in this situation, will differ someonewhat from those described in this paper. During the boardgame, there is no uncertainty of the certain state. There is only uncertainty in aspects not related to the state of the board. The rationalisation of game moves will probably require less information about the uncertainty.
+SUMMARY:
+New style of architecture for robot movement. Combining both a high level logical representation that is like classical planning called Answer Set Prolog which can deal with the high level tasks and a lower level probabilistc approach. This approach differs from previous mixed architectures by taking the ASP to a lower, more granular level and using the the probabilistic approach with bayesian updates for the execution of the higher level tasks defined in ASP feeding data back in to influence the "picture" of the domain. This approach results in "better" results than using ASP or a probabilistic method alone as shown in experiments. This architecture also allows systems to deal with unexpected outcomes by reasoning about exegenous actions. 
 
-In catan there will only be uncertainty in certain situations:
+HOW DOES THIS APPLY TO PROJECT:
+Use of ASP to represent the state of the game and possible transitions within the game? Degree of reasoning under uncertainty is lower than for a robot but will still be there due to the somewhat incomplete information about the game world. Justification of moves using ASP? 
 
--The picking of development cards - Random with certain probabilities - Probability only set at the start when no other players have removed cards but could still use probability to reason about this
+FURTHER READING TO BE DONE:
+Answer Set Prolog
+Classical Planning (lightly)
+________________________________
 
--The dice roll is obviously uncertain -> The result we get is random. The result of the dice role will not affect the reasoning over our move.
+*Abstract* talks about reasoning under uncertainty coupled with actual truths about the environment. This is used to explain the uncertainty as well as infer etc.
+Then explains that this decision making with uncertainty is done using an Answer Set Prolog program.
 
--Behaviour of other players is obviously uncertain to a degree. We will assume that they act rationally. 
-
--We know that we can make moves and that most of these will help us. How can we score the possible moves so that we find, rationalise that our move is the best one?
-
-
-
-->When we do evaluation of the moves not all of them will be evaluated using the same system. For instance at the starting phase of the game it will be quite feasible to score the move using probability theory and the rules and state of the game board rather than taking in some of the wider factors in account.
-
-->We need to work out some way of organising knowledge. 
-
-
-
-->The paper uses ASP which is Answer Set Prolog. More generally ASP refers to Answer Set Programming. Based on stable model semantics, defines a declarative semantics for logic programming with negation as failure.
-
-->To define the domain action Language (AL) is used. This has defined semantics - seems similar to classical planning type language with a few more features. 
-
-SECTION 3.1
+*Introduction*
+Information can be linked to a a degree of uncertainty. Other types of information also exist such as commonsense knowledge. 
+The domain knowledge was represented as an ASP program which was solved to obtain actions.
+High probabiltiy beliefs are given to the ASP program as statements.
+This paper expands on previous work coupling logic programming and probabilistic reasoning by:
+->Using the answer set from solving the ASP program to explain unexpected action outcomes
+->and identifying partial scene descriptions from sensor inputs
 
 
+*Related Work*
+Much related work on knowledge representation and probabilistic graphical models
+Formulations based on probabilistic representations make performing commonsense reasoning difficult; classical planning and logic programming struggles to deal with uncertain information and requires much prior knowledge
+ASP has been used extensively in the past for reasoning based work => But ASP does not support probabilistic representations of uncertainty which is an issue for robots.
+There are positives and negatives to many of the different approaches to reasoning and explanation generation. The ideas in this paper attempt to maintain the focus on a link between logical and probabilistic reasoning but aslso introduce
+->Explanation of unexepcted action outputs from sensor inputs (May be redundant in a board game with low levels of uncertainty?)
+->Reasoning at a finer resolution using ASP, improving the probabilistic reasoning.
 
 
+*Proposed Architecture*
+A symbolic representation of the domain can be translated to an ASP program for logical inference and planning actions to complete tasks. All actions in this plan relevant subsets of the domain are identified and sensors provide Bayesian updates to a probability distribution over this, giving high probability beliefs to the ASP program.
+Action Language (AL) is used to describe the current state and actions that can occur according to a set of rules.
+
+The ASP program is based on a domain representation that includes a system description and a history with defaults. AL is similar to language encountered in AI for classical planning problems.
+As well as the regular "planning" this architecture outlined can handle exogenous events actions to explain the unexpected outcomes of actions. ASP needs to be read up on.
+
+As well as representing the domain using ASP we also represent the domain using probabilistic domain representation. Partially Observable Markov Decision Processes could be used to do probabistic reasoning though they become intractable with a larger state space. POMDP can be used to planning actions in a primitive sense.
+
+The idea is to modify the resolution that ASP is used and by extension the resolution that probabilistic methods are used.
+ASP reasoning at finer resolution (eg. Areas in rooms rather than rooms). This means that plans obtained by ASP inference consist of less abstract actions and have a smaller subset of the domain
+To make this tractable we use selective grounding - excluding unecessary values
+We do not use POMDP for probabilistic reasoning - probability distribution maintained over the domain.
+This reduces the amount of the domain that the robot must reason over -> now only a small subset.
+Belief revisioning performed incrementally using Bayesian Updates - based on sensors. Updates the probability distribution.
+=>ASP inference identifies the subset of the domain to be represented probabilistically and set the initial belief distribution. Action then executed probabilistically. Probabalistic approach for extregeneous actions.
+Are there issues with the mixed architecture? => Errors can be introduced into the ASP based on the probabilistic reasoning. Effectively a trade off between symbolic representation and probabilistic representation.
 
 
-
+*Experimental Setup and Results*
+Scenario of a robot waiter in a restaurant.
+Robot trained to get statistical results of executing algorithms.
+Tests then run to see if this mixed architecture was a good idea - especially when compared to previous architectures. 
+Generally the performance in scenarios is faster than probabilistic while as accurate and more accurate than ASP based on its own.
