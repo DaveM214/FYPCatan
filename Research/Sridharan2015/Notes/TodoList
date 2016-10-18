@@ -1,0 +1,24 @@
+Ideally Before Christmas:
+-Set up the third party API - Be able to interact with it and write a sinmple AI in order to interact with the boxed AI's
+-Some way of representing knowledge and the state of the board
+-Translating the packaged state from the API into the state that we want to use.
+-High level architecture of the system -> Mostly worked out but could do with a little more granularity.
+-What approach will the AI take? Multi-agent sytem mostly but what techniques will be used for each bit
+-How will we reason over the actions presented to us? Score moves? Allow the game to both comment on already taken moves or suggest new ones.
+-Will therefore need a standardised format for actions presented.
+-How are we going to deal with the uncertainty in the game. 
+-The board in catan can change -> this means that the representation of the board needs to be "fluid" and able to change the resource and values within the same overall tesselated hexagonal layer.
+-The layout of the board will affect the reasoning on the position of the game.
+
+
+Find reading on:
+-Catan Strategies - game theory style things, for implementation of the AI.
+->This will need to include some probability/stats stuff on the opening on the game.
+
+-AI techniques for Settlers of Catan.
+->Look into techniques for multi-agent systems.
+
+-Reasoning and evaluating the moves that have been made/possible moves before they are made.
+-> reading similar to the material also given, might be worth finding some Prolog type reading.
+
+
