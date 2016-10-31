@@ -1,0 +1,15 @@
+Project Title: An artificial intelligence for Catan with rationalisation
+
+Introduction => Introduce the game of Catan and why is it interesting from an AI point of view. 
+
+AI for Catan - What current approaches and techniques are currently in use? How will what I use be interesting and new? What is the aim for the AI. How will it be evaluated.
+
+Rationalisation - The very interesting bit. How can we explain why a move will good? can we expand it to evaluating other moves? What methods exist for this? ASP?
+
+Contingency Plans and Aims, extensions. What will be the hard bit? What is the basic aim we are trying to achieve
+
+Feasibility => No feasibility issues. Game is run using JSettlers API and sockets. No other external libraries.
+
+Timetabling and supervision - Schedule weekly meetings with Lars. Aim to have all "plumbing" sorted by Christmas. Cotinuing research into AI techniques and rationalisation.
+
+Approximately 2 pages

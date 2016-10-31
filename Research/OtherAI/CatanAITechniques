@@ -1,0 +1,16 @@
+Notes on AI Techniques used for Catan:
+
+Monte Carlo tree search (MCTS):
+
+General MCTS theory:
+
+Minimax is infeasible as it needs to compute all future states. This would be very hard for Catan due to the branching factor producing many possible different states. There are ways round this such as using the Alpha-Beta Pruning algorithm and truncating the search after certain ply and then using an abstract evaluation function to score the move that is reached. MCTS does not require specific knowledge about the game in question. Play many "games" down the search tree using the UCB1 algorithm to select which move expand. Then get this move to a state where it can be evaluated and backpropagate the result up the nodes.
+
+Would it be possible to use ASP to "think" of weight to give to an MCTS to influence its search? Ie. Can we think of a high level strategy using answer set programming and then use that to feed into the weights for something like a MCTS or other alternative. How viable would this approach be? Allowing ASP programming to influence the heuristics of an MCTS. Needs more reading on MCTS 
+
+
+In multiple papers:
+
+Szita2008 - Extends MCTS to multiplayer games and uses this to examine the feasibility of the algorithm for Catan. Mentions starting positions for the players as this implies some degree of bias. Heuristics are applied to MCTS in order to give larger weight to aspects that seem more promising. For example building a city is always a good idea so larger weight is applied to this. We can easily put domain knowledge into the tree search to guide it. MCTS performs well against the boxed AI that comes with JSettlers. (They test against the JSettlers AI). This MCTS was not programmed to follow the two major Catan strategies (Ore Wheat, Clay Wod). This particular AI does not handle trading which is a major downside, does not track uncertain knowledge through inference.
+
+Kocsis2006 - Paper introducing MCTS. Goes into detail about how child nodes are selected using UCT process. Quite theoretical but provides good overview of how the MCTS works. 
