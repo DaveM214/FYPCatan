@@ -1,0 +1,59 @@
+\documentclass[]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{amssymb}
+\usepackage{filecontents,hyperref}
+\usepackage[style=authoryear, backend = bibtex]{biblatex}
+
+
+%opening
+\title{Artificial Intelligence for Playing Catan with Rationalisation
+\\ \textit{Project Proposal}}
+\author{Student: David Martin 
+\\ Supervisor: Dr Lars Kunze}
+\date{}
+\bibliography{proposal.bib}
+\addbibresource{proposal.bib}
+
+\begin{document}
+\maketitle
+
+\section*{}
+\paragraph{}
+\textit{Catan} is a modern European board game by Klaus Terber for between 3 and 4 players. It is both very popular, having sold over 18 millions copies \autocite{raphel2014man}, as well as being critically acclaimed and winning a number of awards (\citeauthor{bgg1}).
+
+\paragraph{}
+The game involves spending resources and trading in order to develop a set of tiles so that you gain victory points. When a player gains 10 of these they win the game. There is a random element to that game in that the resources that are produced each turn are decided by a dice roll. Victory points are gained by building settlements and cities, playing development cards or possessing the longest road. A more comprehensive version of the rules is available on the official website for the game \textit{(http://www.catan.com/service/game-rules)}, which comprehensively covers the more involved elements of the game such as the starting sequence, board layout and trading rules. 
+
+\paragraph{}
+From a research point of view Catan is interesting due to its difference from games more traditionally studied for AI purposes such as Chess and Go. There are multiple reasons for this degree of difference. One such reason is that there is an element of randomness due to the dice roles. Although this reason differentiates it from the games such as chess the problem of dealing with probability has been fairly well covered with algorithms such as expectimax being designed to take this particular factor into account. Another way in which Catan presents an interesting problem is the nature of the moves that can be taken by players. In games such as chess a move involves the lone action of moving a single piece, in Catan a players turn can include building structures, using development cards and trading. This contributes to a reasonably high branching factor and a style of turn that is somewhat unconventional. The trading in itself is another interesting feature that must be considered in an AI. Trading is an integral part of the game, a player that trades effectively has a much greater chance of getting the resources they need and avoiding the penalties the robber can inflict. This aspect of temporary collaboration with other players adds another factor that must be considered when playing the game. The final element that serves to complicate the AI somewhat is the presence of uncertain information that is introduced to the game when someone gets a card robbed from them as when a player is robbed they lose a card at random with the only the two participating players knowing which. Therefore a small amount of reasoning over uncertainty will be necessary.
+
+\paragraph{}
+For the above reason an AI to play Catan will be a worthwhile project to embark on. The ultimate objective of the project will be to develop an AI that can play the game competently. In addition to this a further objective will be to provide the AI the ability to rationalise the moves it has just made, allowing it to explain why it has made a move. This would allow the system to act like a tutor, not only possessing the ability to play the game but also being able to suggest moves. 
+
+\paragraph{}
+In order to carry out this task I have identified a number of tools and approaches that could be utilised in order to facilitate its successful completion. The task of implementing the game is not within the scope of this project. Therefore it will make sense to use a 3rd party program in order to do this. The specific software that will allow this is `JSettlers' an opensource Java implementation of the game by Jeremy Monin that runs as a server and can be communicated to with sockets effectively making communication with it language neutral. This particular software is commonly used for research and projects involving Catan. This is beneficial as not only does the game come packaged with ``bots'' that could be used for testing but other AI implementations exist using the same API giving the opportunity for benchmarking against other attempts at AI for the game.
+
+\paragraph{}
+As it is the programming language that I am most familiar with, I will program the majority of the game in Java. Other languages may be required for other parts of the program and these will be considered when the need for them becomes more apparent. Although this project will lean more towards the research angle in nature I will still aim to follow good principles of software engineering, documenting code thoroughly and aiming to develop the project in a modular and extensible manner such that it may be of use to future projects in this particular area. 
+
+\paragraph{}
+Rationalisation
+
+\paragraph{}
+AI
+
+\paragraph{}
+As the project may not go fully to plan it is important to maintain a contingency plan. The most obvious act of contingency in order to reduce the scope of the project and pull it back within a more achievable zone would be to scale down either the AI or rationalisation aspect of the project. The choice of which of these to reduce would be taken pragmatically, based upon which is the most promising at the time. I predict that the hard part of the project will be applying the rationalisation to the AI system though depending on the techniques and overall architecture chosen for the system. On the other hand there may time to expand the scope of the project. If this is the case then it would be possible to expand the rationalisation so that it becomes more general, being able to not only explain its own moves but any given to it, furthering its ``tutoring'' ability and allowing it to make judgements on moves from other sources. The likelihood of reaching this expansion phase must realistically be seen as slim however, given the ambitious scope of this project.
+
+\paragraph{}
+Feasibility of this project should not be an issue due to the low requirements. The only things that are required are a Java development environment which can easily be obtained for no cost and the API that I am using in order to provide is open source and can therefore be freely downloaded and, if necessary, modified. No special hardware should be required for this development with the only possible exception to this being the amount of RAM that may be required for the AI aspect of the project, though it should not be an issue with the systems I have at my disposal.
+
+\paragraph{}
+In order to stay on track for this project it will be necessary to devise a timetable in order to schedule the work that needs doing. There will be time over the Christmas break and before the end of the autumn term to carry out some work. This time will be best spent setting up the development environment and ensuring that communication with the 3rd party API is well understood ready for interfacing with the AI. It would also be beneficial to spend this time carrying out further reading to gather information regarding the various topics related to this project. A specific timetable for the project will be developed towards the end of the Christmas break when a clearer picture of the work is gathered. It is important in this timetable to factor in time for evaluating the project and writing the report, which will be an ongoing task throughout the project. I will also ideally set up weekly meetings with my supervisor, Dr Kunze, so that progress on the project and ideas can be discussed. The mandatory weekly progress logs will also be submitted.
+
+\paragraph{}
+To conclude, it can be seen that the presented project is suitably ambitious and provides ample opportunity to create an innovative and original piece of work. This project proposal hopefully demonstrates that the key issues and considerations necessary for this task have been addressed and I believe that, with support, I will be able to produce excellent results.
+
+\printbibliography
+
+\end{document}

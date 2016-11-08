@@ -1,0 +1,67 @@
+% $ biblatex auxiliary file $
+% $ biblatex version 2.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\entry{bgg1}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {BoardGameGeek}{B.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{B1}
+  \strng{fullhash}{B1}
+  \field{labelyear}{2016}
+  \field{sortinit}{B}
+  \field{title}{Catan}
+  \verb{url}
+  \verb https://boardgamegeek.com/boardgame/13/catan
+  \endverb
+  \field{year}{2016}
+  \field{urlday}{08}
+  \field{urlmonth}{11}
+  \field{urlyear}{2016}
+\endentry
+
+\entry{raphel2014man}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Raphel}{R.}%
+     {Adrienne}{A.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{RA1}
+  \strng{fullhash}{RA1}
+  \field{labelyear}{2014}
+  \field{sortinit}{R}
+  \field{title}{The Man Who Built Catan}
+  \verb{url}
+  \verb http://www.newyorker.com/business/currency/the-man-who-built-catan
+  \endverb
+  \field{journaltitle}{The New Yorker}
+  \field{year}{2014}
+  \field{urlday}{08}
+  \field{urlmonth}{11}
+  \field{urlyear}{2016}
+\endentry
+
+\lossort
+\endlossort
+
+\endinput
