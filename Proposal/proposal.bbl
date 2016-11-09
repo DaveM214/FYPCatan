@@ -38,6 +38,175 @@
   \field{urlyear}{2016}
 \endentry
 
+\entry{chaslot2008monte}{inproceedings}{}
+  \name{author}{4}{}{%
+    {{}%
+     {Chaslot}{C.}%
+     {Guillaume}{G.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Bakkes}{B.}%
+     {Sander}{S.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Szita}{S.}%
+     {Istvan}{I.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Spronck}{S.}%
+     {Pieter}{P.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{CG+1}
+  \strng{fullhash}{CGBSSISP1}
+  \field{labelyear}{2008}
+  \field{sortinit}{C}
+  \field{booktitle}{AIIDE}
+  \field{title}{Monte-Carlo Tree Search: A New Framework for Game AI.}
+  \field{year}{2008}
+\endentry
+
+\entry{colaco2015happened}{inproceedings}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Colaco}{C.}%
+     {Zenon}{Z.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Sridharan}{S.}%
+     {Mohan}{M.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {Citeseer}%
+  }
+  \strng{namehash}{CZSM1}
+  \strng{fullhash}{CZSM1}
+  \field{labelyear}{2015}
+  \field{sortinit}{C}
+  \field{booktitle}{Australasian Conference on Robotics and Automation}
+  \field{pages}{2\bibrangedash 4}
+  \field{title}{What Happened and Why? A Mixed Architecture for Planning and
+  Explanation Generation in Robotics}
+  \field{year}{2015}
+\endentry
+
+\entry{lifschitz2002answer}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Lifschitz}{L.}%
+     {Vladimir}{V.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Elsevier}%
+  }
+  \strng{namehash}{LV1}
+  \strng{fullhash}{LV1}
+  \field{labelyear}{2002}
+  \field{sortinit}{L}
+  \field{number}{1}
+  \field{pages}{39\bibrangedash 54}
+  \field{title}{Answer set programming and plan generation}
+  \field{volume}{138}
+  \field{journaltitle}{Artificial Intelligence}
+  \field{year}{2002}
+\endentry
+
+\entry{mnih2015human}{article}{}
+  \true{moreauthor}
+  \name{author}{10}{}{%
+    {{}%
+     {Mnih}{M.}%
+     {Volodymyr}{V.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Kavukcuoglu}{K.}%
+     {Koray}{K.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Silver}{S.}%
+     {David}{D.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Rusu}{R.}%
+     {Andrei~A}{A.~A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Veness}{V.}%
+     {Joel}{J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Bellemare}{B.}%
+     {Marc~G}{M.~G.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Graves}{G.}%
+     {Alex}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Riedmiller}{R.}%
+     {Martin}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Fidjeland}{F.}%
+     {Andreas~K}{A.~K.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Ostrovski}{O.}%
+     {Georg}{G.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Nature Publishing Group}%
+  }
+  \strng{namehash}{MV+1}
+  \strng{fullhash}{MVKKSDRAAVJBMGGARMFAKOG+1}
+  \field{labelyear}{2015}
+  \field{sortinit}{M}
+  \field{number}{7540}
+  \field{pages}{529\bibrangedash 533}
+  \field{title}{Human-level control through deep reinforcement learning}
+  \field{volume}{518}
+  \field{journaltitle}{Nature}
+  \field{year}{2015}
+\endentry
+
+\entry{pfeiffer2004reinforcement}{inproceedings}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Pfeiffer}{P.}%
+     {Michael}{M.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{PM1}
+  \strng{fullhash}{PM1}
+  \field{labelyear}{2004}
+  \field{sortinit}{P}
+  \field{booktitle}{Proceedings of the International Conference on Computer
+  Games: Artificial Intelligence, Design and Education}
+  \field{title}{Reinforcement learning of strategies for Settlers of Catan}
+  \field{year}{2004}
+\endentry
+
 \entry{raphel2014man}{article}{}
   \name{author}{1}{}{%
     {{}%
@@ -59,6 +228,191 @@
   \field{urlday}{08}
   \field{urlmonth}{11}
   \field{urlyear}{2016}
+\endentry
+
+\entry{sheppard2002world}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Sheppard}{S.}%
+     {Brian}{B.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Elsevier}%
+  }
+  \strng{namehash}{SB1}
+  \strng{fullhash}{SB1}
+  \field{labelyear}{2002}
+  \field{sortinit}{S}
+  \field{number}{1}
+  \field{pages}{241\bibrangedash 275}
+  \field{title}{World-championship-caliber Scrabble}
+  \field{volume}{134}
+  \field{journaltitle}{Artificial Intelligence}
+  \field{year}{2002}
+\endentry
+
+\entry{silver2016mastering}{article}{}
+  \true{moreauthor}
+  \name{author}{10}{}{%
+    {{}%
+     {Silver}{S.}%
+     {David}{D.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Huang}{H.}%
+     {Aja}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Maddison}{M.}%
+     {Chris~J}{C.~J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Guez}{G.}%
+     {Arthur}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Sifre}{S.}%
+     {Laurent}{L.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Van Den~Driessche}{V.~D.~D.}%
+     {George}{G.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Schrittwieser}{S.}%
+     {Julian}{J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Antonoglou}{A.}%
+     {Ioannis}{I.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Panneershelvam}{P.}%
+     {Veda}{V.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Lanctot}{L.}%
+     {Marc}{M.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Nature Publishing Group}%
+  }
+  \strng{namehash}{SD+1}
+  \strng{fullhash}{SDHAMCJGASLVDDGSJAIPVLM+1}
+  \field{labelyear}{2016}
+  \field{sortinit}{S}
+  \field{number}{7587}
+  \field{pages}{484\bibrangedash 489}
+  \field{title}{Mastering the game of Go with deep neural networks and tree
+  search}
+  \field{volume}{529}
+  \field{journaltitle}{Nature}
+  \field{year}{2016}
+\endentry
+
+\entry{sridharan2016tale}{inproceedings}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Sridharan}{S.}%
+     {Mohan}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Meadows}{M.}%
+     {Ben}{B.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Colaco}{C.}%
+     {Zenon}{Z.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {ACM}%
+  }
+  \strng{namehash}{SM+1}
+  \strng{fullhash}{SMMBCZ1}
+  \field{labelyear}{2016}
+  \field{sortinit}{S}
+  \field{booktitle}{Proceedings of the 31st Annual ACM Symposium on Applied
+  Computing}
+  \field{pages}{260\bibrangedash 267}
+  \field{title}{A tale of many explanations: towards an explanation generation
+  system for robots}
+  \field{year}{2016}
+\endentry
+
+\entry{szita2009monte}{inproceedings}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Szita}{S.}%
+     {Istv{\'a}n}{I.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Chaslot}{C.}%
+     {Guillaume}{G.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Spronck}{S.}%
+     {Pieter}{P.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {Springer}%
+  }
+  \strng{namehash}{SI+1}
+  \strng{fullhash}{SICGSP1}
+  \field{labelyear}{2009}
+  \field{sortinit}{S}
+  \field{booktitle}{Advances in Computer Games}
+  \field{pages}{21\bibrangedash 32}
+  \field{title}{Monte-carlo tree search in settlers of catan}
+  \field{year}{2009}
+\endentry
+
+\entry{watkins1992q}{article}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Watkins}{W.}%
+     {Christopher~JCH}{C.~J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Dayan}{D.}%
+     {Peter}{P.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Springer}%
+  }
+  \strng{namehash}{WCJDP1}
+  \strng{fullhash}{WCJDP1}
+  \field{labelyear}{1992}
+  \field{sortinit}{W}
+  \field{number}{3-4}
+  \field{pages}{279\bibrangedash 292}
+  \field{title}{Q-learning}
+  \field{volume}{8}
+  \field{journaltitle}{Machine learning}
+  \field{year}{1992}
 \endentry
 
 \lossort

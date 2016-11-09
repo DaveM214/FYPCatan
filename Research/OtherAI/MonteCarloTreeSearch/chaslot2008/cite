@@ -1,0 +1,6 @@
+@inproceedings{chaslot2008monte,
+  title={Monte-Carlo Tree Search: A New Framework for Game AI.},
+  author={Chaslot, Guillaume and Bakkes, Sander and Szita, Istvan and Spronck, Pieter},
+  booktitle={AIIDE},
+  year={2008}
+}
