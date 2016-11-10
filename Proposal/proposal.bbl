@@ -120,6 +120,31 @@
   \field{year}{2002}
 \endentry
 
+\entry{melko2007optimal}{article}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Melk{\'o}}{M.}%
+     {Ervin}{E.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Nagy}{N.}%
+     {Benedek}{B.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{MENB1}
+  \strng{fullhash}{MENB1}
+  \field{labelyear}{2007}
+  \field{sortinit}{M}
+  \field{number}{2}
+  \field{pages}{171\bibrangedash 192}
+  \field{title}{Optimal strategy in games with chance nodes.}
+  \field{volume}{18}
+  \field{journaltitle}{Acta Cybern.}
+  \field{year}{2007}
+\endentry
+
 \entry{mnih2015human}{article}{}
   \true{moreauthor}
   \name{author}{10}{}{%
@@ -187,6 +212,26 @@
   \field{volume}{518}
   \field{journaltitle}{Nature}
   \field{year}{2015}
+\endentry
+
+\entry{moninJsettlers}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Monin}{M.}%
+     {Jeremy}{J.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{MJ1}
+  \strng{fullhash}{MJ1}
+  \field{labelyear}{2016}
+  \field{sortinit}{M}
+  \field{title}{JSettlers2}
+  \verb{url}
+  \verb http://nand.net/jsettlers/
+  \endverb
+  \field{year}{2016}
+  \warn{\item Invalid format of field 'urldate'}
 \endentry
 
 \entry{pfeiffer2004reinforcement}{inproceedings}{}
