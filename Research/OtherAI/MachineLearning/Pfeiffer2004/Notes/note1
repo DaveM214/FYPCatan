@@ -1,0 +1,23 @@
+Notes on Pfeiffer 2004 - "Reinforcement learning of strategies for Settlers of Catan"
+
+Summary:
+-This paper uses a reinforcement learning technique combined with high level heuristics in order to play Catan to a reasonably effective standard.
+-The reinforcement learning involves getting a reward for taking certain moves resulting in certain states afterwards
+-There is some novel usage of model trees in order to reduce the size of the search space from an area that would otherwise be infeasible to look through
+-Combination of reinforcement learning model that dictates the high level behaviour of the agent to low level reinforcement learning policies to achieve certain goals. The way these are rewarded enforce some degree of separation.
+-Training is done against itself, the stochastic nature of the allows this to happen.
+-Numerous ways of utilising the high level part but in the end decided that using some high level heuristics in order to guide the strategy is the one that generally yields the best results.
+
+
+Things learnt applying to the project:
+-A reinforcement learning based approach is viable in the creation of an AI for this game
+-This paper uses a separated high and low level aspect. The high level decides on the strategy that is going to be used and the low level then tries to achieve the sub goals that it has been given. This approach is interesting to see as it is quite similar to what will be attempted in the project with the ASP effectively governing the high level strategy.
+-Some high level heuristics are needed in this method but not as many as using a complete rule based approach.
+-This method requires a lot of storage space for the training data and takes a long time to be able to train.
+-When the situation on a board needs to be evaluated this method does not just feed in the raw data for the board but instead it sort of abstracts out the general situation based on the features it has. Probably counters key features such as the number of cities etc.
+-The usage of model trees in order to make decisions might be somewhat interesting to consider but will largely not be compatibly with an MCTS as that does not require the evaluation of states.
+-This paper will be very good to reference in order to show the viability of a mixed approach of a high level and low level decision maker. Also one of the few people that has made an actual concrete attempt at an AI.
+
+Reading from this paper:
+Pfeiffer, M. 2003. "Machine Learning Applications in
+Computer Games."

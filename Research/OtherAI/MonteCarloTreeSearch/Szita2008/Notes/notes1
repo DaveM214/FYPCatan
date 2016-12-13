@@ -1,0 +1,30 @@
+Notes on Paper - "Monte-Carlo Tree Search in Settlers of Catan"
+
+SUMMARY:
+-Attempt at using a MCTS in order to play the Settler of Catan game. 
+-This particular attempt achieves good results when playing against the AI that comes included with the JSettlers implementation
+of the game. When MCTS playthrough is allowed 10,000 moves then it achieves a win rate approaching 50%.
+-In this paper there are change to the rules. For example there is a perfect information and there is also no trading which
+probably somewhat reduces the performance of the AI. It would be interesting to be able to introduce this.
+-Against a human player the AI is better but still relatively easily beaten.
+-This paper effectively shows that MCTS is usable both for games that have complex rules.
+
+
+Useful knowledge when applying to the project:
+-It might be necessary to create an environment for the playing of MCTS simulations as JSettlers may be too slow. It would be
+having a local JSettlers server vs. having a standalone environment to play the games.
+-It is possible to influence the playthrough with both changing the weights and also attributing virtual wins to the game. This,
+in our case, could be the outcome of the high level decisions made with ASP.
+-Influencing the decisions through the domain knowledge may lead to worse results due to how it interacts with the MCTS. This
+means that when we evaluate it in the project it would be a good idea to test it in various configurations in order to see if we
+get better results with this different approach.
+-There is an inherent bias with the positions that players are seated at on the board. It will be worth looking at this when
+evaluating the project and must be taken into account. Ie-> will our AI perform much better or worse whether it performs second or
+first?
+
+
+Further reading as a result of this paper:
+"Current Challenges in multi-plaeyr game search" - 2004 - N Sturtevant
+"Reinforcement Learning Strategies for Settlers of Catan" - 2004 - M Pfeiffer
+"Monte-Carlo Strategies for Computer Go" - 2006 - G Chaslot
+"Progressive Strategies for Monto-Carlo Tree Search" - 2008 - G Chaslot
