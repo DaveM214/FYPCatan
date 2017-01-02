@@ -1,42 +1,7 @@
-In the next few weeks:
--Finalise ideas of project
--Do project proposal - agree with Lars on the scope of the project
--Ethics review - trivial exercise involving ticking boxes as there will be no ethical concerns in this project
+Todo:
 
-
-
-BEFORE CHRISTMAS BREAK
--Set up the third party API properly - Be able to interact with it and write a sinmple AI in order to interact with the boxed AI's 
--Some way of representing knowledge and the state of the board
--Translating the packaged state from the API into the state that we want to use.
-
-AFTER RESEARCH AND READING BEFORE END OF CHRISTMAS BREAK:
--High level architecture of the system -> Mostly worked out but could do with a little more granularity.
--What approach will the AI take? Multi-agent sytem mostly but what techniques will be used for each bit
--How will we reason over the actions presented to us? Score moves? Allow the game to both "comment" on already taken moves or suggest new ones.
--Will therefore need a standardised format for actions presented.
--How are we going to deal with the uncertainty in the game?
--The board in catan can change -> this means that the representation of the board needs to be "fluid" and able to change the resource and values within the same overall tesselated hexagonal layer.
--The layout of the board will affect the reasoning on the position of the game.
-
-
-Find reading on:
--Catan Strategies - game theory style things, for implementation of the AI.
-->This will need to include some probability/stats stuff on the opening on the game.
-
--AI techniques for Settlers of Catan.
-->Look into techniques for multi-agent systems.
-->Techniques that utilise that implemented rationalisation
-
--Reasoning and evaluating the moves that have been made/possible moves before they are made.
--> reading similar to the material also given, might be worth finding some Prolog type reading.
-
-
-
-Project Idea:
-
-An artificial intelligence that can play the popular board game "Catan". This probably involve a variety of techniques. In addition to the AI there will also be a part of the project that can justify why these moves have been taken, expaining why they are useful. This particular feature would allow the AI to act like a tutor, explaining moves to new players by giving them examples. An extension of this would be to then extend the rationalisation part of the project so that it can not only justify moves that itself has played but attempt to justify any move that is provided to it given the board state. This would be particularly interesting as it opens up many possibilities such as reasoning about the effectiveness of moves made by the opponent and reasoning about the effectiveness of moves generated its own AI meaning it could feed back into it to improve possible solutions. It could also then further the "tutoring" of the game by explaining the effectiveness of the moves that a player suggests. Uninteresting code will be kept to a minimum by using a third party API for the implementation of the game which is communicated with using sockets. 
-
-Main Goal: Working AI with rationalisation
-Further Goal: Highly Competent AI that can apply rationalisation to any move and incorporate it into its game playing ability
-
+-Setup API
+-ASP Reading - Program toy example?
+-Make timetable for second term
+-Figure out representation and working with the API - basic AI?
+-Reading on MCTS? 
