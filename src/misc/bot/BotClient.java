@@ -1,17 +1,22 @@
 package misc.bot;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import misc.utils.BotMessageQueue;
 import misc.utils.exceptions.QSizeExceededException;
+import soc.disableDebug.D;
 import soc.game.SOCGame;
+import soc.game.SOCGameOption;
 import soc.message.SOCAdminPing;
 import soc.message.SOCAdminReset;
+import soc.message.SOCChangeFace;
 import soc.message.SOCDeleteGame;
 import soc.message.SOCGameMembers;
 import soc.message.SOCGameState;
 import soc.message.SOCGameTextMsg;
 import soc.message.SOCInventoryItemAction;
+import soc.message.SOCJoinGame;
 import soc.message.SOCJoinGameAuth;
 import soc.message.SOCMessage;
 import soc.message.SOCMessageForGame;
@@ -25,8 +30,11 @@ import soc.message.SOCSimpleRequest;
 import soc.message.SOCSitDown;
 import soc.message.SOCStatusMessage;
 import soc.message.SOCUpdateRobotParams;
+import soc.robot.SOCRobotBrain;
 import soc.robot.SOCRobotClient;
+import soc.robot.SOCRobotDM;
 import soc.util.CappedQueue;
+import soc.util.CutoffExceededException;
 import soc.util.SOCRobotParameters;
 
 /**
@@ -37,8 +45,8 @@ import soc.util.SOCRobotParameters;
  */
 public class BotClient extends SOCRobotClient {
 
-	private static final String HOST_NAME = "localhost";
-	private static final int PORT = 8088;
+	private static final String HOST_NAME = "127.0.0.1";
+	private static final int PORT = 8880;
 	private static final String NICKNAME = "CatanBot";
 	private static final String PASSWORD = "password";
 	private static final String COOKIE = "cookie";
@@ -109,8 +117,8 @@ public class BotClient extends SOCRobotClient {
 			return;
 		}
 
-		final String ga = ((SOCMessageForGame) msg).getGame();
-		System.out.println("Msg Received for game:" + ga);
+		final String message = msg.toString();
+		System.out.println("Msg Received: " + message);
 		System.out.println(msg);
 
 		try {
@@ -202,7 +210,7 @@ public class BotClient extends SOCRobotClient {
 			/**
 			 * game text message
 			 */
-				//Overridden
+			// Overridden
 			case SOCMessage.GAMETEXTMSG:
 				handleGAMETEXTMSG((SOCGameTextMsg) msg);
 				break;
@@ -210,7 +218,7 @@ public class BotClient extends SOCRobotClient {
 			/**
 			 * someone is sitting down
 			 */
-				//Overridden
+			// Overridden
 			case SOCMessage.SITDOWN:
 				handleSITDOWN((SOCSitDown) msg);
 				break;
@@ -218,6 +226,7 @@ public class BotClient extends SOCRobotClient {
 			/**
 			 * update the state of the game
 			 */
+			// Overridden
 			case SOCMessage.GAMESTATE:
 				handleGAMESTATE((SOCGameState) msg);
 				break;
@@ -225,6 +234,7 @@ public class BotClient extends SOCRobotClient {
 			/**
 			 * a player built something
 			 */
+			// Overridden
 			case SOCMessage.PUTPIECE:
 				handlePUTPIECE((SOCPutPiece) msg);
 				break;
@@ -232,6 +242,7 @@ public class BotClient extends SOCRobotClient {
 			/**
 			 * the server is requesting that we join a game
 			 */
+			// Not Overridden
 			case SOCMessage.ROBOTJOINGAMEREQUEST:
 				handleROBOTJOINGAMEREQUEST((SOCRobotJoinGameRequest) msg);
 				break;
@@ -239,6 +250,7 @@ public class BotClient extends SOCRobotClient {
 			/**
 			 * message that means the server wants us to leave the game
 			 */
+			// Overridden
 			case SOCMessage.ROBOTDISMISS:
 				handleROBOTDISMISS((SOCRobotDismiss) msg);
 				break;
@@ -247,6 +259,7 @@ public class BotClient extends SOCRobotClient {
 			 * handle board reset (new game with same players, same game name,
 			 * new layout).
 			 */
+			// Overridden
 			case SOCMessage.RESETBOARDAUTH:
 				handleRESETBOARDAUTH((SOCResetBoardAuth) msg);
 				break;
@@ -258,7 +271,7 @@ public class BotClient extends SOCRobotClient {
 			 */
 			case SOCMessage.SIMPLEREQUEST:
 				super.handleSIMPLEREQUEST(games, (SOCSimpleRequest) msg);
-				handlePutBrainQ((SOCSimpleRequest) msg);
+				addMessageToBrainQueue((SOCSimpleRequest) msg);
 				break;
 
 			/**
@@ -267,7 +280,7 @@ public class BotClient extends SOCRobotClient {
 			 */
 			case SOCMessage.SIMPLEACTION:
 				super.handleSIMPLEACTION(games, (SOCSimpleAction) msg);
-				handlePutBrainQ((SOCSimpleAction) msg);
+				addMessageToBrainQueue((SOCSimpleAction) msg);
 				break;
 
 			/**
@@ -277,7 +290,7 @@ public class BotClient extends SOCRobotClient {
 			case SOCMessage.INVENTORYITEMACTION: {
 				final boolean isReject = super.handleINVENTORYITEMACTION(games, (SOCInventoryItemAction) msg);
 				if (isReject)
-					handlePutBrainQ((SOCInventoryItemAction) msg);
+					addMessageToBrainQueue((SOCInventoryItemAction) msg);
 			}
 				break;
 
@@ -286,7 +299,7 @@ public class BotClient extends SOCRobotClient {
 			 */
 			case SOCMessage.SETSPECIALITEM:
 				super.handleSETSPECIALITEM(games, (SOCSetSpecialItem) msg);
-				handlePutBrainQ((SOCSetSpecialItem) msg);
+				addMessageToBrainQueue((SOCSetSpecialItem) msg);
 				break;
 
 			// Irrelevant to robots and "one-directional" so can simply be
@@ -334,6 +347,7 @@ public class BotClient extends SOCRobotClient {
 		}
 	}
 
+	// This method creates the robot brain.
 	@Override
 	public void handleJOINGAMEAUTH(SOCJoinGameAuth msg, boolean isPractice) {
 		gamesPlayed++;
@@ -399,15 +413,98 @@ public class BotClient extends SOCRobotClient {
 	 * the game begins with the name our bot.
 	 */
 	public void handleGAMETEXTMSG_debug(SOCGameTextMsg msg) {
-		//TODO decide what functions this method will have.
-		//This can be done somewhat later
+		// TODO decide what functions this method will have.
+		// This can be done somewhat later
 	}
-	
-	/**Method to seat a player at the game. This method handles adding them to the local representation of the game.
+
+	/**
+	 * Method to seat a player at the game. This method handles adding them to
+	 * the local representation of the game.
 	 * 
 	 */
-	public void handleSITDOWN(SOCSitDown mes){
-		//TODO FIRST finish this off. This will be the starting of the brain if the player that has joined is us
+	public void handleSITDOWN(SOCSitDown msg) {
+		SOCGame ga = games.get(msg.getGame());
+
+		/// Check the game to make sure it isn't null
+		if (ga != null) {
+			// Add the player to the game
+			ga.addPlayer(msg.getNickname(), msg.getPlayerNumber());
+		}
+
+		// If this message is mirroring that it is us that has joined.
+		if (nickname.equals(msg.getNickname())) {
+			BotBrain brain = myRobotBrains.get(msg.getGame());
+
+			// Start the brain.
+			brain.start();
+			// Put the robot face
+			put(SOCChangeFace.toCmd(ga.getName(), msg.getPlayerNumber(), 0));
+		}
+		// TODO possible code here if you want to build trackers for the
+		// opposition players that are joining
+	}
+
+	// This message should be handed to the brain queue
+	public void handleGAMESTATE(SOCGameState msg) {
+		SOCGame ga = games.get(msg.getGame());
+
+		if (ga != null) {
+			addMessageToBrainQueue(msg);
+		}
+	}
+
+	public void handlePUTPIECE(SOCPutPiece msg) {
+		BotMessageQueue<SOCMessage> brainQueue = brainQueues.get(msg.getGame());
+		if (brainQueue != null) {
+
+			try {
+				brainQueue.put((SOCMessage) msg);
+			} catch (QSizeExceededException e) {
+				// TODO: handle exception
+			}
+		}
+	}
+
+	// Handle the robot being dismissed from the game.
+	public void handleROBOTDISMISS(SOCRobotDismiss msg) {
+		SOCGame ga = games.get(msg.getGame());
+		BotMessageQueue<SOCMessage> brainQueue = brainQueues.get(msg.getGame());
+
+		if ((ga != null) && (brainQueue != null)) {
+			try {
+				brainQueue.put(msg);
+			} catch (QSizeExceededException exc) {
+				D.ebugPrintln("CutoffExceededException" + exc);
+			}
+
+			/**
+			 * if the brain isn't alive, then we need to leave the game here,
+			 * instead of having the brain leave it
+			 */
+			BotBrain brain = myRobotBrains.get(msg.getGame());
+
+			if ((brain == null) || (!brain.isAlive())) {
+				leaveGame(games.get(msg.getGame()), "brain not alive in handleROBOTDISMISS", true, false);
+			}
+		}
+	}
+
+	@Override
+	public void handleRESETBOARDAUTH(SOCResetBoardAuth msg) {
+		D.ebugPrintln("**** handleRESETBOARDAUTH ****");
+
+		String gname = msg.getGame();
+		SOCGame ga = games.get(gname);
+		if (ga == null) {
+			return; // Not one of our games
+		}
+		
+		BotBrain brain = myRobotBrains.get(gname);
+		if (brain != null)
+			brain.kill();
+		leaveGame(ga, "resetboardauth", false, false); // Same as in
+														// handleROBOTDISMISS
+		ga.destroyGame();
 	}
 
 	// TODO Implement method for running multiple games after one another.

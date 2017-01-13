@@ -22,8 +22,6 @@ public class BotApplication {
 		printWelcome();
 		BotClient client = new BotClient();
 		client.init();
-		System.out.println("test"); // Test to see if blocked and we need to put
-									// this in another thread
 	}
 
 	private static void printWelcome() {
