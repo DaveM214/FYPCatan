@@ -1,0 +1,1 @@
+java -jar JSettlersServer.jar -Djsettlers.startrobots=9 -Djsettlers.bots.cookie=cookie -o RD=f N=t 8880 10 
