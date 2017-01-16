@@ -1,5 +1,8 @@
 package misc.bot;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -15,6 +18,7 @@ import soc.message.SOCDeleteGame;
 import soc.message.SOCGameMembers;
 import soc.message.SOCGameState;
 import soc.message.SOCGameTextMsg;
+import soc.message.SOCImARobot;
 import soc.message.SOCInventoryItemAction;
 import soc.message.SOCJoinGame;
 import soc.message.SOCJoinGameAuth;
@@ -30,12 +34,16 @@ import soc.message.SOCSimpleRequest;
 import soc.message.SOCSitDown;
 import soc.message.SOCStatusMessage;
 import soc.message.SOCUpdateRobotParams;
+import soc.message.SOCVersion;
 import soc.robot.SOCRobotBrain;
 import soc.robot.SOCRobotClient;
 import soc.robot.SOCRobotDM;
+import soc.server.genericServer.LocalStringServerSocket;
 import soc.util.CappedQueue;
 import soc.util.CutoffExceededException;
 import soc.util.SOCRobotParameters;
+import soc.util.SOCServerFeatures;
+import soc.util.Version;
 
 /**
  * Class extends the robot class
@@ -50,6 +58,10 @@ public class BotClient extends SOCRobotClient {
 	private static final String NICKNAME = "CatanBot";
 	private static final String PASSWORD = "password";
 	private static final String COOKIE = "cookie";
+	private static final int SERVER_VERSION_NUMBER = 2000;
+	private static final String SERVER_VERSION_STRING = "2.0.00";
+	private static final String SERVER_BUILD = "JM20161228";
+	private Thread readerRobot;
 
 	// Hash table containing the brains of games
 	private Hashtable<String, BotBrain> myRobotBrains = new Hashtable<String, BotBrain>();
@@ -98,6 +110,37 @@ public class BotClient extends SOCRobotClient {
 	 */
 	public BotClient(String s, String nn, String pw, String co) {
 		super(s, nn, pw, co);
+	}
+
+	/**
+	 * Override the init method to avoid having to explicitly deal with the
+	 * dynamic versioning that will mean extra resource files need to be
+	 * included. Doing this should keep the required libraries to run the game
+	 * as small as possible
+	 */
+	@Override
+	public void init() {
+		try {
+			if (strSocketName == null) {
+				s = new Socket(host, port);
+				s.setSoTimeout(300000);
+				in = new DataInputStream(s.getInputStream());
+				out = new DataOutputStream(s.getOutputStream());
+			} else {
+				sLocal = LocalStringServerSocket.connectTo(strSocketName);
+			}
+			connected = true;
+			readerRobot = new Thread(this);
+			readerRobot.start();
+
+			// resetThread = new SOCRobotResetThread(this);
+			// resetThread.start();
+			put(SOCVersion.toCmd(SERVER_VERSION_NUMBER, SERVER_VERSION_STRING, SERVER_BUILD, null));
+			put(SOCImARobot.toCmd(nickname, COOKIE, SOCImARobot.RBCLASS_BUILTIN));
+		} catch (Exception e) {
+			ex = e;
+			System.err.println("Could not connect to the server: " + ex);
+		}
 	}
 
 	/**
@@ -253,6 +296,10 @@ public class BotClient extends SOCRobotClient {
 			// Overridden
 			case SOCMessage.ROBOTDISMISS:
 				handleROBOTDISMISS((SOCRobotDismiss) msg);
+				break;
+
+			case SOCMessage.VERSION:
+				handleVERSION((sLocal != null), (SOCVersion) msg);
 				break;
 
 			/**
@@ -498,7 +545,7 @@ public class BotClient extends SOCRobotClient {
 		if (ga == null) {
 			return; // Not one of our games
 		}
-		
+
 		BotBrain brain = myRobotBrains.get(gname);
 		if (brain != null)
 			brain.kill();
@@ -507,7 +554,36 @@ public class BotClient extends SOCRobotClient {
 		ga.destroyGame();
 	}
 
-	// TODO Implement method for running multiple games after one another.
-	// Probably take an input from the main application class
+	/**
+	 * Override of the version handling method to allow us to not need to
+	 * dynamically retrieve the version information of the server from a
+	 * resource file. There version of the client that we can connect too will
+	 * be stored in this class.
+	 */
+	public void handleVERSION(boolean isLocal, SOCVersion msg) {
+		int vers = msg.getVersionNumber();
+		final SOCServerFeatures feats = (vers >= SOCServerFeatures.VERSION_FOR_SERVERFEATURES)
+				? new SOCServerFeatures(msg.localeOrFeats) : new SOCServerFeatures(true);
+
+		if (isLocal) {
+			sLocalVersion = vers;
+			sLocalFeatures = feats;
+		} else {
+			sVersion = vers;
+			sFeatures = feats;
+		}
+
+		final int ourVers = SERVER_VERSION_NUMBER;
+		if (vers != ourVers) {
+			final String errmsg = "Internal error SOCDisplaylessPlayerClient.handleVERSION: Server must be same as our version "
+					+ ourVers + ", not " + vers; // i18n: Unlikely error, keep
+													// un-localized for possible
+													// bug reporting
+			System.err.println(errmsg);
+			ex = new IllegalStateException(errmsg);
+			destroy();
+		}
+	}
+
 
 }
