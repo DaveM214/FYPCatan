@@ -1,6 +1,8 @@
 package misc.bot;
 
 import misc.utils.BotMessageQueue;
+import misc.bot.BotClient;
+import soc.game.SOCBoard;
 import soc.game.SOCGame;
 
 /**
@@ -13,9 +15,18 @@ import soc.game.SOCGame;
  *
  */
 public class BotBrain extends Thread {
+	
+	private BotMessageQueue msgQ;
+	private BotClient client;
+	private SOCBoard board; 
+	private SOCGame game;
+	private boolean boardInit = false;
+	private int seatNumber;
 
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue msgQueue) {
-
+		msgQ = msgQueue;
+		this.client = client;
+		this.game = game;
 	}
 
 	// TODO complete this method.
@@ -26,8 +37,22 @@ public class BotBrain extends Thread {
 
 	@Override
 	public void run() {
-
+		init();
 	}
+	
+	/**
+	 * Carry out the initialisation of the bot
+	 * Need to work out what initialisation needs to go in here
+	 */
+	private void init(){
+		
+		
+	}
+	
+	public void setSeatNumber(int seatNumber){
+		this.seatNumber = seatNumber;
+	}
+	
 	// TODO Implement the behaviours of this brain and how it will be organised,
 	// work out how the loop will work in the runnable.
 

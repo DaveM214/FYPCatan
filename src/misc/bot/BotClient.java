@@ -481,14 +481,12 @@ public class BotClient extends SOCRobotClient {
 		// If this message is mirroring that it is us that has joined.
 		if (nickname.equals(msg.getNickname())) {
 			BotBrain brain = myRobotBrains.get(msg.getGame());
-
+			brain.setSeatNumber(msg.getPlayerNumber());
 			// Start the brain.
 			brain.start();
 			// Put the robot face
 			put(SOCChangeFace.toCmd(ga.getName(), msg.getPlayerNumber(), 0));
 		}
-		// TODO possible code here if you want to build trackers for the
-		// opposition players that are joining
 	}
 
 	// This message should be handed to the brain queue
