@@ -483,6 +483,7 @@ public class BotClient extends SOCRobotClient {
 			BotBrain brain = myRobotBrains.get(msg.getGame());
 			brain.setSeatNumber(msg.getPlayerNumber());
 			// Start the brain.
+			brain.setPlayerData();
 			brain.start();
 			// Put the robot face
 			put(SOCChangeFace.toCmd(ga.getName(), msg.getPlayerNumber(), 0));

@@ -4,10 +4,17 @@ import misc.utils.BotMessageQueue;
 import misc.bot.BotClient;
 import soc.game.SOCBoard;
 import soc.game.SOCGame;
+import soc.game.SOCPlayer;
+import soc.game.SOCPlayingPiece;
+import soc.game.SOCRoad;
+import soc.game.SOCSettlement;
 import soc.message.SOCFirstPlayer;
 import soc.message.SOCGameState;
 import soc.message.SOCMessage;
+import soc.message.SOCPlayerElement;
+import soc.message.SOCResourceCount;
 import soc.message.SOCSetTurn;
+import soc.message.SOCTurn;
 
 /**
  * Class to direct the AI of the bot. This class will maintain a state of the
@@ -24,16 +31,26 @@ public class BotBrain extends Thread {
 	private BotClient client;
 	private SOCBoard board;
 	private SOCGame game;
+	private SOCPlayer ourPlayer;
 	private boolean boardInit = false;
-	private int seatNumber;
+	private int seatNumber; // Our seatNumber
 	private boolean alive;
 	private int currentPlayer;
 	private int firstPlayer;
-	private int turnCounter; //Number of turns there have been
-	private int ourTurnCounter; //Number of turns we have had
+	private int ourPriority; //The order of the first move we will make
+	private int turnCounter; // Number of turns there have been
+	private int ourTurnCounter;// Number of turns we have had
+	private boolean ourTurn;
 	private boolean initialRoadsBuilt;
 	private boolean initialSettlementsBuilt;
 	
+	//Possible playing strategy constants
+	private final static int BRICK_STRATEGY = 1;
+	private final static int ORE_STRATEGY = 2;
+	private final static int MIXED_STRATEGY = 3;
+	
+	private InitialMoveDecider decider;
+
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue<SOCMessage> msgQueue) {
 		msgQ = msgQueue;
 		this.client = client;
@@ -55,29 +72,47 @@ public class BotBrain extends Thread {
 				// This method sleeps until there is an element in the queue
 				SOCMessage msg = msgQ.get();
 				int msgType = msg.getType();
-				
+
 				switch (msgType) {
-				
-				//We have received a new game state from the server.
+
+				// We have received a new game state from the server.
 				case SOCMessage.GAMESTATE:
 					updateGameState(((SOCGameState) msg).getState());
 					break;
-					
-				//Handle the message that indicates who the first player to move is.	
-				case SOCMessage.FIRSTPLAYER	:
-					setFirstPlayer(((SOCFirstPlayer)msg).getPlayerNumber());
+
+				// Handle the message that indicates who the first player to
+				// move is.
+				case SOCMessage.FIRSTPLAYER:
+					setFirstPlayer(((SOCFirstPlayer) msg).getPlayerNumber());
 					break;
-					
+
+				// Handle the message that is indicates its is someone elses
+				// turn
 				case SOCMessage.SETTURN:
-					setTurnNumber((((SOCSetTurn)msg).getPlayerNumber()));
+					setTurnNumber((((SOCSetTurn) msg).getPlayerNumber()));
 					break;
-					
+
+				// Handle the message that indicates someones turn is starting
 				case SOCMessage.TURN:
-					setTurn
+					handleTurnMessage(((SOCTurn) msg));
 					break;
-					
+
+				case SOCMessage.PLAYERELEMENT:
+					handePlayerElement(((SOCPlayerElement) msg));
+					break;
+
+				// Handle the message showing how many resources a player has.
+				case SOCMessage.RESOURCECOUNT:
+					handleResourceCount(msg);
+					break;
+
 				default:
 					break;
+				}
+
+				// If it is our turn then enact our turn
+				if (ourTurn) {
+					handleOurTurn();
 				}
 
 			} catch (Exception e) {
@@ -85,10 +120,67 @@ public class BotBrain extends Thread {
 			}
 		}
 	}
+
+	private void handleOurTurn() {
+		int currentState = game.getGameState();
+		if (game.isInitialPlacement()) {
+			// We will do initial placement manually through probabilities and
+			// stats
+			doInitialPlacement(currentState);
+		}
+
+	}
+
+	/**
+	 * Method that will handle the initial placement of both roads and
+	 * settlements by passing it to a special segment which will decide this
+	 * information given the state of the board
+	 */
+	private void doInitialPlacement(int currentState) {
+		int location = decider.handleDecision(game);
+		//If we are placing a road
+		if(currentState == SOCGame.START1B || currentState ==  SOCGame.START2B){
+			requestRoadPlacement(location);
+		}else{
+			requestSettlementPlacement(location);
+		}
+	}
+
+	private void requestRoadPlacement(int location) {
+		client.putPiece(game, new SOCRoad(ourPlayer, location, null));
+	}
 	
+	private void requestSettlementPlacement(int location){
+		 client.putPiece(game, new SOCSettlement(ourPlayer, location, null));
+	}
+
+	private void handleResourceCount(SOCMessage msg) {
+		SOCPlayer pl = game.getPlayer(((SOCResourceCount) msg).getPlayerNumber());
+		if (((SOCResourceCount) msg).getCount() != pl.getResources().getTotal()) {
+			// TODO handle mistmatches
+		}
+	}
+
+	private void handePlayerElement(SOCPlayerElement socPlayerElement) {
+		// TODO Code here to handle resources being given to the other players
+	}
+
+	private void handleTurnMessage(SOCTurn turn) {
+		game.setCurrentPlayerNumber(turn.getPlayerNumber());
+		game.updateAtTurn();
+
+		if (game.getCurrentPlayerNumber() == seatNumber) {
+			ourTurn = true;
+		} else {
+			ourTurn = false;
+		}
+
+		// TODO code here to enact our turn
+	}
+
 	private void setTurnNumber(int seatNumber) {
-		//Check that the turn number has advanced.
-		if(seatNumber != currentPlayer){
+		// Check that the turn number has advanced.
+		if (seatNumber != currentPlayer) {
 			turnCounter++;
 		}
 		game.setCurrentPlayerNumber(seatNumber);
@@ -96,13 +188,15 @@ public class BotBrain extends Thread {
 
 	/**
 	 * Method to set the field indicating which player will go first.
-	 * @param playerNumber The seat number of the player (1-4) that is going to go first.
+	 * 
+	 * @param playerNumber
+	 *            The seat number of the player (1-4) that is going to go first.
 	 */
 	private void setFirstPlayer(int playerNumber) {
 		this.firstPlayer = playerNumber;
 	}
 
-	//TODO Code to update state of the game.
+	// TODO Code to update state of the game.
 	private void updateGameState(int state) {
 		
 	}
@@ -117,6 +211,11 @@ public class BotBrain extends Thread {
 
 	public void setSeatNumber(int seatNumber) {
 		this.seatNumber = seatNumber;
+	}
+	
+	public void setPlayerData(){
+		ourPlayer = game.getPlayer(client.getNickname());
+		decider = new InitialMoveDecider(ourPlayer);
 	}
 
 	// TODO Implement the behaviours of this brain and how it will be organised,
