@@ -1,6 +1,9 @@
 package misc.bot;
 
 import misc.utils.BotMessageQueue;
+
+import java.util.Vector;
+
 import misc.bot.BotClient;
 import soc.game.SOCBoard;
 import soc.game.SOCGame;
@@ -37,19 +40,20 @@ public class BotBrain extends Thread {
 	private boolean alive;
 	private int currentPlayer;
 	private int firstPlayer;
-	private int ourPriority; //The order of the first move we will make
+	private int ourPriority; // The order of the first move we will make
 	private int turnCounter; // Number of turns there have been
 	private int ourTurnCounter;// Number of turns we have had
 	private boolean ourTurn;
 	private boolean initialRoadsBuilt;
 	private boolean initialSettlementsBuilt;
-	
-	//Possible playing strategy constants
+
+	// Possible playing strategy constants
 	private final static int BRICK_STRATEGY = 1;
 	private final static int ORE_STRATEGY = 2;
 	private final static int MIXED_STRATEGY = 3;
-	
+
 	private InitialMoveDecider decider;
+	private boolean expectingMove =false;
 
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue<SOCMessage> msgQueue) {
 		msgQ = msgQueue;
@@ -72,6 +76,7 @@ public class BotBrain extends Thread {
 				// This method sleeps until there is an element in the queue
 				SOCMessage msg = msgQ.get();
 				int msgType = msg.getType();
+				System.out.println(msg.toString());
 
 				switch (msgType) {
 
@@ -112,9 +117,12 @@ public class BotBrain extends Thread {
 
 				// If it is our turn then enact our turn
 				if (ourTurn) {
-					handleOurTurn();
+					if (expectingMove) {
+						handleOurTurn();
+					}
 				}
 
+				yield();
 			} catch (Exception e) {
 
 			}
@@ -122,11 +130,15 @@ public class BotBrain extends Thread {
 	}
 
 	private void handleOurTurn() {
+		System.out.println("HANDLING OUR TURN!");
 		int currentState = game.getGameState();
-		if (game.isInitialPlacement()) {
+
+		// IF Initial state
+		if (currentState >= 5 && currentState <= 11) {
 			// We will do initial placement manually through probabilities and
 			// stats
 			doInitialPlacement(currentState);
+			expectingMove = false;
 		}
 
 	}
@@ -137,11 +149,17 @@ public class BotBrain extends Thread {
 	 * information given the state of the board
 	 */
 	private void doInitialPlacement(int currentState) {
-		int location = decider.handleDecision(game);
-		//If we are placing a road
-		if(currentState == SOCGame.START1B || currentState ==  SOCGame.START2B){
+		int location = decider.handleDecision(currentState, board);
+		System.out.println("Build location; " + location);
+		
+		// If we are placing a road
+		if (currentState == SOCGame.START1B || currentState == SOCGame.START2B) {
+			System.out.println("Building road");
 			requestRoadPlacement(location);
-		}else{
+			
+		//If we are placing a settlement	
+		} else {
+			System.out.println("Building Settlement");
 			requestSettlementPlacement(location);
 		}
 	}
@@ -149,9 +167,9 @@ public class BotBrain extends Thread {
 	private void requestRoadPlacement(int location) {
 		client.putPiece(game, new SOCRoad(ourPlayer, location, null));
 	}
-	
-	private void requestSettlementPlacement(int location){
-		 client.putPiece(game, new SOCSettlement(ourPlayer, location, null));
+
+	private void requestSettlementPlacement(int location) {
+		client.putPiece(game, new SOCSettlement(ourPlayer, location, null));
 	}
 
 	private void handleResourceCount(SOCMessage msg) {
@@ -162,15 +180,17 @@ public class BotBrain extends Thread {
 	}
 
 	private void handePlayerElement(SOCPlayerElement socPlayerElement) {
-		// TODO Code here to handle resources being given to the other players
+
 	}
 
 	private void handleTurnMessage(SOCTurn turn) {
 		game.setCurrentPlayerNumber(turn.getPlayerNumber());
 		game.updateAtTurn();
-
-		if (game.getCurrentPlayerNumber() == seatNumber) {
+		board = game.getBoard();
+		
+		if (game.getCurrentPlayerNumber() == ourPlayer.getPlayerNumber()) {
 			ourTurn = true;
+			expectingMove = true;
 		} else {
 			ourTurn = false;
 		}
@@ -198,7 +218,7 @@ public class BotBrain extends Thread {
 
 	// TODO Code to update state of the game.
 	private void updateGameState(int state) {
-		
+		game.setGameState(state);
 	}
 
 	/**
@@ -209,11 +229,12 @@ public class BotBrain extends Thread {
 
 	}
 
+	@Deprecated
 	public void setSeatNumber(int seatNumber) {
 		this.seatNumber = seatNumber;
 	}
-	
-	public void setPlayerData(){
+
+	public void setPlayerData() {
 		ourPlayer = game.getPlayer(client.getNickname());
 		decider = new InitialMoveDecider(ourPlayer);
 	}

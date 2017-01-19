@@ -3,6 +3,7 @@ package misc.utils;
 import java.util.Vector;
 
 import misc.utils.exceptions.QSizeExceededException;
+import soc.util.CutoffExceededException;
 
 /**
  * Class inspired by the capped queue in JSettlers. Ideally a thread safe(ish)
@@ -31,11 +32,13 @@ public class BotMessageQueue<T> {
 	 * exception.
 	 */
 	synchronized public void put(T element) throws QSizeExceededException{
-		if(messages.size() >= sizeLimit - 1){
-			throw new QSizeExceededException();
-		}else{
-			messages.addElement(element);
-		}
+		messages.add(element);
+		notifyAll();
+		
+		if (messages.size() == sizeLimit)
+        {
+            throw new QSizeExceededException();
+        }
 	}
 
 	/**
@@ -46,7 +49,7 @@ public class BotMessageQueue<T> {
 	synchronized public T get() {
 
 		while (true) {
-			if (!messages.isEmpty()) {
+			if (messages.size() > 0) {
 				T element = messages.firstElement();
 				messages.remove(0);
 				return element;
@@ -58,6 +61,10 @@ public class BotMessageQueue<T> {
 				}
 			}
 		}
+	}
+	
+	synchronized public int getSize(){
+		return messages.size();
 	}
 
 	/**

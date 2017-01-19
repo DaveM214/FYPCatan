@@ -1,6 +1,7 @@
 package misc.utils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import soc.game.SOCBoard;
@@ -37,10 +38,12 @@ public class SettlementResourceInfo {
 	 */
 	private void calculateInformation() {
 		//Get all the hexes that neighbour that node
-		Vector<Integer>hexes =  board.getAdjacentHexesToNode(location);
+		Vector<Integer> hexes =  board.getAdjacentHexesToNode(location);
+		System.out.println("test2");
 		
 		//Add their resource and dice number to the list
 		for (Integer hex : hexes) {
+			
 			int type = board.getHexTypeFromCoord(hex);
 			
 			//We only care about it if it is a resource gathering hex
@@ -51,6 +54,7 @@ public class SettlementResourceInfo {
 			}
 				
 		}
+		
 	}
 
 }

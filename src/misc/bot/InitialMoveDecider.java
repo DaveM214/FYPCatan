@@ -1,6 +1,7 @@
 package misc.bot;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Vector;
 
 import misc.utils.SettlementResourceInfo;
@@ -9,6 +10,7 @@ import soc.game.SOCBoard;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 import soc.game.SOCSettlement;
+import soc.message.SOCGameState;
 
 public class InitialMoveDecider {
 
@@ -17,6 +19,7 @@ public class InitialMoveDecider {
 	private SOCGame game;
 	private int strategy;
 	private SOCPlayer ourPlayer;
+	private SOCBoard board;
 
 	public InitialMoveDecider(SOCPlayer ourPlayer) {
 		this.ourPlayer = ourPlayer;
@@ -26,10 +29,8 @@ public class InitialMoveDecider {
 		this.turnOrder = order;
 	}
 
-	public int handleDecision(SOCGame game) {
-		setGame(game);
+	public int handleDecision(int state, SOCBoard board) {
 		int result = 0;
-		int state = game.getGameState();
 		// If we need to build a settlement then build it
 		if (state == SOCGame.START1A || state == SOCGame.START2A) {
 			result = handleSettlementBuild();
@@ -53,8 +54,7 @@ public class InitialMoveDecider {
 	 *            The location of the settlement we are building
 	 */
 	private void decideStrategy(int location) {
-		// TODO code to work out which strategy we are playing based on the
-		// first pick
+		return;
 	}
 
 	/**
@@ -67,11 +67,11 @@ public class InitialMoveDecider {
 		// Get all possible locations
 		ArrayList<Integer> possSetlLocations = generatePossibleSetLocs();
 		ArrayList<SettlementResourceInfo> possSetInfo = new ArrayList<SettlementResourceInfo>();
-
+	
 		// Generate all of the information for the possible settlements
-		for (Integer location : possSetlLocations) {
-			SettlementResourceInfo info = new SettlementResourceInfo(location, game.getBoard());
-			possSetInfo.add(info);
+		for (Integer location : possSetlLocations) {	
+			SettlementResourceInfo info = new SettlementResourceInfo(location, board);
+			possSetInfo.add(info);	
 		}
 
 		int settlementLocation = generateSuggestedSettlement(possSetInfo);
@@ -85,9 +85,8 @@ public class InitialMoveDecider {
 	 * @param possSetInfo
 	 */
 	private int generateSuggestedSettlement(ArrayList<SettlementResourceInfo> possSetInfo) {
-		// TODO Code to infer the best settlement from the possible list here
-		//TODO temp testing info where it just picks a randomly available settlement from the list . Do roads as well so we know it can fully interact with the server
-		return 0;
+		Random rand = new Random();
+		return rand.nextInt(possSetInfo.size());
 	}
 
 	/**
@@ -122,23 +121,46 @@ public class InitialMoveDecider {
 		return roadLocation;
 	}
 
+	/**
+	 * Helper method, given a list of all of the possible locations a road can
+	 * be built pick one.
+	 * 
+	 * @param possibleRoadLocations
+	 * @return
+	 */
 	private int generateSugggestedRoadLocation(ArrayList<Integer> possibleRoadLocations) {
-		// TODO code to generate the road building position from a list of
-		// possibilities and the state of the board
-		return 0;
+		// TODO do this properly. Just do it randomly now.
+		Random rand = new Random();
+		return rand.nextInt(possibleRoadLocations.size());
 	}
 
 	/**
 	 * Method that will generate all of the possible coordinates of the roads
 	 * that we can build. This list will be a lot shorter than that containing
 	 * all of the possible settlements as a road must be connected to one of the
-	 * settlements that we have built
+	 * settlements that we have built.
+	 * 
+	 * We will do this by going through all the coordinates for edges and
+	 * querying if they are valid road building locations.
 	 * 
 	 * @return List of all the possible locations of the roads
 	 */
 	private ArrayList<Integer> generatePossibleRoadLocs() {
-		// TODO code to generate road locations
-		return null;
+		// Hex values representing the board
+		// TODO extract these to a proper constant
+		int minEdge = 0x22;
+		int maxEdge = 0xCC;
+
+		ArrayList<Integer> roadLocs = generatePossibleRoadLocs();
+
+		// Loop through all coordinates that may be buildable edges
+		for (int i = minEdge; i >= maxEdge; i++) {
+			if (ourPlayer.isPotentialRoad(i)) {
+				// If the coordinate is a viable road add it to the list.
+				roadLocs.add(i);
+			}
+		}
+		return roadLocs;
 	}
 
 	/**

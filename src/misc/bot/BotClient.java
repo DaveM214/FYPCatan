@@ -161,8 +161,7 @@ public class BotClient extends SOCRobotClient {
 		}
 
 		final String message = msg.toString();
-		System.out.println("Msg Received: " + message);
-		System.out.println(msg);
+		// System.out.println("Msg Received: " + message);
 
 		try {
 			switch (msg.getType()) {
@@ -476,17 +475,18 @@ public class BotClient extends SOCRobotClient {
 		if (ga != null) {
 			// Add the player to the game
 			ga.addPlayer(msg.getNickname(), msg.getPlayerNumber());
-		}
+			ga.getPlayer(msg.getPlayerNumber()).setRobotFlag(msg.isRobot(), false);
 
-		// If this message is mirroring that it is us that has joined.
-		if (nickname.equals(msg.getNickname())) {
-			BotBrain brain = myRobotBrains.get(msg.getGame());
-			brain.setSeatNumber(msg.getPlayerNumber());
-			// Start the brain.
-			brain.setPlayerData();
-			brain.start();
-			// Put the robot face
-			put(SOCChangeFace.toCmd(ga.getName(), msg.getPlayerNumber(), 0));
+			// If this message is mirroring that it is us that has joined.
+			if (nickname.equals(msg.getNickname())) {
+				BotBrain brain = myRobotBrains.get(msg.getGame());
+				// brain.setSeatNumber(msg.getPlayerNumber());
+				// Start the brain.
+				brain.setPlayerData();
+				brain.start();
+				// Put the robot face
+				put(SOCChangeFace.toCmd(ga.getName(), msg.getPlayerNumber(), 0));
+			}
 		}
 	}
 
@@ -502,7 +502,6 @@ public class BotClient extends SOCRobotClient {
 	public void handlePUTPIECE(SOCPutPiece msg) {
 		BotMessageQueue<SOCMessage> brainQueue = brainQueues.get(msg.getGame());
 		if (brainQueue != null) {
-
 			try {
 				brainQueue.put((SOCMessage) msg);
 			} catch (QSizeExceededException e) {
@@ -583,6 +582,5 @@ public class BotClient extends SOCRobotClient {
 			destroy();
 		}
 	}
-
 
 }
