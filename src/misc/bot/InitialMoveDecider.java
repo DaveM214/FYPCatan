@@ -31,6 +31,7 @@ public class InitialMoveDecider {
 
 	public int handleDecision(int state, SOCBoard board) {
 		int result = 0;
+		this.board = board;
 		// If we need to build a settlement then build it
 		if (state == SOCGame.START1A || state == SOCGame.START2A) {
 			result = handleSettlementBuild();
@@ -41,6 +42,7 @@ public class InitialMoveDecider {
 			// Otherwise we are building a road
 		} else {
 			result = handleRoadBuild();
+			System.out.println("BUILDING AT: " + String.format("%02X", result));
 		}
 
 		return result;
@@ -86,7 +88,8 @@ public class InitialMoveDecider {
 	 */
 	private int generateSuggestedSettlement(ArrayList<SettlementResourceInfo> possSetInfo) {
 		Random rand = new Random();
-		return rand.nextInt(possSetInfo.size());
+		int randInt = rand.nextInt(possSetInfo.size());
+		return possSetInfo.get(randInt).getLocation();
 	}
 
 	/**
@@ -131,7 +134,8 @@ public class InitialMoveDecider {
 	private int generateSugggestedRoadLocation(ArrayList<Integer> possibleRoadLocations) {
 		// TODO do this properly. Just do it randomly now.
 		Random rand = new Random();
-		return rand.nextInt(possibleRoadLocations.size());
+		int randInt = rand.nextInt(possibleRoadLocations.size());
+		return (possibleRoadLocations.get(randInt));
 	}
 
 	/**
@@ -151,13 +155,14 @@ public class InitialMoveDecider {
 		int minEdge = 0x22;
 		int maxEdge = 0xCC;
 
-		ArrayList<Integer> roadLocs = generatePossibleRoadLocs();
+		ArrayList<Integer> roadLocs = new ArrayList<Integer>();
 
 		// Loop through all coordinates that may be buildable edges
-		for (int i = minEdge; i >= maxEdge; i++) {
-			if (ourPlayer.isPotentialRoad(i)) {
+		for (int i = minEdge; i <= maxEdge; i++) {
+			if (ourPlayer.isPotentialRoad(i) && ourPlayer.isLegalRoad(i)) {
 				// If the coordinate is a viable road add it to the list.
 				roadLocs.add(i);
+				//System.out.println(String.format("%02X", i));
 			}
 		}
 		return roadLocs;

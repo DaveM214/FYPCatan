@@ -17,6 +17,7 @@ public class SettlementResourceInfo {
 		this.location = location;
 		this.values = new ArrayList<Integer>();
 		this.resources = new ArrayList<Integer>();
+		this.board = board;
 		calculateInformation();
 	}
 
@@ -39,7 +40,6 @@ public class SettlementResourceInfo {
 	private void calculateInformation() {
 		//Get all the hexes that neighbour that node
 		Vector<Integer> hexes =  board.getAdjacentHexesToNode(location);
-		System.out.println("test2");
 		
 		//Add their resource and dice number to the list
 		for (Integer hex : hexes) {

@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import misc.bot.BotClient;
 import soc.game.SOCBoard;
+import soc.game.SOCCity;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
@@ -15,6 +16,7 @@ import soc.message.SOCFirstPlayer;
 import soc.message.SOCGameState;
 import soc.message.SOCMessage;
 import soc.message.SOCPlayerElement;
+import soc.message.SOCPutPiece;
 import soc.message.SOCResourceCount;
 import soc.message.SOCSetTurn;
 import soc.message.SOCTurn;
@@ -53,7 +55,8 @@ public class BotBrain extends Thread {
 	private final static int MIXED_STRATEGY = 3;
 
 	private InitialMoveDecider decider;
-	private boolean expectingMove =false;
+	private boolean expectingMove = false;
+	private boolean waitingForGameState = false;
 
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue<SOCMessage> msgQueue) {
 		msgQ = msgQueue;
@@ -111,13 +114,17 @@ public class BotBrain extends Thread {
 					handleResourceCount(msg);
 					break;
 
+				case SOCMessage.PUTPIECE:
+					handlePutPiece((SOCPutPiece) msg);
+					break;
+
 				default:
 					break;
 				}
 
 				// If it is our turn then enact our turn
 				if (ourTurn) {
-					if (expectingMove) {
+					if (expectingMove & !waitingForGameState) {
 						handleOurTurn();
 					}
 				}
@@ -129,8 +136,25 @@ public class BotBrain extends Thread {
 		}
 	}
 
+	private void handlePutPiece(SOCPutPiece msg) {
+		SOCPlayer player = game.getPlayer(msg.getPlayerNumber());
+
+		SOCPlayingPiece piece = null;
+		if (msg.getPieceType() == SOCPlayingPiece.SETTLEMENT) {
+			piece = new SOCSettlement(player, msg.getCoordinates(), game.getBoard());
+		} else if (msg.getPieceType() == SOCPlayingPiece.ROAD) {
+			piece = new SOCRoad(player, msg.getCoordinates(), game.getBoard());
+		} else if (msg.getPieceType() == SOCPlayingPiece.CITY) {
+			piece = new SOCCity(player, msg.getCoordinates(), game.getBoard());
+		}
+
+		if (piece != null) {
+			player.putPiece(piece, false);
+			game.putPiece(piece);
+		}
+	}
+
 	private void handleOurTurn() {
-		System.out.println("HANDLING OUR TURN!");
 		int currentState = game.getGameState();
 
 		// IF Initial state
@@ -138,7 +162,6 @@ public class BotBrain extends Thread {
 			// We will do initial placement manually through probabilities and
 			// stats
 			doInitialPlacement(currentState);
-			expectingMove = false;
 		}
 
 	}
@@ -149,18 +172,18 @@ public class BotBrain extends Thread {
 	 * information given the state of the board
 	 */
 	private void doInitialPlacement(int currentState) {
+		board = game.getBoard();
 		int location = decider.handleDecision(currentState, board);
-		System.out.println("Build location; " + location);
-		
+
 		// If we are placing a road
 		if (currentState == SOCGame.START1B || currentState == SOCGame.START2B) {
-			System.out.println("Building road");
 			requestRoadPlacement(location);
-			
-		//If we are placing a settlement	
+			waitingForGameState = true;
+
+			// If we are placing a settlement
 		} else {
-			System.out.println("Building Settlement");
 			requestSettlementPlacement(location);
+			waitingForGameState = true;
 		}
 	}
 
@@ -187,7 +210,7 @@ public class BotBrain extends Thread {
 		game.setCurrentPlayerNumber(turn.getPlayerNumber());
 		game.updateAtTurn();
 		board = game.getBoard();
-		
+
 		if (game.getCurrentPlayerNumber() == ourPlayer.getPlayerNumber()) {
 			ourTurn = true;
 			expectingMove = true;
@@ -216,9 +239,9 @@ public class BotBrain extends Thread {
 		this.firstPlayer = playerNumber;
 	}
 
-	// TODO Code to update state of the game.
 	private void updateGameState(int state) {
 		game.setGameState(state);
+		waitingForGameState = false;
 	}
 
 	/**
@@ -237,6 +260,14 @@ public class BotBrain extends Thread {
 	public void setPlayerData() {
 		ourPlayer = game.getPlayer(client.getNickname());
 		decider = new InitialMoveDecider(ourPlayer);
+	}
+
+	private void pause(int ms) {
+		try {
+			yield();
+			sleep(ms);
+		} catch (InterruptedException exc) {
+		}
 	}
 
 	// TODO Implement the behaviours of this brain and how it will be organised,
