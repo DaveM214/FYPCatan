@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
+import com.sun.media.sound.SoftLowFrequencyOscillator;
+
 import misc.utils.SettlementResourceInfo;
 import soc.client.SOCBoardPanel;
 import soc.game.SOCBoard;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
+import soc.game.SOCResourceConstants;
 import soc.game.SOCSettlement;
 import soc.message.SOCGameState;
 
@@ -21,8 +24,18 @@ public class InitialMoveDecider {
 	private SOCPlayer ourPlayer;
 	private SOCBoard board;
 
+	// MAGIC NUMBERS - Plucked from thin air
+	private static final double BRICK_MUTLIPLIER = 0.90;
+	private static final double ORE_MUTLIPLIER = 0.92;
+	private static final double ALL_RESOURCE_MULTIPLIER = 0.88;
+	private static final double CORRECT_STRAT_MULTIPLIER = 0.85;
+	private static final double DOUBLE_RESOURCE_MULTIPLIER = 0.85;
+
+	private static final double INIT = Double.MAX_VALUE;
+
 	public InitialMoveDecider(SOCPlayer ourPlayer) {
 		this.ourPlayer = ourPlayer;
+		strategy = -1;
 	}
 
 	public void setTurnOrder(int order) {
@@ -35,8 +48,11 @@ public class InitialMoveDecider {
 		// If we need to build a settlement then build it
 		if (state == SOCGame.START1A || state == SOCGame.START2A) {
 			result = handleSettlementBuild();
+
+			// If this is the first settlement we are placing then it decides on
+			// the strategy we are playing
 			if (state == SOCGame.START1A) {
-				decideStrategy(result);
+				// decideStrategy(result);
 			}
 
 			// Otherwise we are building a road
@@ -50,13 +66,62 @@ public class InitialMoveDecider {
 
 	/**
 	 * Work out the strategy that we will be playing with once we work out the
-	 * first settlement location.
+	 * first settlement location. These strategies are either to build wood and
+	 * brick. Ore and wheat. Or a good mix of all of the elements.
+	 * 
+	 * TODO this method is too slow by a small margin improve this or change the
+	 * server settings.
 	 * 
 	 * @param location
 	 *            The location of the settlement we are building
 	 */
-	private void decideStrategy(int location) {
-		return;
+	private int decideStrategy(int location) {
+		// Get the information of the settlement we are building
+		SettlementResourceInfo settlementInfo = new SettlementResourceInfo(location, board);
+
+		ArrayList<Integer> resources = settlementInfo.getResources();
+		ArrayList<Integer> values = settlementInfo.getValues();
+		double[] resourceCount = new double[] { INIT, INIT, INIT, INIT, INIT };
+		int strategy = 3;
+
+		// score each settlement for its resources. Lower is better
+
+		// Loop over the hexes it connects too.
+		for (int i = 0; i < resources.size(); i++) {
+			double score = Math.abs(7 - values.get(i));
+			int value = values.get(i);
+
+			if (resourceCount[value - 1] != INIT) {
+				resourceCount[value - 1] = ((resourceCount[value - 1] + score) / 2) * DOUBLE_RESOURCE_MULTIPLIER;
+			} else {
+				resourceCount[value - 1] = score;
+			}
+		}
+
+		// Find the lowest values in the array
+
+		double lowestValue = Double.MAX_VALUE;
+		double lowestIndex = -1;
+
+		for (int i = 0; i < resources.size(); i++) {
+			if (resourceCount[i] < lowestValue) {
+				lowestIndex = i;
+				lowestValue = resourceCount[i];
+			}
+		}
+
+		// Add one as they are offset from the game values by one
+		lowestIndex++;
+
+		if (lowestValue == SOCResourceConstants.CLAY || lowestValue == SOCResourceConstants.WOOD) {
+			strategy = BotBrain.BRICK_STRATEGY;
+		} else if (lowestValue == SOCResourceConstants.ORE) {
+			strategy = BotBrain.ORE_STRATEGY;
+		} else {
+			strategy = BotBrain.MIXED_STRATEGY;
+		}
+
+		return strategy;
 	}
 
 	/**
@@ -69,11 +134,11 @@ public class InitialMoveDecider {
 		// Get all possible locations
 		ArrayList<Integer> possSetlLocations = generatePossibleSetLocs();
 		ArrayList<SettlementResourceInfo> possSetInfo = new ArrayList<SettlementResourceInfo>();
-	
+
 		// Generate all of the information for the possible settlements
-		for (Integer location : possSetlLocations) {	
+		for (Integer location : possSetlLocations) {
 			SettlementResourceInfo info = new SettlementResourceInfo(location, board);
-			possSetInfo.add(info);	
+			possSetInfo.add(info);
 		}
 
 		int settlementLocation = generateSuggestedSettlement(possSetInfo);
@@ -87,9 +152,123 @@ public class InitialMoveDecider {
 	 * @param possSetInfo
 	 */
 	private int generateSuggestedSettlement(ArrayList<SettlementResourceInfo> possSetInfo) {
-		Random rand = new Random();
-		int randInt = rand.nextInt(possSetInfo.size());
-		return possSetInfo.get(randInt).getLocation();
+		double bestUtility = Double.MAX_VALUE;
+		int bestLocation = 0;
+
+		for (SettlementResourceInfo settlementResourceInfo : possSetInfo) {
+
+			double adjustedUtility = adjustWeighting(settlementResourceInfo);
+
+			if (adjustedUtility < bestUtility) {
+				bestUtility = adjustedUtility;
+				bestLocation = settlementResourceInfo.getLocation();
+			}
+
+		}
+
+		return bestLocation;
+
+	}
+
+	/**
+	 * Adjust the weighting score of the settlement based on certain facts and
+	 * scores that can be specified in this class. For example we may want it so
+	 * that we get bonus weighting for getting a certain resource or a bonus for
+	 * getting all resources.
+	 * 
+	 * @param settlementResourceInfo
+	 *            The information of the hexes around a settlement.
+	 * @return The adjusted waiting of the score of a settlement
+	 */
+	private double adjustWeighting(SettlementResourceInfo settlementResourceInfo) {
+		boolean containsBrick = false;
+		boolean containsOre = false;
+		boolean compliesWithStrategy = false;
+		boolean allResource = false;
+		boolean[] resourcePresent = new boolean[] { false, false, false, false, false };
+
+		ArrayList<Integer> resources = settlementResourceInfo.getResources();
+
+		for (Integer hex : resources) {
+			if (hex == SOCResourceConstants.CLAY) {
+				containsBrick = true;
+			}
+			if (hex == SOCResourceConstants.ORE) {
+				containsOre = true;
+			}
+			resourcePresent[hex - 1] = true;
+		}
+
+		int totalResources = 0;
+
+		for (boolean resourceType : resourcePresent) {
+			if (resourceType == true) {
+				totalResources++;
+			}
+		}
+
+		if (totalResources == 3) {
+			allResource = true;
+		}
+
+		// If a strategy has been decided upon.
+		if (strategy != -1) {
+			compliesWithStrategy = checkStrategyAgreement(settlementResourceInfo);
+		}
+
+		double multiplier = 1;
+
+		if (containsBrick) {
+			multiplier += multiplier * BRICK_MUTLIPLIER;
+		}
+		if (containsOre) {
+			multiplier += multiplier * ORE_MUTLIPLIER;
+		}
+		if (allResource) {
+			multiplier += multiplier * ALL_RESOURCE_MULTIPLIER;
+		}
+
+		return multiplier * settlementResourceInfo.getAdjustedResourceWeight();
+	}
+
+	private boolean checkStrategyAgreement(SettlementResourceInfo settlementResourceInfo) {
+
+		boolean stratAgreement = false;
+		ArrayList<Integer> resources = settlementResourceInfo.getResources();
+		int[] resourcePresent = new int[] { 0, 0, 0, 0, 0 };
+
+		for (Integer hex : resources) {
+			resourcePresent[hex - 1] += 1;
+		}
+
+		if (strategy == BotBrain.BRICK_STRATEGY) {
+			if ((resourcePresent[SOCResourceConstants.CLAY - 1]
+					+ resourcePresent[SOCResourceConstants.WOOD - 1]) >= 2) {
+				stratAgreement = true;
+			}
+		}
+
+		if (strategy == BotBrain.ORE_STRATEGY) {
+			if (resourcePresent[SOCResourceConstants.ORE] + resourcePresent[SOCResourceConstants.WHEAT] >= 2) {
+				stratAgreement = true;
+			}
+		}
+
+		if (strategy == BotBrain.MIXED_STRATEGY) {
+			int totalResources = 0;
+
+			for (int resourceType : resourcePresent) {
+				if (resourceType == 1) {
+					totalResources++;
+				}
+			}
+
+			if (totalResources == 3) {
+				stratAgreement = true;
+			}
+		}
+
+		return stratAgreement;
 	}
 
 	/**
@@ -111,7 +290,9 @@ public class InitialMoveDecider {
 	}
 
 	/**
-	 * Helper method that returns the location of where a road should be built
+	 * Helper method that returns the location of where a road should be built.
+	 * A good idea is to build the road towards the next best settlement.
+	 * 
 	 * 
 	 * @return The location of where a road should be build
 	 */
@@ -119,23 +300,55 @@ public class InitialMoveDecider {
 		// Get all possible road locations
 		ArrayList<Integer> possibleRoadLocations = generatePossibleRoadLocs();
 
-		// Choose new road location
-		int roadLocation = generateSugggestedRoadLocation(possibleRoadLocations);
-		return roadLocation;
+		/**
+		 * Get the locations of all of the possible settlements and use this to
+		 * move towards a promising area on the map. In the future we could
+		 * change this take into account promising locations rather than
+		 * individual settlements
+		 */
+		ArrayList<Integer> possSetlLocations = generatePossibleSetLocs();
+		ArrayList<SettlementResourceInfo> possSetInfo = new ArrayList<SettlementResourceInfo>();
+		for (Integer location : possSetlLocations) {
+			SettlementResourceInfo info = new SettlementResourceInfo(location, board);
+			possSetInfo.add(info);
+		}
+
+		// Get the location of what we want the next settlement to be
+		int settlementLoc = generateSuggestedSettlement(possSetInfo);
+		int closestRoad = 0;
+		double closestDistance = Double.MAX_VALUE;
+
+		// Euclidean distance *should* work!
+		for (Integer roadLocations : possibleRoadLocations) {
+			double distance = calcEuclidDistance(roadLocations, settlementLoc);
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestRoad = roadLocations;
+			}
+		}
+
+		return closestRoad;
+
 	}
 
 	/**
-	 * Helper method, given a list of all of the possible locations a road can
-	 * be built pick one.
+	 * Helper method for calculating euclidean between 2 hexadecimal coordinates
+	 * on the catan board. This method will not return the actual distance
+	 * between them in terms of the Catan board but rather a non square rooted
+	 * comparison between the two which will allow you to see which one is
+	 * bigger
 	 * 
-	 * @param possibleRoadLocations
 	 * @return
 	 */
-	private int generateSugggestedRoadLocation(ArrayList<Integer> possibleRoadLocations) {
-		// TODO do this properly. Just do it randomly now.
-		Random rand = new Random();
-		int randInt = rand.nextInt(possibleRoadLocations.size());
-		return (possibleRoadLocations.get(randInt));
+	private double calcEuclidDistance(int pointA, int pointB) {
+		int pointAX = String.valueOf(Integer.toHexString(pointA)).charAt(0);
+		int pointAY = String.valueOf(Integer.toHexString(pointA)).charAt(1);
+		int pointBX = String.valueOf(Integer.toHexString(pointB)).charAt(0);
+		int pointBY = String.valueOf(Integer.toHexString(pointB)).charAt(1);
+
+		int value = (pointAX - pointBX) + (pointAY - pointBY);
+
+		return Math.pow(value, 2);
 	}
 
 	/**
@@ -162,7 +375,7 @@ public class InitialMoveDecider {
 			if (ourPlayer.isPotentialRoad(i) && ourPlayer.isLegalRoad(i)) {
 				// If the coordinate is a viable road add it to the list.
 				roadLocs.add(i);
-				//System.out.println(String.format("%02X", i));
+				// System.out.println(String.format("%02X", i));
 			}
 		}
 		return roadLocs;
@@ -178,8 +391,22 @@ public class InitialMoveDecider {
 		this.game = game;
 	}
 
+	/**
+	 * Set the strategy that we will be playing.
+	 * 
+	 * @param strategy
+	 */
 	public void setStrategy(int strategy) {
 		this.strategy = strategy;
+	}
+
+	/**
+	 * Return the strategy that has been decided on based upon the initial moves
+	 * 
+	 * @return The strategy that has been chosen.
+	 */
+	public int getStrategy() {
+		return strategy;
 	}
 
 }

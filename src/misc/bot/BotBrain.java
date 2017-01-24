@@ -50,9 +50,9 @@ public class BotBrain extends Thread {
 	private boolean initialSettlementsBuilt;
 
 	// Possible playing strategy constants
-	private final static int BRICK_STRATEGY = 1;
-	private final static int ORE_STRATEGY = 2;
-	private final static int MIXED_STRATEGY = 3;
+	public final static int BRICK_STRATEGY = 1;
+	public final static int ORE_STRATEGY = 2;
+	public final static int MIXED_STRATEGY = 3;
 
 	private InitialMoveDecider decider;
 	private boolean expectingMove = false;
