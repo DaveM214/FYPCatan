@@ -33,6 +33,7 @@ import soc.message.SOCTurn;
 public class BotBrain extends Thread {
 
 	private BotMessageQueue<SOCMessage> msgQ;
+	private DecisionMaker dm;
 	private BotClient client;
 	private SOCBoard board;
 	private SOCGame game;
@@ -57,12 +58,14 @@ public class BotBrain extends Thread {
 	private InitialMoveDecider decider;
 	private boolean expectingMove = false;
 	private boolean waitingForGameState = false;
+	private boolean expectingDiceRoll = false;
 
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue<SOCMessage> msgQueue) {
 		msgQ = msgQueue;
 		this.client = client;
 		this.game = game;
 		alive = true;
+		dm = new MixedDecisionMaker(game, ourPlayer);
 	}
 
 	// TODO complete this method.
@@ -162,8 +165,28 @@ public class BotBrain extends Thread {
 			// We will do initial placement manually through probabilities and
 			// stats
 			doInitialPlacement(currentState);
+			expectingDiceRoll = true;
+			
+		}
+		// Otherwise we are in the main game.
+		else {
+			if (expectingDiceRoll == true) {
+				System.out.println("ROLLING DICE!");
+				requestDiceRoll();
+				expectingDiceRoll = false;
+			}else{
+				//Ask our decision maker to give us a set of moves.
+				dm.getMoveDecision();
+				expectingDiceRoll = true;
+				waitingForGameState = true;
+				client.endTurn(game);			
+			}
 		}
 
+	}
+
+	private void requestDiceRoll() {
+		client.rollDice(game);
 	}
 
 	/**
@@ -203,7 +226,7 @@ public class BotBrain extends Thread {
 	}
 
 	private void handePlayerElement(SOCPlayerElement socPlayerElement) {
-
+	
 	}
 
 	private void handleTurnMessage(SOCTurn turn) {
