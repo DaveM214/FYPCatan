@@ -6,18 +6,15 @@ import misc.bot.moves.BotMove;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 
-public class MixedDecisionMaker extends DecisionMaker{
+public class RandomDecisionMaker extends DecisionMaker{
 
-	public MixedDecisionMaker(SOCGame game, SOCPlayer ourPlayer){
-		super(game,ourPlayer);
+	public RandomDecisionMaker(SOCGame game, SOCPlayer ourPlayer) {
+		super(game, ourPlayer);
 	}
 
 	@Override
 	public ArrayList<BotMove> getMoveDecision() {
 		return null;
-		
 	}
-	
-	
-	
+
 }

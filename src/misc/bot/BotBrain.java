@@ -2,9 +2,14 @@ package misc.bot;
 
 import misc.utils.BotMessageQueue;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import misc.bot.BotClient;
+import misc.bot.moves.BotMove;
+import misc.bot.moves.PiecePlacement;
+import misc.bot.moves.PlayDevCard;
+import misc.bot.moves.Trade;
 import soc.game.SOCBoard;
 import soc.game.SOCCity;
 import soc.game.SOCGame;
@@ -49,6 +54,8 @@ public class BotBrain extends Thread {
 	private boolean ourTurn;
 	private boolean initialRoadsBuilt;
 	private boolean initialSettlementsBuilt;
+	// private int desiredBuildLocation;
+	// private int desiredBuildType;
 
 	// Possible playing strategy constants
 	public final static int BRICK_STRATEGY = 1;
@@ -59,6 +66,7 @@ public class BotBrain extends Thread {
 	private boolean expectingMove = false;
 	private boolean waitingForGameState = false;
 	private boolean expectingDiceRoll = false;
+	private ArrayList<BotMove> movesToProcess;
 
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue<SOCMessage> msgQueue) {
 		msgQ = msgQueue;
@@ -66,6 +74,7 @@ public class BotBrain extends Thread {
 		this.game = game;
 		alive = true;
 		dm = new MixedDecisionMaker(game, ourPlayer);
+		movesToProcess = new ArrayList<BotMove>();
 	}
 
 	// TODO complete this method.
@@ -121,6 +130,12 @@ public class BotBrain extends Thread {
 					handlePutPiece((SOCPutPiece) msg);
 					break;
 
+				case SOCMessage.BUILDREQUEST:
+					if (ourTurn) {
+						handleBuildRequest();
+					}
+					break;
+
 				default:
 					break;
 				}
@@ -137,6 +152,11 @@ public class BotBrain extends Thread {
 
 			}
 		}
+	}
+
+	private void handleBuildRequest() {
+		// TODO Auto-generated method stub
+
 	}
 
 	private void handlePutPiece(SOCPutPiece msg) {
@@ -166,22 +186,90 @@ public class BotBrain extends Thread {
 			// stats
 			doInitialPlacement(currentState);
 			expectingDiceRoll = true;
-			
+
 		}
 		// Otherwise we are in the main game.
 		else {
-			if (expectingDiceRoll == true) {
-				System.out.println("ROLLING DICE!");
-				requestDiceRoll();
-				expectingDiceRoll = false;
-			}else{
-				//Ask our decision maker to give us a set of moves.
-				dm.getMoveDecision();
-				expectingDiceRoll = true;
-				waitingForGameState = true;
-				client.endTurn(game);			
-			}
+			handleMainTurn();
 		}
+
+	}
+
+	private void handleMainTurn() {
+		if (expectingDiceRoll == true) {
+			System.out.println("ROLLING DICE!");
+			requestDiceRoll();
+			expectingDiceRoll = false;
+		} else {
+			// Ask our decision maker to give us a set of moves.
+
+			movesToProcess = dm.getMoveDecision();
+
+			for (BotMove botMove : movesToProcess) {
+				processMove(botMove);
+			}
+			
+			expectingDiceRoll = true;
+			waitingForGameState = true;
+			client.endTurn(game);
+		}
+	}
+
+	private void processMove(BotMove move) {
+		switch (move.getMoveType()) {
+
+		case BotMove.PIECE_PLACEMENT:
+			handlePiecePlacement((PiecePlacement) move);
+			break;
+
+		case BotMove.DEV_CARD_BUY:
+			requestDevCardBuy();
+			break;
+
+		case BotMove.DEV_CARD_PLACE:
+			handleDevCardUse((PlayDevCard) move);
+			break;
+
+		case BotMove.TRADE:
+			handleTrade((Trade) move);
+			break;
+
+		}
+	}
+
+	private void requestDevCardBuy() {
+		client.buyDevCard(game);
+	}
+
+	private void handlePiecePlacement(PiecePlacement move) {
+
+		SOCPlayingPiece piece = null;
+
+		switch (move.getPieceType()) {
+
+		case SOCPlayingPiece.ROAD:
+			piece = new SOCRoad(ourPlayer, move.getCoordinate(), game.getBoard());
+			break;
+
+		case SOCPlayingPiece.CITY:
+			piece = new SOCCity(ourPlayer, move.getCoordinate(), game.getBoard());
+			break;
+
+		case SOCPlayingPiece.SETTLEMENT:
+			piece = new SOCRoad(ourPlayer, move.getCoordinate(), game.getBoard());
+			break;
+
+		}
+
+		client.putPiece(game, piece);
+
+	}
+
+	private void handleDevCardUse(PlayDevCard devCard) {
+
+	}
+
+	private void handleTrade(Trade trade) {
 
 	}
 
@@ -226,7 +314,7 @@ public class BotBrain extends Thread {
 	}
 
 	private void handePlayerElement(SOCPlayerElement socPlayerElement) {
-	
+
 	}
 
 	private void handleTurnMessage(SOCTurn turn) {
