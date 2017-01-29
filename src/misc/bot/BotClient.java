@@ -46,7 +46,12 @@ import soc.util.SOCServerFeatures;
 import soc.util.Version;
 
 /**
- * Class extends the robot class
+ * Extension of the {@link SOCRobotClient} class from the JSettlers API with
+ * various changes and overrides in order to suit our needs. This class is
+ * responsible for establishing a client which connects to the server. A client
+ * is capable of running many games at the same time on a server and is
+ * responsible for distributing the messages received from the server to the
+ * correct bot playing the game.
  * 
  * @author david
  *
@@ -393,7 +398,11 @@ public class BotClient extends SOCRobotClient {
 		}
 	}
 
-	// This method creates the robot brain.
+	/**
+	 * Handles the {@link SOCJoinGameAuth} message. This message allows a player
+	 * to join a game. This method is responsible for the creation of the
+	 * specific instances of {@link BotBrain} that play then play the game.
+	 */
 	@Override
 	public void handleJOINGAMEAUTH(SOCJoinGameAuth msg, boolean isPractice) {
 		gamesPlayed++;
@@ -409,8 +418,13 @@ public class BotClient extends SOCRobotClient {
 		myRobotBrains.put(gaName, brain);
 	}
 
+	/**
+	 * Method to handle deletion of a game. If this game is over then add stats
+	 * and such
+	 * 
+	 */
 	@Override
-	public void handleDELETEGAME(SOCDeleteGame mes) {
+	protected void handleDELETEGAME(SOCDeleteGame mes) {
 		BotBrain brain = myRobotBrains.get(mes.getGame());
 
 		if (brain != null) {
@@ -465,7 +479,9 @@ public class BotClient extends SOCRobotClient {
 
 	/**
 	 * Method to seat a player at the game. This method handles adding them to
-	 * the local representation of the game.
+	 * the local representation of the game. If the number of the player being
+	 * seated by the game is that of our player then we will start the
+	 * corresponding {@link BotBrain}
 	 * 
 	 */
 	public void handleSITDOWN(SOCSitDown msg) {
@@ -490,8 +506,11 @@ public class BotClient extends SOCRobotClient {
 		}
 	}
 
-	// This message should be handed to the brain queue
-	public void handleGAMESTATE(SOCGameState msg) {
+	/**
+	 * Handle the updating of the game state. This message is passed to the
+	 * correct bot queue in the matching game mentioned from the message.
+	 */
+	protected void handleGAMESTATE(SOCGameState msg) {
 		SOCGame ga = games.get(msg.getGame());
 
 		if (ga != null) {
@@ -499,7 +518,13 @@ public class BotClient extends SOCRobotClient {
 		}
 	}
 
-	public void handlePUTPIECE(SOCPutPiece msg) {
+	/**
+	 * Handle {@link SOCPutPiece} message. This message is passed to the correct
+	 * bot in the corresponding game as it is solely responsible for responding
+	 * to this message.
+	 * 
+	 */
+	protected void handlePUTPIECE(SOCPutPiece msg) {
 		BotMessageQueue<SOCMessage> brainQueue = brainQueues.get(msg.getGame());
 		if (brainQueue != null) {
 			try {
@@ -510,8 +535,10 @@ public class BotClient extends SOCRobotClient {
 		}
 	}
 
-	// Handle the robot being dismissed from the game.
-	public void handleROBOTDISMISS(SOCRobotDismiss msg) {
+	/**
+	 * Handle the {@link SOCRobotDismiss} message.
+	 */
+	protected void handleROBOTDISMISS(SOCRobotDismiss msg) {
 		SOCGame ga = games.get(msg.getGame());
 		BotMessageQueue<SOCMessage> brainQueue = brainQueues.get(msg.getGame());
 
@@ -534,8 +561,11 @@ public class BotClient extends SOCRobotClient {
 		}
 	}
 
+	/**
+	 * handle the {@link SOCResetBoardAuth} message.
+	 */
 	@Override
-	public void handleRESETBOARDAUTH(SOCResetBoardAuth msg) {
+	protected void handleRESETBOARDAUTH(SOCResetBoardAuth msg) {
 		D.ebugPrintln("**** handleRESETBOARDAUTH ****");
 
 		String gname = msg.getGame();
@@ -558,7 +588,7 @@ public class BotClient extends SOCRobotClient {
 	 * resource file. There version of the client that we can connect too will
 	 * be stored in this class.
 	 */
-	public void handleVERSION(boolean isLocal, SOCVersion msg) {
+	protected void handleVERSION(boolean isLocal, SOCVersion msg) {
 		int vers = msg.getVersionNumber();
 		final SOCServerFeatures feats = (vers >= SOCServerFeatures.VERSION_FOR_SERVERFEATURES)
 				? new SOCServerFeatures(msg.localeOrFeats) : new SOCServerFeatures(true);

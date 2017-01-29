@@ -15,6 +15,15 @@ import soc.game.SOCResourceConstants;
 import soc.game.SOCSettlement;
 import soc.message.SOCGameState;
 
+/**
+ * Class that will decide on the initial moves to the game. This is done
+ * separately to the normal move decisions because the processing here is quite
+ * probabilistic and is not very dynamic. It is easier to simply have some rules
+ * to follow and just use those in this case.
+ * 
+ * @author david
+ *
+ */
 public class InitialMoveDecider {
 
 	// Int showing which turn we first move in
@@ -24,7 +33,7 @@ public class InitialMoveDecider {
 	private SOCPlayer ourPlayer;
 	private SOCBoard board;
 
-	// MAGIC NUMBERS - Plucked from thin air
+	// MAGIC NUMBERS - Weights for various types of decision.
 	private static final double BRICK_MUTLIPLIER = 0.90;
 	private static final double ORE_MUTLIPLIER = 0.92;
 	private static final double ALL_RESOURCE_MULTIPLIER = 0.88;
@@ -33,15 +42,38 @@ public class InitialMoveDecider {
 
 	private static final double INIT = Double.MAX_VALUE;
 
+	/**
+	 * Constructor. Initialise this object with information about
+	 * 
+	 * @param ourPlayer
+	 *            The player representing our robot playing the game.
+	 */
 	public InitialMoveDecider(SOCPlayer ourPlayer) {
 		this.ourPlayer = ourPlayer;
 		strategy = -1;
 	}
 
+	/**
+	 * Set the player moving first
+	 * 
+	 * @param order
+	 *            First player number.
+	 */
 	public void setTurnOrder(int order) {
 		this.turnOrder = order;
 	}
 
+	/**
+	 * Method to take in the state of the game and the board currently given and
+	 * to make a decision based upon this information. The result will be 2
+	 * digit hex digit coordinate.
+	 * 
+	 * @param state
+	 *            The state the game is currently in
+	 * @param board
+	 *            The current board layout.
+	 * @return The location of the object we are going to board.
+	 */
 	public int handleDecision(int state, SOCBoard board) {
 		int result = 0;
 		this.board = board;
@@ -150,6 +182,8 @@ public class InitialMoveDecider {
 	 * Given a list of all the possible settlements that we can build
 	 * 
 	 * @param possSetInfo
+	 *            The list of all possible settlements that we can build and
+	 *            their associated information
 	 */
 	private int generateSuggestedSettlement(ArrayList<SettlementResourceInfo> possSetInfo) {
 		double bestUtility = Double.MAX_VALUE;

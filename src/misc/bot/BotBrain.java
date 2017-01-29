@@ -29,8 +29,9 @@ import soc.message.SOCTurn;
 /**
  * Class to direct the AI of the bot. This class will maintain a state of the
  * current game and server as the point of communication to the client which
- * will handle the communication with the server. We will use a similar
- * architecture where a queue is maintained
+ * will handle the communication with the server. This class acts as the
+ * interface between the decision making and the client. This is the only class
+ * that is allowed to call the client to send messages.
  * 
  * @author david
  *
@@ -52,8 +53,6 @@ public class BotBrain extends Thread {
 	private int turnCounter; // Number of turns there have been
 	private int ourTurnCounter;// Number of turns we have had
 	private boolean ourTurn;
-	private boolean initialRoadsBuilt;
-	private boolean initialSettlementsBuilt;
 	// private int desiredBuildLocation;
 	// private int desiredBuildType;
 
@@ -62,7 +61,7 @@ public class BotBrain extends Thread {
 	public final static int ORE_STRATEGY = 2;
 	public final static int MIXED_STRATEGY = 3;
 
-	private InitialMoveDecider decider;
+	private InitialMoveDecider initialDecider;
 	private boolean expectingMove = false;
 	private boolean waitingForGameState = false;
 	private boolean expectingDiceRoll = false;
@@ -126,6 +125,8 @@ public class BotBrain extends Thread {
 					handleResourceCount(msg);
 					break;
 
+				// Handle the message that describes a player placing a piece on
+				// the board.
 				case SOCMessage.PUTPIECE:
 					handlePutPiece((SOCPutPiece) msg);
 					break;
@@ -159,6 +160,13 @@ public class BotBrain extends Thread {
 
 	}
 
+	/**
+	 * Method to handle someone placing a piece on the game board. Updates the
+	 * game board.
+	 * 
+	 * @param msg
+	 *            The message describing who placed what piece and where.
+	 */
 	private void handlePutPiece(SOCPutPiece msg) {
 		SOCPlayer player = game.getPlayer(msg.getPlayerNumber());
 
@@ -177,6 +185,11 @@ public class BotBrain extends Thread {
 		}
 	}
 
+	/**
+	 * Helper method that handles how our turn should be run. This method mainly
+	 * branches between handling the initial moves, which follow a different set
+	 * of rules to the rest of the game, and the regular game moves.
+	 */
 	private void handleOurTurn() {
 		int currentState = game.getGameState();
 
@@ -195,6 +208,12 @@ public class BotBrain extends Thread {
 
 	}
 
+	/**
+	 * Method to handle the playing of the regular turns in the game. This
+	 * involves moving the robber or playing a knight card (TODO) if required
+	 * and then rolling the dice and playing our own moves.
+	 * 
+	 */
 	private void handleMainTurn() {
 		if (expectingDiceRoll == true) {
 			System.out.println("ROLLING DICE!");
@@ -208,13 +227,20 @@ public class BotBrain extends Thread {
 			for (BotMove botMove : movesToProcess) {
 				processMove(botMove);
 			}
-			
+
 			expectingDiceRoll = true;
 			waitingForGameState = true;
 			client.endTurn(game);
 		}
 	}
 
+	/**
+	 * Helper method to process enact the moves that the decision maker has
+	 * decided that we should commit.
+	 * 
+	 * @param move
+	 *            The part of the sequence of moves that we are doing.
+	 */
 	private void processMove(BotMove move) {
 		switch (move.getMoveType()) {
 
@@ -237,10 +263,20 @@ public class BotBrain extends Thread {
 		}
 	}
 
+	/**
+	 * Request that the client asks the server to buy us a development card.
+	 */
 	private void requestDevCardBuy() {
 		client.buyDevCard(game);
 	}
 
+	/**
+	 * Method to handle a move which says we should place a piece on the table.
+	 * The methods check what piece is being requested and then asks the server
+	 * to place that piece on the game board.
+	 * 
+	 * @param move
+	 */
 	private void handlePiecePlacement(PiecePlacement move) {
 
 		SOCPlayingPiece piece = null;
@@ -265,6 +301,13 @@ public class BotBrain extends Thread {
 
 	}
 
+	/**
+	 * Method to get the client to play a development card. Further interaction
+	 * will be required in order to make certain decisions regarding the
+	 * development card.
+	 * 
+	 * @param devCard
+	 */
 	private void handleDevCardUse(PlayDevCard devCard) {
 
 	}
@@ -273,6 +316,9 @@ public class BotBrain extends Thread {
 
 	}
 
+	/**
+	 * Method to request that the client rolls the dice.
+	 */
 	private void requestDiceRoll() {
 		client.rollDice(game);
 	}
@@ -284,7 +330,7 @@ public class BotBrain extends Thread {
 	 */
 	private void doInitialPlacement(int currentState) {
 		board = game.getBoard();
-		int location = decider.handleDecision(currentState, board);
+		int location = initialDecider.handleDecision(currentState, board);
 
 		// If we are placing a road
 		if (currentState == SOCGame.START1B || currentState == SOCGame.START2B) {
@@ -298,10 +344,22 @@ public class BotBrain extends Thread {
 		}
 	}
 
+	/**
+	 * Method requested that the client asks the server to place a road at a
+	 * specific location.
+	 * 
+	 * @param location
+	 */
 	private void requestRoadPlacement(int location) {
 		client.putPiece(game, new SOCRoad(ourPlayer, location, null));
 	}
 
+	/**
+	 * Method requesting that the client asks the server to place a road at a
+	 * specific location.
+	 * 
+	 * @param location
+	 */
 	private void requestSettlementPlacement(int location) {
 		client.putPiece(game, new SOCSettlement(ourPlayer, location, null));
 	}
@@ -317,6 +375,13 @@ public class BotBrain extends Thread {
 
 	}
 
+	/**
+	 * Handle the reception of the turn method that is received from the server.
+	 * If it is our turn this method will trigger a flag that indicates that it
+	 * is our turn.
+	 * 
+	 * @param turn
+	 */
 	private void handleTurnMessage(SOCTurn turn) {
 		game.setCurrentPlayerNumber(turn.getPlayerNumber());
 		game.updateAtTurn();
@@ -329,9 +394,8 @@ public class BotBrain extends Thread {
 			ourTurn = false;
 		}
 
-		// TODO code here to enact our turn
 	}
-
+	
 	private void setTurnNumber(int seatNumber) {
 		// Check that the turn number has advanced.
 		if (seatNumber != currentPlayer) {
@@ -350,6 +414,10 @@ public class BotBrain extends Thread {
 		this.firstPlayer = playerNumber;
 	}
 
+	/**
+	 * Update the current {@link SOCGameState} that the game is in.
+	 * @param state
+	 */
 	private void updateGameState(int state) {
 		game.setGameState(state);
 		waitingForGameState = false;
@@ -368,9 +436,12 @@ public class BotBrain extends Thread {
 		this.seatNumber = seatNumber;
 	}
 
+	/**
+	 * 
+	 */
 	public void setPlayerData() {
 		ourPlayer = game.getPlayer(client.getNickname());
-		decider = new InitialMoveDecider(ourPlayer);
+		initialDecider = new InitialMoveDecider(ourPlayer);
 	}
 
 	private void pause(int ms) {
@@ -380,9 +451,4 @@ public class BotBrain extends Thread {
 		} catch (InterruptedException exc) {
 		}
 	}
-
-	// TODO Implement the behaviours of this brain and how it will be organised,
-	// work out how the loop will work in the runnable.
-
-	// TODO work out how the ASP approach will be integrated into this.
 }
