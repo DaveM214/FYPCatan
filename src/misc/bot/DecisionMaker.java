@@ -58,8 +58,28 @@ public abstract class DecisionMaker {
 	 */
 	public ArrayList<ArrayList<BotMove>> getAllPossibleMoves() {
 		ArrayList<ArrayList<BotMove>> possibles = new ArrayList<ArrayList<BotMove>>();
+		
+		//Do we need to be able the build the stuff in any order?
+		
+		//Check if we can play development cards.
+		//Go through cards see which are playable
+		
+		//Check if we can trade with the bank
+		//Do this first as it frees up resources.
+		
+		//Check if we can build any roads and settlements or buy development cards.
+		
+		
+		//Combine these into the required permutations
+		
+		//Don't worry about ordering as end result is the same as long as you are doing stuff that can increase the possible resources first.
+		
 
 		return possibles;
+	}
+	
+	private ArrayList<BotMove> getDevCardsMoves(){
+		return null;
 	}
 
 	/**
