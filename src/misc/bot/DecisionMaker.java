@@ -14,6 +14,8 @@ import soc.game.SOCInventory;
 import soc.game.SOCInventoryItem;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
+import soc.game.SOCResourceConstants;
+import soc.game.SOCResourceSet;
 import soc.game.SOCRoad;
 import soc.game.SOCSettlement;
 
@@ -203,6 +205,7 @@ public abstract class DecisionMaker {
 			for (Integer possibleSecondLocation : possibleSecondLocations) {
 				PlayRoadBuilding possibleDoubleBuild = new PlayRoadBuilding(possibleFirstLocation,
 						possibleSecondLocation);
+				possMoves.add(possibleDoubleBuild);
 			}
 
 		}
@@ -286,7 +289,25 @@ public abstract class DecisionMaker {
 	 * 
 	 * @return
 	 */
-	private ArrayList<BotMove> getBuildMoves() {
+	private ArrayList<ArrayList<BotMove>> getBuildMoves() {
+		// Find all the things we can build
+		ArrayList<ArrayList<BotMove>> possibleMoves = new ArrayList<ArrayList<BotMove>>();
+
+		// See if we have the correct resources to build anything
+		SOCResourceSet resources = ourPlayer.getResources();
+
+		// We could use an Array but it is slightly more readable to
+		// individually declare the resources
+		int numClay = resources.getAmount(SOCResourceConstants.CLAY);
+		int numWood = resources.getAmount(SOCResourceConstants.WOOD);
+		int numOre = resources.getAmount(SOCResourceConstants.ORE);
+		int numWheat = resources.getAmount(SOCResourceConstants.WHEAT);
+		int numSheep = resources.getAmount(SOCResourceConstants.SHEEP);
+		
+		//Work out if anything is buildable with these and then see if anything is buildable after
+		//We need to consider both the resource and the location available.
+		
+
 		return null;
 	}
 
