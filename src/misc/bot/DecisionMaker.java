@@ -2,6 +2,7 @@ package misc.bot;
 
 import java.util.*;
 import misc.bot.moves.BotMove;
+import misc.bot.moves.BuyDevCard;
 import misc.bot.moves.PlayKnight;
 import misc.bot.moves.PlayMonopoly;
 import misc.bot.moves.PlayRoadBuilding;
@@ -74,7 +75,7 @@ public abstract class DecisionMaker {
 
 		ArrayList<BotMove> devCardsMoves = getDevCardMoves();
 		ArrayList<BotMove> bankTradeMoves = getBankTradeMoves();
-		ArrayList<BotMove> buildMoves = getBuildMoves();
+		ArrayList<ArrayList<BotMove>> buildMoves = getBuildMoves();
 
 		// Check if we can play development cards.
 		// Go through cards see which are playable
@@ -93,6 +94,11 @@ public abstract class DecisionMaker {
 		return possibles;
 	}
 
+	/**
+	 * Get all the possible moves that involve playing development cards.
+	 * 
+	 * @return The list of all possible moves from paying development cards.
+	 */
 	private ArrayList<BotMove> getDevCardMoves() {
 		SOCInventory inv = ourPlayer.getInventory();
 		List<SOCInventoryItem> playableCards = inv.getByState(SOCInventory.PLAYABLE);
@@ -279,6 +285,12 @@ public abstract class DecisionMaker {
 		return results;
 	}
 
+	/**
+	 * TODO complete this method. Get all the possible bank trade types of
+	 * moves.
+	 * 
+	 * @return
+	 */
 	private ArrayList<BotMove> getBankTradeMoves() {
 		return null;
 	}
@@ -303,12 +315,31 @@ public abstract class DecisionMaker {
 		int numOre = resources.getAmount(SOCResourceConstants.ORE);
 		int numWheat = resources.getAmount(SOCResourceConstants.WHEAT);
 		int numSheep = resources.getAmount(SOCResourceConstants.SHEEP);
-		
-		//Work out if anything is buildable with these and then see if anything is buildable after
-		//We need to consider both the resource and the location available.
-		
+
+		// Work out if anything is buildable with these.
+		// We need to consider both the resource and the location available.
+		ArrayList<ArrayList<BotMove>> possibleBuilds = checkForBuilds(numClay, numWood, numOre, numWheat, numSheep);
 
 		return null;
+	}
+
+	/**
+	 * Work out if it is possible to put the piece down. We won't consider the
+	 * location just the costs. TODO complete this method we will use the tree
+	 * structure we are using with the reduced players and games.
+	 * 
+	 * @param numClay
+	 * @param numWood
+	 * @param numOre
+	 * @param numWheat
+	 * @param numSheep
+	 * @return
+	 */
+	private ArrayList<ArrayList<BotMove>> checkForBuilds(int numClay, int numWood, int numOre, int numWheat,
+			int numSheep) {
+
+		return null;
+
 	}
 
 	/**

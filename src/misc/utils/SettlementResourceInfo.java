@@ -6,6 +6,14 @@ import java.util.Vector;
 
 import soc.game.SOCBoard;
 
+/**
+ * Class that contains useful information about the potential building location
+ * of a settlement. This class will calculate its location on the board and also
+ * calculate how "good" its location is based on the surrounding hexes.
+ * 
+ * @author david
+ *
+ */
 public class SettlementResourceInfo {
 
 	private final int location;
@@ -27,10 +35,20 @@ public class SettlementResourceInfo {
 		calculateInformation();
 	}
 
+	/**
+	 * Return the dice values the settlement has available
+	 * 
+	 * @return List of dice values
+	 */
 	public ArrayList<Integer> getValues() {
 		return values;
 	}
 
+	/**
+	 * Return a list of resources the
+	 * 
+	 * @return
+	 */
 	public ArrayList<Integer> getResources() {
 		return resources;
 	}
@@ -40,8 +58,10 @@ public class SettlementResourceInfo {
 	}
 
 	/**
+	 * Get the average weighting of the tiles around the settlement. This is
+	 * based on their values
 	 * 
-	 * @return
+	 * @return The average resource weight.
 	 */
 	public double getAvgResourceWeight() {
 		return avgResourceWeight;
@@ -50,7 +70,8 @@ public class SettlementResourceInfo {
 	/**
 	 * Return the average resource weight adjusted for the possibility of it not
 	 * having 3 possible settlements. However you cannot discount them
-	 * completely because there are cases where you may want to use them. We will triple 
+	 * completely because there are cases where you may want to use them. We
+	 * will triple
 	 * 
 	 * @return
 	 */

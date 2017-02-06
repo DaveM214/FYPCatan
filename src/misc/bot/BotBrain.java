@@ -76,12 +76,17 @@ public class BotBrain extends Thread {
 		movesToProcess = new ArrayList<BotMove>();
 	}
 
-	// TODO complete this method.
-	// Needs to kill the bot. Maybe add some feedback to the client?
+	/**
+	 * TODO complete this method. It should elegantly kill the bot.
+	 */
 	public void kill() {
 
 	}
 
+	/**
+	 * Thread run method. Starts the execution of the brain and handles the
+	 * messages that are reveived from the server.
+	 */
 	@Override
 	public void run() {
 		init();
@@ -395,7 +400,12 @@ public class BotBrain extends Thread {
 		}
 
 	}
-	
+
+	/**
+	 * Set the current turn number that we are on.
+	 * 
+	 * @param seatNumber
+	 */
 	private void setTurnNumber(int seatNumber) {
 		// Check that the turn number has advanced.
 		if (seatNumber != currentPlayer) {
@@ -416,6 +426,7 @@ public class BotBrain extends Thread {
 
 	/**
 	 * Update the current {@link SOCGameState} that the game is in.
+	 * 
 	 * @param state
 	 */
 	private void updateGameState(int state) {
@@ -437,13 +448,18 @@ public class BotBrain extends Thread {
 	}
 
 	/**
-	 * 
+	 * Set our player data to that currently stored in the game.
 	 */
 	public void setPlayerData() {
 		ourPlayer = game.getPlayer(client.getNickname());
 		initialDecider = new InitialMoveDecider(ourPlayer);
 	}
 
+	/**
+	 * Helper method to insert a pause into the execution of this thread.
+	 * 
+	 * @param ms The length of the pause in MS.
+	 */
 	private void pause(int ms) {
 		try {
 			yield();

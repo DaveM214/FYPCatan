@@ -265,6 +265,13 @@ public class InitialMoveDecider {
 		return multiplier * settlementResourceInfo.getAdjustedResourceWeight();
 	}
 
+	/**
+	 * Helper method to check whether the second locations are in agreement with
+	 * the strategy that is dictated from the first one.
+	 * 
+	 * @param settlementResourceInfo The location being checked
+	 * @return Whether it agrees with our strategy.
+	 */
 	private boolean checkStrategyAgreement(SettlementResourceInfo settlementResourceInfo) {
 
 		boolean stratAgreement = false;

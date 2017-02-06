@@ -386,6 +386,13 @@ public class BotClient extends SOCRobotClient {
 
 	}
 
+	/**
+	 * Add a message to the queue of messages that need to be processed by the
+	 * AI brain which contain the elements that decide what moves we are doing.
+	 * 
+	 * @param msg
+	 *            The message being added to the queue.
+	 */
 	public void addMessageToBrainQueue(SOCMessageForGame msg) {
 		BotMessageQueue<SOCMessage> brainQueue = brainQueues.get(msg.getGame());
 		if (brainQueue != null) {
