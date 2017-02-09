@@ -1,5 +1,6 @@
 package misc.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import soc.game.SOCGame;
@@ -35,7 +36,14 @@ public class ReducedGame {
 	 */
 	public ReducedGame(ReducedGame orig){
 		this.ourPlayerNumber = orig.getOurPlayerNumber();
+		this.devCardsLeft = orig.getDevCardsLeft();
 		this.board = new ReducedBoard(orig.getBoard());
+		
+		players = new ArrayList<ReducedPlayer>();
+		for (ReducedPlayer player : orig.getPlayers()) {
+			ReducedPlayer newPlayer = new ReducedPlayer(player);
+			players.add(newPlayer);
+		}
 		
 	}
 	
@@ -53,7 +61,7 @@ public class ReducedGame {
 	 * @return
 	 */
 	public int getDevCardsLeft(){
-		return this.getDevCardsLeft();
+		return devCardsLeft;
 	}
 	
 	/**
@@ -80,6 +88,9 @@ public class ReducedGame {
 		return players.get(ourPlayerNumber);
 	}
 	
+	public List<ReducedPlayer> getPlayers(){
+		return players;
+	}
 	
 	
 	

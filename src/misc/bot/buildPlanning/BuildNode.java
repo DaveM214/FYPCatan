@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import misc.bot.moves.BotMove;
 import misc.bot.moves.BuyDevCard;
+import misc.utils.ReducedGame;
 import soc.game.SOCBoard;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
+import sun.org.mozilla.javascript.GeneratedClassLoader;
 
 /**
  * To find out all the possible building we will take a search tree approach.
@@ -24,8 +26,9 @@ public class BuildNode {
 	private final int numClay;
 	private final int numWheat;
 	private final int numSheep;
-
-	private SOCGame game;
+	private ReducedGame game;
+	
+	private SOCGame referenceGame;
 	private SOCPlayer ourPlayer;
 	
 	private BuildNode parentNode;
@@ -46,10 +49,11 @@ public class BuildNode {
 	 * @param ourPlayer ourPlayer
 	 * @param game The SOC game this is a part of.
 	 */
-	public BuildNode(int ore, int wood, int clay, int wheat, int sheep, BotMove parentMove, BuildNode parentNode, SOCPlayer ourPlayer, SOCGame game){
+	public BuildNode(ReducedGame game ,BotMove parentMove, BuildNode parentNode, SOCPlayer ourPlayer, SOCGame referenceGame){
 		this.game = game;
+		this.referenceGame  = referenceGame;
 		this.ourPlayer = ourPlayer;
-		this.numOre = ore;
+		this.numOre = game.getOurPlayer
 		this.numWood = wood;
 		this.numClay = clay;
 		this.numWheat = wheat;
@@ -62,7 +66,7 @@ public class BuildNode {
 	public void generateChildNodes(){
 		
 		if(numWood >= 1 && numClay >= 1){
-			//Build roads
+			
 		}
 		
 		if(numWood >= 1 && numClay >= 1 && numWheat >= 1 && numSheep >=1){
@@ -70,9 +74,10 @@ public class BuildNode {
 		}
 		
 		if(numOre >= 3 && numWheat >= 2){
-			//Build cities
+		
 		}
 		
+		//We are only allowed one dev card so it is allowed set it to possible buy
 		if(numOre >=1 && numWheat >= 1 && numSheep >=1 && game.getNumDevCards() > 0){
 			BotMove move = new BuyDevCard();
 			SOCPlayer playerCopy = new SOCPlayer(ourPlayer);

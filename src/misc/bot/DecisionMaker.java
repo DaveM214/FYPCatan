@@ -1,6 +1,8 @@
 package misc.bot;
 
 import java.util.*;
+
+import misc.bot.buildPlanning.BuildNode;
 import misc.bot.moves.BotMove;
 import misc.bot.moves.BuyDevCard;
 import misc.bot.moves.PlayKnight;
@@ -324,9 +326,7 @@ public abstract class DecisionMaker {
 	}
 
 	/**
-	 * Work out if it is possible to put the piece down. We won't consider the
-	 * location just the costs. TODO complete this method we will use the tree
-	 * structure we are using with the reduced players and games.
+	 * Work out if it is possible to put the piece down.
 	 * 
 	 * @param numClay
 	 * @param numWood
@@ -337,6 +337,8 @@ public abstract class DecisionMaker {
 	 */
 	private ArrayList<ArrayList<BotMove>> checkForBuilds(int numClay, int numWood, int numOre, int numWheat,
 			int numSheep) {
+		
+		BuildNode root = new BuildNode(numSheep, numSheep, numSheep, numSheep, numSheep, null, null, ourPlayer, game);
 
 		return null;
 

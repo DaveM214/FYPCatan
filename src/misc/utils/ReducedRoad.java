@@ -7,7 +7,29 @@ package misc.utils;
  */
 public class ReducedRoad {
 
-	private int location;
-	private int road;
+	private final int location;
+	private final int owner;
+	
+	public ReducedRoad(int location, int owner){
+		this.location = location;
+		this.owner = owner ;
+	}
+	
+	/**
+	 * Copy constructor
+	 * @param orig
+	 */
+	public ReducedRoad(ReducedRoad orig){
+		this.location = orig.getLocation();
+		this.owner = orig.getOwner();
+	}
+	
+	public int getLocation(){
+		return location;
+	}
+	
+	public int getOwner(){
+		return owner;
+	}
 	
 }
