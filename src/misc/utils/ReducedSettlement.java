@@ -21,7 +21,7 @@ public class ReducedSettlement {
 		this.owner = orig.getOwner();
 	}
 
-	private int getOwner() {
+	public int getOwner() {
 		return owner;
 	}
 

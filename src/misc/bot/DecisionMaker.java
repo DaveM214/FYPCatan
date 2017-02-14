@@ -9,6 +9,7 @@ import misc.bot.moves.PlayKnight;
 import misc.bot.moves.PlayMonopoly;
 import misc.bot.moves.PlayRoadBuilding;
 import misc.bot.moves.PlayYOP;
+import misc.utils.ReducedGame;
 import soc.game.SOCBoard;
 import soc.game.SOCCity;
 import soc.game.SOCDevCardConstants;
@@ -307,20 +308,9 @@ public abstract class DecisionMaker {
 		// Find all the things we can build
 		ArrayList<ArrayList<BotMove>> possibleMoves = new ArrayList<ArrayList<BotMove>>();
 
-		// See if we have the correct resources to build anything
-		SOCResourceSet resources = ourPlayer.getResources();
-
-		// We could use an Array but it is slightly more readable to
-		// individually declare the resources
-		int numClay = resources.getAmount(SOCResourceConstants.CLAY);
-		int numWood = resources.getAmount(SOCResourceConstants.WOOD);
-		int numOre = resources.getAmount(SOCResourceConstants.ORE);
-		int numWheat = resources.getAmount(SOCResourceConstants.WHEAT);
-		int numSheep = resources.getAmount(SOCResourceConstants.SHEEP);
-
-		// Work out if anything is buildable with these.
-		// We need to consider both the resource and the location available.
-		ArrayList<ArrayList<BotMove>> possibleBuilds = checkForBuilds(numClay, numWood, numOre, numWheat, numSheep);
+		// Check for all of the possible buys and builds - this should get all
+		// permutations
+		ArrayList<ArrayList<BotMove>> possibleBuilds = checkForBuilds();
 
 		return null;
 	}
@@ -335,13 +325,15 @@ public abstract class DecisionMaker {
 	 * @param numSheep
 	 * @return
 	 */
-	private ArrayList<ArrayList<BotMove>> checkForBuilds(int numClay, int numWood, int numOre, int numWheat,
-			int numSheep) {
-		
-		BuildNode root = new BuildNode(numSheep, numSheep, numSheep, numSheep, numSheep, null, null, ourPlayer, game);
+	private ArrayList<ArrayList<BotMove>> checkForBuilds() {
 
+		ReducedGame reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(), game);
+		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
+
+		// Now we need to do a breadth first traverse of the tree to get all
+		// possible combinations of moves.
+		// TODO sort this
 		return null;
-
 	}
 
 	/**
