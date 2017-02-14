@@ -67,7 +67,7 @@ public class ReducedPlayer {
 		for (int i : temp) {
 			resources[i] = i;
 		}
-		
+
 		settlementPieces = orig.getSettlementPieces();
 		cityPieces = orig.getCityPieces();
 		roadPieces = orig.getRoadPieces();
@@ -158,7 +158,7 @@ public class ReducedPlayer {
 	public void decrementSettlementPieces() {
 		settlementPieces--;
 	}
-	
+
 	public void decrementCityPieces() {
 		cityPieces--;
 	}
@@ -169,6 +169,26 @@ public class ReducedPlayer {
 	 */
 	public void incrementSettlementPieces() {
 		settlementPieces++;
+	}
+
+	/**
+	 * Return true if this player has a 3:1 port. Otherwise return false.
+	 * 
+	 * @return Whether the player has a 3:1 trade port or not.
+	 */
+	public boolean hasGeneralPort() {
+		return false;
+	}
+
+	/**
+	 * Return boolean array of whether we have specialist 2:1 trade ports for a
+	 * specific resource.
+	 * 
+	 * @return A true false list for each resource. True if we have a 2:1 trade
+	 *         port it and false if we do not.
+	 */
+	public boolean[] hasSpecPorts() {
+		return null;
 	}
 
 }

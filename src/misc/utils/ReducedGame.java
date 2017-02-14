@@ -129,5 +129,14 @@ public class ReducedGame {
 		}
 		return winner;
 	}
+	
+	/**
+	 * Get the player sitting at a specific seat. 0-3
+	 * @param player The play number of the player we want
+	 * @return The reduced player object referred to by the number.
+	 */
+	public ReducedPlayer getPlayer(int player){
+		return players.get(player);
+	}
 
 }

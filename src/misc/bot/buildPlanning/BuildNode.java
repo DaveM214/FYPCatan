@@ -92,6 +92,9 @@ public class BuildNode {
 	public void generateChildNodes() {
 		// Will we need to consider the number of pieces available?
 
+		// Bank trades
+		handleBankTradeChildren(ourPlayerNumber);
+
 		// If we have enough for a road find all the road building locations
 		if (numWood >= 1 && numClay >= 1 && game.getOurPlayer().getRoadPieces() > 0) {
 			ReducedBoard board = game.getBoard();
@@ -143,12 +146,12 @@ public class BuildNode {
 				ReducedGame gameCopy = new ReducedGame(game);
 				gameCopy.getBoard().addCity(location, ourPlayerNumber);
 				ReducedPlayer usInCopy = gameCopy.getOurPlayer();
-				
+
 				for (int i = 0; i < 2; i++) {
 					usInCopy.decrementResource(SOCResourceConstants.ORE - 1);
 					usInCopy.decrementResource(SOCResourceConstants.WOOD - 1);
 				}
-				
+
 				usInCopy.decrementResource(SOCResourceConstants.ORE - 1);
 				usInCopy.decrementCityPieces();
 				usInCopy.incrementSettlementPieces();
@@ -173,6 +176,36 @@ public class BuildNode {
 			BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
 			children.add(child);
 		}
+
+	}
+
+	/**
+	 * Handle populating all possible bank trades deals. We need to take into
+	 * account the regular bank trade rate as well as possible reduced trade
+	 * rate if we have a port and also specific resource ports.
+	 */
+	private void handleBankTradeChildren(int player) {
+		int baseTradeRate = 4;
+
+		if (game.getPlayer(player).hasGeneralPort()) {
+			baseTradeRate--;
+		}
+
+		int[] tradeRates = new int[5];
+		for (int i : tradeRates) {
+			tradeRates[i] = baseTradeRate;
+		}
+
+		boolean[] specPorts = game.getPlayer(player).hasSpecPorts();
+		for (int i = 0; i < specPorts.length; i++) {
+			if (specPorts[i]) {
+				tradeRates[i]--;
+			}
+		}
+
+		// We have array of trade rates for bank trade. Work out which resources
+		// we can trade and add the 4 relevant resources for each one to the
+		// possible move tree.
 
 	}
 
