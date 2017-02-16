@@ -35,7 +35,7 @@ public class BuildNode {
 	private SOCPlayer ourPlayer;
 
 	private BuildNode parentNode;
-	private ArrayList<BuildNode> children;
+	private List<BuildNode> children;
 
 	// The Move that got us to this state. Null if it is the root of the tree;
 	private final BotMove parentMove;
@@ -65,6 +65,7 @@ public class BuildNode {
 	 */
 	public BuildNode(ReducedGame game, BotMove parentMove, BuildNode parentNode, SOCPlayer ourPlayer,
 			SOCGame referenceGame) {
+		this.children = new ArrayList<BuildNode>();
 		this.game = game;
 		this.referenceGame = referenceGame;
 		this.ourPlayer = ourPlayer;
@@ -187,7 +188,7 @@ public class BuildNode {
 		int[] tradeRates = new int[5];
 
 		// Initialise an array of the trade rates.
-		for (int i : tradeRates) {
+		for (int i = 0;i<tradeRates.length;i++) {
 			tradeRates[i] = baseTradeRate;
 		}
 
@@ -207,7 +208,7 @@ public class BuildNode {
 			//i =  what we are trading
 			//j = what we are receiving
 			if (resources[i] >= tradeRates[i]) {
-				for (int j = 0; i < resources.length; i++) {
+				for (int j = 0; j < resources.length; j++) {
 					// We don't want to trade for itself
 					if (j != i) {
 						ReducedGame gameCopy = new ReducedGame(game);
@@ -242,7 +243,7 @@ public class BuildNode {
 		return parentNode;
 	}
 
-	public ArrayList<BuildNode> getChildren() {
+	public List<BuildNode> getChildren() {
 		return children;
 	}
 	

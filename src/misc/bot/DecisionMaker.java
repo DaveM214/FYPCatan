@@ -46,9 +46,8 @@ public abstract class DecisionMaker {
 	 * @param game
 	 * @param ourPlayer
 	 */
-	public DecisionMaker(SOCGame game, SOCPlayer ourPlayer) {
+	public DecisionMaker(SOCGame game) {
 		this.game = game;
-		this.ourPlayer = ourPlayer;
 	}
 
 	/**
@@ -83,7 +82,6 @@ public abstract class DecisionMaker {
 		// ArrayList<BotMove> devCardsMoves = getDevCardMoves();
 
 		ArrayList<ArrayList<BotMove>> buildMoves = getBuildMoves();
-		System.out.println(buildMoves.size());
 		
 		return buildMoves;
 	}
@@ -303,8 +301,11 @@ public abstract class DecisionMaker {
 
 		ReducedGame reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(), game);
 		ArrayList<ArrayList<BotMove>> moveCombos = new ArrayList<ArrayList<BotMove>>();
-
+		
+		System.out.println("Preparing to generate game states");
 		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
+		System.out.println("Game states generated");
+		
 		List<BuildNode> nodes = new ArrayList<BuildNode>();
 		gatherChildren(root, nodes);
 

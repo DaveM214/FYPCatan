@@ -72,7 +72,7 @@ public class BotBrain extends Thread {
 		this.client = client;
 		this.game = game;
 		alive = true;
-		dm = new RandomDecisionMaker(game, ourPlayer);
+		dm = new RandomDecisionMaker(game);
 		movesToProcess = new ArrayList<BotMove>();
 	}
 
@@ -155,7 +155,7 @@ public class BotBrain extends Thread {
 
 				yield();
 			} catch (Exception e) {
-
+				e.printStackTrace();
 			}
 		}
 	}
@@ -453,6 +453,7 @@ public class BotBrain extends Thread {
 	 */
 	public void setPlayerData() {
 		ourPlayer = game.getPlayer(client.getNickname());
+		dm.setOurPlayerInformation(ourPlayer);
 		initialDecider = new InitialMoveDecider(ourPlayer);
 	}
 

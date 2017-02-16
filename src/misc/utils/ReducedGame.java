@@ -27,16 +27,18 @@ public class ReducedGame {
 	 * @param game
 	 */
 	public ReducedGame(int ourPlayerNumber, SOCGame game) {
+	
 		this.ourPlayerNumber = ourPlayerNumber;
 		this.devCardsLeft = game.getNumDevCards();
 		this.board = new ReducedBoard(game.getBoard());
-
+	
 		SOCPlayer[] socPlayers = game.getPlayers();
+		players = new ArrayList<ReducedPlayer>();	
 		for (SOCPlayer socPlayer : socPlayers) {
 			ReducedPlayer reducedPlayer = new ReducedPlayer(socPlayer);
 			players.add(reducedPlayer);
 		}
-
+		
 	}
 
 	/**

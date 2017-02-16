@@ -9,8 +9,8 @@ import soc.game.SOCPlayer;
 
 public class RandomDecisionMaker extends DecisionMaker{
 
-	public RandomDecisionMaker(SOCGame game, SOCPlayer ourPlayer) {
-		super(game, ourPlayer);
+	public RandomDecisionMaker(SOCGame game) {
+		super(game);
 	}
 
 	@Override

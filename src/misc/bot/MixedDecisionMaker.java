@@ -8,8 +8,8 @@ import soc.game.SOCPlayer;
 
 public class MixedDecisionMaker extends DecisionMaker{
 
-	public MixedDecisionMaker(SOCGame game, SOCPlayer ourPlayer){
-		super(game,ourPlayer);
+	public MixedDecisionMaker(SOCGame game){
+		super(game);
 	}
 
 	@Override

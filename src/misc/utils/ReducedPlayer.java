@@ -39,6 +39,7 @@ public class ReducedPlayer {
 	public ReducedPlayer(SOCPlayer player) {
 		this.playerNumber = player.getPlayerNumber();
 		this.victoryPoints = player.getTotalVP();
+		resources = new int[5];
 		SOCResourceSet resourceSet = player.getResources();
 
 		resources[0] = resourceSet.getAmount(SOCResourceConstants.CLAY);
@@ -62,10 +63,11 @@ public class ReducedPlayer {
 		this.playerNumber = orig.getPlayerNumber();
 		this.victoryPoints = orig.getVictoryPoints();
 
-		int[] resources = new int[5];
+		resources = new int[5];
 		int[] temp = orig.getResources();
-		for (int i : temp) {
-			resources[i] = i;
+		
+		for (int i =0;i<temp.length ; i++) {
+			resources[i] = temp[i];
 		}
 
 		settlementPieces = orig.getSettlementPieces();
@@ -188,7 +190,7 @@ public class ReducedPlayer {
 	 *         port it and false if we do not.
 	 */
 	public boolean[] hasSpecPorts() {
-		return null;
+		return new boolean[]{false,false,false,false,false};
 	}
 
 }
