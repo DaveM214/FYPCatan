@@ -1,7 +1,10 @@
 package misc.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import soc.game.SOCBoard;
 import soc.game.SOCCity;
@@ -20,9 +23,11 @@ import soc.game.SOCSettlement;
  */
 public class ReducedBoard {
 
-	private List<ReducedRoad> roads;
-	private List<ReducedSettlement> settlements;
-	private List<ReducedCity> cities;
+	private List<ReducedBoardPiece> roads;
+	private List<ReducedBoardPiece> settlements;
+	private List<ReducedBoardPiece> cities;
+
+	private SOCBoard referenceBoard;
 
 	public static final int MIN_SETTLEMENT = 0x23;
 	public static final int MAX_SETTLEMENT = 0xDC;
@@ -41,6 +46,7 @@ public class ReducedBoard {
 		roads = new ArrayList<>();
 		settlements = new ArrayList<>();
 		cities = new ArrayList<>();
+		this.referenceBoard = board;
 
 		List<SOCRoad> socRoads = board.getRoads();
 		List<SOCSettlement> socSettlements = board.getSettlements();
@@ -67,21 +73,22 @@ public class ReducedBoard {
 	 * @param orig
 	 */
 	public ReducedBoard(ReducedBoard orig) {
-		roads = new ArrayList<ReducedRoad>();
-		settlements = new ArrayList<ReducedSettlement>();
-		cities = new ArrayList<ReducedCity>();
+		roads = new ArrayList<ReducedBoardPiece>();
+		settlements = new ArrayList<ReducedBoardPiece>();
+		cities = new ArrayList<ReducedBoardPiece>();
+		referenceBoard = orig.referenceBoard;
 
-		for (ReducedCity city : orig.getCities()) {
+		for (ReducedBoardPiece city : orig.getCities()) {
 			ReducedCity newCity = new ReducedCity(city);
 			cities.add(newCity);
 		}
 
-		for (ReducedRoad road : orig.getRoads()) {
+		for (ReducedBoardPiece road : orig.getRoads()) {
 			ReducedRoad newRoad = new ReducedRoad(road);
 			roads.add(newRoad);
 		}
 
-		for (ReducedSettlement settlement : orig.getSettlements()) {
+		for (ReducedBoardPiece settlement : orig.getSettlements()) {
 			ReducedSettlement newSettlement = new ReducedSettlement(settlement);
 			settlements.add(newSettlement);
 		}
@@ -100,11 +107,57 @@ public class ReducedBoard {
 	 * @return The locations that a player can build a settlement.
 	 */
 	public List<Integer> getLegalSettlementLocations(int player) {
-		return null;
+		// Settlements can only be built on roads so find all the roads a player
+		// has.
+		List<ReducedBoardPiece> playersRoads = getPlayersRoads(player);
+		List<Integer> coveredNodes = new ArrayList<Integer>();
+
+		for (ReducedBoardPiece road : playersRoads) {
+			coveredNodes.addAll(referenceBoard.getAdjacentNodesToEdge(road.getLocation()));
+		}
+
+		// Remove duplicate nodes
+		Set<Integer> nodes = new HashSet<Integer>(coveredNodes);
+		List<Integer> validSettlements = new ArrayList<Integer>();
+
+		// We have all the possible locations that we can build
+		for (Integer settlementLocation : nodes) {
+			if (isValidSettlement(settlementLocation, player)) {
+				validSettlements.add(settlementLocation);
+			}
+		}
+
+		return validSettlements;
+
+	}
+
+	private List<ReducedBoardPiece> getPlayersRoads(int player) {
+		List<ReducedBoardPiece> playersRoads = new ArrayList<ReducedBoardPiece>();
+		for (ReducedBoardPiece reducedRoad : roads) {
+			if (reducedRoad.getOwner() == player) {
+				playersRoads.add(reducedRoad);
+			}
+		}
+		return playersRoads;
 	}
 
 	public List<Integer> getLegalRoadLocations(int player) {
-		return null;
+		List<ReducedBoardPiece> playersRoads = getPlayersRoads(player);
+		Set<Integer> possibleLocations = new HashSet<Integer>();
+		
+		//Add all connecting edges
+		for (ReducedBoardPiece road : playersRoads) {
+			possibleLocations.addAll(referenceBoard.getAdjacentEdgesToEdge(road.getLocation()));
+		}
+		
+		for (ReducedBoardPiece road: playersRoads){
+			int location = road.getLocation();
+			if(possibleLocations.contains(location)){
+				possibleLocations.remove(location);
+			}
+		}
+		
+		return new ArrayList<Integer>(possibleLocations);	
 	}
 
 	/**
@@ -121,7 +174,7 @@ public class ReducedBoard {
 		List<Integer> locations = new ArrayList<Integer>();
 
 		// Valid city locations are where ever we have a settlement
-		for (ReducedSettlement settlement : settlements) {
+		for (ReducedBoardPiece settlement : settlements) {
 			if (settlement.getOwner() == player) {
 				locations.add(settlement.getLocation());
 			}
@@ -151,7 +204,52 @@ public class ReducedBoard {
 	 * @return
 	 */
 	public boolean isValidSettlement(int location, int owner) {
-		return false;
+		List<Integer> surroundingNodes = referenceBoard.getAdjacentNodesToNode(location);
+		List<Integer> surroundingEdges = referenceBoard.getAdjacentEdgesToNode(location);
+
+		List<ReducedBoardPiece> pieces = new ArrayList<>(settlements);
+		pieces.addAll(cities);
+
+		for (ReducedBoardPiece piece : pieces) {
+			// If there is a piece too close then not valid
+			if (surroundingNodes.contains(piece.getLocation())) {
+				return false;
+			}
+		}
+
+		// Find the roads that are next to the tested location
+		List<ReducedBoardPiece> adjRoads = new ArrayList<ReducedBoardPiece>();
+		for (ReducedBoardPiece road : roads) {
+			if (surroundingEdges.contains(road.getLocation())) {
+				adjRoads.add(road);
+			}
+		}
+		
+		if(adjRoads.isEmpty()){
+			return false;
+		}
+
+	
+		// Check all the adjacent roads. One must be ours. The others must
+		// either be blank or belong to two separate players
+		boolean playerAdjacent = false;
+		boolean opponentAdjacent = false;
+		
+		for (ReducedBoardPiece road : adjRoads) {
+			int roadOwner =  road.getOwner();
+			
+			if(owner == roadOwner){
+				playerAdjacent = true;
+			}else{
+				if(opponentAdjacent == true){
+					return false; //its blocked
+				}
+				opponentAdjacent = true;
+			}
+		}
+		
+		return playerAdjacent;
+
 	}
 
 	public boolean isValidCity(int location, int owner) {
@@ -182,17 +280,21 @@ public class ReducedBoard {
 		return false;
 	}
 
-	public List<ReducedRoad> getRoads() {
+	public List<ReducedBoardPiece> getRoads() {
 		return roads;
 	}
 
-	public List<ReducedCity> getCities() {
+	public List<ReducedBoardPiece> getCities() {
 		return cities;
 	}
 
-	public List<ReducedSettlement> getSettlements() {
+	public List<ReducedBoardPiece> getSettlements() {
 		return settlements;
 
+	}
+
+	public SOCBoard getReferenceBoard() {
+		return referenceBoard;
 	}
 
 }

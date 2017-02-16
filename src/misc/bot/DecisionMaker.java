@@ -74,27 +74,18 @@ public abstract class DecisionMaker {
 	 * lists of moves.
 	 */
 	public ArrayList<ArrayList<BotMove>> getAllPossibleMoves() {
-		ArrayList<ArrayList<BotMove>> possibles = new ArrayList<ArrayList<BotMove>>();
 
-		ArrayList<BotMove> devCardsMoves = getDevCardMoves();
-		ArrayList<BotMove> bankTradeMoves = getBankTradeMoves();
+		// Temp leave out dev cards moves. Will add in later. Might want to add
+		// to simulator to improve how far ahead it can look
+		// ArrayList<ArrayList<BotMove>> possibles = new
+		// ArrayList<ArrayList<BotMove>>();
+
+		// ArrayList<BotMove> devCardsMoves = getDevCardMoves();
+
 		ArrayList<ArrayList<BotMove>> buildMoves = getBuildMoves();
-
-		// Check if we can play development cards.
-		// Go through cards see which are playable
-
-		// Check if we can trade with the bank
-		// Do this first as it frees up resources.
-
-		// Check if we can build any roads and settlements or buy development
-		// cards.
-
-		// Combine these into the required permutations
-
-		// Don't worry about ordering as end result is the same as long as you
-		// are doing stuff that can increase the possible resources first.
-
-		return possibles;
+		System.out.println(buildMoves.size());
+		
+		return buildMoves;
 	}
 
 	/**
@@ -289,16 +280,6 @@ public abstract class DecisionMaker {
 	}
 
 	/**
-	 * TODO complete this method. Get all the possible bank trade types of
-	 * moves.
-	 * 
-	 * @return
-	 */
-	private ArrayList<BotMove> getBankTradeMoves() {
-		return null;
-	}
-
-	/**
 	 * Return all of the things that we can build this includes dev cards that
 	 * we can buy.
 	 * 
@@ -306,34 +287,58 @@ public abstract class DecisionMaker {
 	 */
 	private ArrayList<ArrayList<BotMove>> getBuildMoves() {
 		// Find all the things we can build
-		ArrayList<ArrayList<BotMove>> possibleMoves = new ArrayList<ArrayList<BotMove>>();
 
 		// Check for all of the possible buys and builds - this should get all
 		// permutations
 		ArrayList<ArrayList<BotMove>> possibleBuilds = checkForBuilds();
 
-		return null;
+		return possibleBuilds;
 	}
 
 	/**
-	 * Work out if it is possible to put the piece down.
 	 * 
-	 * @param numClay
-	 * @param numWood
-	 * @param numOre
-	 * @param numWheat
-	 * @param numSheep
 	 * @return
 	 */
 	private ArrayList<ArrayList<BotMove>> checkForBuilds() {
 
 		ReducedGame reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(), game);
-		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
+		ArrayList<ArrayList<BotMove>> moveCombos = new ArrayList<ArrayList<BotMove>>();
 
-		// Now we need to do a breadth first traverse of the tree to get all
-		// possible combinations of moves.
-		// TODO sort this
-		return null;
+		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
+		List<BuildNode> nodes = new ArrayList<BuildNode>();
+		gatherChildren(root, nodes);
+
+		// Generate the move sequences from all the build nodes in the tree
+		for (BuildNode buildNode : nodes) {
+			moveCombos.add(generateMovesFromNode(buildNode));
+		}
+
+		return moveCombos;
+	}
+
+	/**
+	 * Given build a node gather all the moves that led to it.
+	 * 
+	 * @param buildNode
+	 * @return
+	 */
+	private ArrayList<BotMove> generateMovesFromNode(BuildNode buildNode) {
+		ArrayList<BotMove> moves = new ArrayList<>();
+		while (buildNode.getParentNode() != null) {
+			moves.add(0, buildNode.getParentMove());
+			buildNode = buildNode.getParentNode();
+		}
+		return moves;
+	}
+
+	/**
+	 * Recursive method to do traversal
+	 */
+	private void gatherChildren(BuildNode node, List<BuildNode> visited) {
+		visited.add(node);
+		for (BuildNode childNode : node.getChildren()) {
+			gatherChildren(childNode, visited);
+		}
 	}
 
 	/**

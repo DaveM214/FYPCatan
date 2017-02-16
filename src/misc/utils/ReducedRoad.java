@@ -5,31 +5,18 @@ package misc.utils;
  * @author david
  *
  */
-public class ReducedRoad {
+public class ReducedRoad extends ReducedBoardPiece{
 
-	private final int location;
-	private final int owner;
-	
 	public ReducedRoad(int location, int owner){
-		this.location = location;
-		this.owner = owner ;
+		super(location,owner);
 	}
 	
 	/**
 	 * Copy constructor
 	 * @param orig
 	 */
-	public ReducedRoad(ReducedRoad orig){
-		this.location = orig.getLocation();
-		this.owner = orig.getOwner();
-	}
-	
-	public int getLocation(){
-		return location;
-	}
-	
-	public int getOwner(){
-		return owner;
+	public ReducedRoad(ReducedBoardPiece orig){
+		super(orig.getLocation(),orig.getOwner());
 	}
 	
 }

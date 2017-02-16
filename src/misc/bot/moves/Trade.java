@@ -12,19 +12,20 @@ package misc.bot.moves;
 public class Trade extends BotMove {
 	
 	//In the future this will be a player number
-	private final int tradeTarget = -1;
+	private final int tradeTarget;
 	private final int giveType;
 	private final int giveAmount;
 	private final int recType;
 	private final int recAmount;
 	
 	
-	public Trade(int giveType, int giveAmount, int recType, int recAmount) {
+	public Trade(int giveType, int giveAmount, int recType, int recAmount, int tradeTarget) {
 		super(BotMove.TRADE);
 		this.giveType = giveType;
 		this.giveAmount = giveAmount;
 		this.recType = recType;
 		this.recAmount = recAmount;
+		this.tradeTarget = tradeTarget;
 	}
 	
 	

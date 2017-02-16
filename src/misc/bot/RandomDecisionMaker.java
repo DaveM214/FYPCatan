@@ -1,6 +1,7 @@
 package misc.bot;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import misc.bot.moves.BotMove;
 import soc.game.SOCGame;
@@ -14,7 +15,12 @@ public class RandomDecisionMaker extends DecisionMaker{
 
 	@Override
 	public ArrayList<BotMove> getMoveDecision() {
-		return null;
+		System.out.println("Getting all possible moves");
+		ArrayList<ArrayList<BotMove>> possMoves = getAllPossibleMoves();
+		System.out.println("All possible moves received");
+		
+		Random rand = new Random();
+		return possMoves.get(rand.nextInt(possMoves.size()));
 	}
 
 }

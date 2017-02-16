@@ -72,7 +72,7 @@ public class BotBrain extends Thread {
 		this.client = client;
 		this.game = game;
 		alive = true;
-		dm = new MixedDecisionMaker(game, ourPlayer);
+		dm = new RandomDecisionMaker(game, ourPlayer);
 		movesToProcess = new ArrayList<BotMove>();
 	}
 
@@ -227,6 +227,7 @@ public class BotBrain extends Thread {
 		} else {
 			// Ask our decision maker to give us a set of moves.
 
+			System.out.println("Getting a move");
 			movesToProcess = dm.getMoveDecision();
 
 			for (BotMove botMove : movesToProcess) {

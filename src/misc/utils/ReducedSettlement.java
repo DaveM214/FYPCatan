@@ -6,27 +6,18 @@ package misc.utils;
  * @author david
  *
  */
-public class ReducedSettlement {
+public class ReducedSettlement extends ReducedBoardPiece{
 
-	private int location;
-	private int owner;
-
-	public ReducedSettlement(int location, int owner) {
-		this.location = location;
-		this.owner = owner;
+	public ReducedSettlement(int location, int owner){
+		super(location,owner);
 	}
-
-	public ReducedSettlement(ReducedSettlement orig){
-		this.location = orig.getLocation();
-		this.owner = orig.getOwner();
-	}
-
-	public int getOwner() {
-		return owner;
-	}
-
-	public int getLocation() {
-		return location;
+	
+	/**
+	 * Copy constructor
+	 * @param orig
+	 */
+	public ReducedSettlement(ReducedBoardPiece orig){
+		super(orig.getLocation(),orig.getOwner());
 	}
 
 }

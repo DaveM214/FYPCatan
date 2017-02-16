@@ -5,27 +5,18 @@ package misc.utils;
  * @author david
  *
  */
-public class ReducedCity {
+public class ReducedCity extends ReducedBoardPiece{
 
-	private int location;
-	private int owner;
-
-	public ReducedCity(int location, int owner) {
-		this.location = location;
-		this.owner = owner;
+	public ReducedCity(int location, int owner){
+		super(location,owner);
 	}
-
-	public ReducedCity(ReducedCity orig){
-		this.location = orig.getLocation();
-		this.owner = orig.getOwner();
-	}
-
-	private int getOwner() {
-		return owner;
-	}
-
-	public int getLocation() {
-		return location;
+	
+	/**
+	 * Copy constructor
+	 * @param orig
+	 */
+	public ReducedCity(ReducedBoardPiece orig){
+		super(orig.getLocation(),orig.getOwner());
 	}
 	
 }

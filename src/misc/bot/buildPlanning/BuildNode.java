@@ -6,6 +6,7 @@ import java.util.List;
 import misc.bot.moves.BotMove;
 import misc.bot.moves.BuyDevCard;
 import misc.bot.moves.PiecePlacement;
+import misc.bot.moves.Trade;
 import misc.utils.ReducedBoard;
 import misc.utils.ReducedGame;
 import misc.utils.ReducedPlayer;
@@ -27,11 +28,6 @@ import sun.org.mozilla.javascript.GeneratedClassLoader;
  */
 public class BuildNode {
 
-	private int numOre;
-	private int numWood;
-	private int numClay;
-	private int numWheat;
-	private int numSheep;
 	private int ourPlayerNumber;
 	private ReducedGame game;
 
@@ -73,30 +69,23 @@ public class BuildNode {
 		this.referenceGame = referenceGame;
 		this.ourPlayer = ourPlayer;
 		this.ourPlayerNumber = ourPlayer.getPlayerNumber();
-		populateResouceFields();
+		// populateResouceFields();
 		this.parentMove = parentMove;
 		this.parentNode = parentNode;
 		generateChildNodes();
 	}
 
-	private void populateResouceFields() {
-		ReducedPlayer us = game.getOurPlayer();
-		int[] res = us.getResources();
-		numClay = res[0];
-		numOre = res[1];
-		numSheep = res[2];
-		numWheat = res[3];
-		numWood = res[4];
-	}
-
 	public void generateChildNodes() {
 		// Will we need to consider the number of pieces available?
+		ReducedPlayer us = game.getPlayer(ourPlayerNumber);
+		int[] resources = us.getResources();
 
 		// Bank trades
 		handleBankTradeChildren(ourPlayerNumber);
 
 		// If we have enough for a road find all the road building locations
-		if (numWood >= 1 && numClay >= 1 && game.getOurPlayer().getRoadPieces() > 0) {
+		if (resources[SOCResourceConstants.WOOD - 1] >= 1 && resources[SOCResourceConstants.CLAY - 1] >= 1
+				&& game.getOurPlayer().getRoadPieces() > 0) {
 			ReducedBoard board = game.getBoard();
 			List<Integer> locations = board.getLegalRoadLocations(ourPlayerNumber);
 			for (Integer location : locations) {
@@ -114,7 +103,8 @@ public class BuildNode {
 
 		// If we have enough for a settlement find all the locations that we can
 		// build it
-		if (numWood >= 1 && numClay >= 1 && numWheat >= 1 && numSheep >= 1
+		if (resources[SOCResourceConstants.WOOD - 1] >= 1 && resources[SOCResourceConstants.CLAY - 1] >= 1
+				&& resources[SOCResourceConstants.WHEAT - 1] >= 1 && resources[SOCResourceConstants.SHEEP - 1] >= 1
 				&& game.getOurPlayer().getSettlementPieces() > 0) {
 			// Find all the places that we can build a settlement
 			ReducedBoard board = game.getBoard();
@@ -137,7 +127,8 @@ public class BuildNode {
 
 		}
 
-		if (numOre >= 3 && numWheat >= 2 && game.getOurPlayer().getCityPieces() > 0) {
+		if (resources[SOCResourceConstants.ORE - 1] >= 3 && resources[SOCResourceConstants.WHEAT - 1] >= 2
+				&& game.getOurPlayer().getCityPieces() > 0) {
 			// BuildCities
 			ReducedBoard board = game.getBoard();
 			List<Integer> locations = board.getLegalCityLocations(ourPlayerNumber);
@@ -163,7 +154,8 @@ public class BuildNode {
 
 		// We are only allowed one dev card so it is allowed set it to possible
 		// buy
-		if (numOre >= 1 && numWheat >= 1 && numSheep >= 1 && game.getDevCardsLeft() > 0) {
+		if (resources[SOCResourceConstants.ORE - 1] >= 1 && resources[SOCResourceConstants.WHEAT - 1] >= 1
+				&& resources[SOCResourceConstants.SHEEP - 1] >= 1 && game.getDevCardsLeft() > 0) {
 			BotMove move = new BuyDevCard();
 			ReducedGame gameCopy = new ReducedGame(game);
 
@@ -187,46 +179,51 @@ public class BuildNode {
 	private void handleBankTradeChildren(int player) {
 		int baseTradeRate = 4;
 
+		// Check if we have 3:1 port
 		if (game.getPlayer(player).hasGeneralPort()) {
 			baseTradeRate--;
 		}
 
 		int[] tradeRates = new int[5];
+
+		// Initialise an array of the trade rates.
 		for (int i : tradeRates) {
 			tradeRates[i] = baseTradeRate;
 		}
 
+		// See if there are any speciality ports
 		boolean[] specPorts = game.getPlayer(player).hasSpecPorts();
 		for (int i = 0; i < specPorts.length; i++) {
 			if (specPorts[i]) {
-				tradeRates[i]--;
+				tradeRates[i] = 2;
 			}
 		}
 
-		// We have array of trade rates for bank trade. Work out which resources
-		// we can trade and add the 4 relevant resources for each one to the
-		// possible move tree.
+		// Get the resources the player has
+		int[] resources = game.getPlayer(player).getResources();
 
-	}
+		for (int i = 0; i < resources.length; i++) {
+			// We can trade this the resource to the bank
+			//i =  what we are trading
+			//j = what we are receiving
+			if (resources[i] >= tradeRates[i]) {
+				for (int j = 0; i < resources.length; i++) {
+					// We don't want to trade for itself
+					if (j != i) {
+						ReducedGame gameCopy = new ReducedGame(game);
+						ReducedPlayer copyPlayer = gameCopy.getPlayer(player);
+						copyPlayer.incrementResource(j);
+						for (int k = 0; k < tradeRates[i]; k++) {
+							copyPlayer.decrementResource(i);
+						}
+						BotMove move = new Trade(i+1,tradeRates[i],j+1,1,-1);
+						BuildNode  child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
+						children.add(child);
+					}
+				}
+			}
+		}
 
-	public int getNumOre() {
-		return numOre;
-	}
-
-	public int getNumWood() {
-		return numWood;
-	}
-
-	public int getNumClay() {
-		return numClay;
-	}
-
-	public int getNumWheat() {
-		return numWheat;
-	}
-
-	public int getNumSheep() {
-		return numSheep;
 	}
 
 	public SOCGame getGame() {
@@ -247,6 +244,14 @@ public class BuildNode {
 
 	public ArrayList<BuildNode> getChildren() {
 		return children;
+	}
+	
+	/**
+	 * Get the move that resulted in this state.
+	 * @return
+	 */
+	public BotMove getParentMove(){
+		return parentMove;
 	}
 
 }
