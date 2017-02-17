@@ -14,4 +14,7 @@ public class PlayDevCard extends BotMove{
 		this.devCardType  = devCardType;
 	}
 	
+	
+	
+	
 }

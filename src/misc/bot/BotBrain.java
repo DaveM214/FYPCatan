@@ -3,6 +3,7 @@ package misc.bot;
 import misc.utils.BotMessageQueue;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import misc.bot.BotClient;
@@ -15,6 +16,7 @@ import soc.game.SOCCity;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
+import soc.game.SOCResourceSet;
 import soc.game.SOCRoad;
 import soc.game.SOCSettlement;
 import soc.message.SOCFirstPlayer;
@@ -122,7 +124,7 @@ public class BotBrain extends Thread {
 					break;
 
 				case SOCMessage.PLAYERELEMENT:
-					handePlayerElement(((SOCPlayerElement) msg));
+					handlePlayerElement(((SOCPlayerElement) msg));
 					break;
 
 				// Handle the message showing how many resources a player has.
@@ -173,6 +175,7 @@ public class BotBrain extends Thread {
 	 *            The message describing who placed what piece and where.
 	 */
 	private void handlePutPiece(SOCPutPiece msg) {
+		System.out.println("Placing piece");
 		SOCPlayer player = game.getPlayer(msg.getPlayerNumber());
 
 		SOCPlayingPiece piece = null;
@@ -197,6 +200,7 @@ public class BotBrain extends Thread {
 	 */
 	private void handleOurTurn() {
 		int currentState = game.getGameState();
+		System.out.println("Current State: " + currentState);
 
 		// IF Initial state
 		if (currentState >= 5 && currentState <= 11) {
@@ -207,8 +211,16 @@ public class BotBrain extends Thread {
 
 		}
 		// Otherwise we are in the main game.
-		else {
+		if (currentState == SOCGame.PLAY && expectingDiceRoll) {
+			System.out.println("ROLLING DICE!");
+			requestDiceRoll();
+			expectingDiceRoll = false;
+		}
+
+		if (currentState >= SOCGame.PLAY1) {
+			System.out.println("\nHandling our turn");
 			handleMainTurn();
+			expectingDiceRoll = true;
 		}
 
 	}
@@ -220,24 +232,43 @@ public class BotBrain extends Thread {
 	 * 
 	 */
 	private void handleMainTurn() {
-		if (expectingDiceRoll == true) {
-			System.out.println("ROLLING DICE!");
-			requestDiceRoll();
-			expectingDiceRoll = false;
-		} else {
-			// Ask our decision maker to give us a set of moves.
+		dm.updateGame(game);
+		dm.setOurPlayerInformation(ourPlayer);
 
-			System.out.println("Getting a move");
-			movesToProcess = dm.getMoveDecision();
+		movesToProcess = dm.getMoveDecision();
 
-			for (BotMove botMove : movesToProcess) {
-				processMove(botMove);
+		System.out.println(ourPlayer.getResources().toFriendlyString());
+		System.out.println(game.getPlayer(ourPlayer.getPlayerNumber()).getResources().toFriendlyString());
+		System.out.println("Playing Following Moves:" + movesToProcess.toString());
+
+		List<BotMove> trades = new ArrayList<>();
+		List<BotMove> builds = new ArrayList<>();
+
+		for (BotMove botMove : movesToProcess) {
+			if (botMove.getMoveType() == 2) {
+				trades.add(botMove);
+			}
+			if (botMove.getMoveType() == 1 || botMove.getMoveType() == 3) {
+				builds.add(botMove);
 			}
 
-			expectingDiceRoll = true;
-			waitingForGameState = true;
-			client.endTurn(game);
 		}
+
+		// Handle the trades first
+		for (BotMove trade : trades) {
+			processMove(trade);
+		}
+
+		for (BotMove build : builds) {
+			processMove(build);
+		}
+
+		expectingDiceRoll = true;
+		waitingForGameState = true;
+		expectingMove = false;
+		client.endTurn(game);
+
+		System.out.println("");
 	}
 
 	/**
@@ -248,6 +279,7 @@ public class BotBrain extends Thread {
 	 *            The part of the sequence of moves that we are doing.
 	 */
 	private void processMove(BotMove move) {
+
 		switch (move.getMoveType()) {
 
 		case BotMove.PIECE_PLACEMENT:
@@ -319,7 +351,21 @@ public class BotBrain extends Thread {
 	}
 
 	private void handleTrade(Trade trade) {
+		// If the target is the bank
+		if (trade.getTradeTarget() == -1) {
+			handleBankTrade(trade);
+		}
+	}
 
+	private void handleBankTrade(Trade trade) {
+		System.out.println(trade.getGiveType() + " " + trade.getRecType());
+		SOCResourceSet giveSet = new SOCResourceSet();
+		giveSet.setAmount(trade.getGiveAmount(), trade.getGiveType());
+
+		SOCResourceSet recSet = new SOCResourceSet();
+		recSet.setAmount(trade.getRecAmount(), trade.getRecType());
+
+		client.bankTrade(game, giveSet, recSet);
 	}
 
 	/**
@@ -370,15 +416,39 @@ public class BotBrain extends Thread {
 		client.putPiece(game, new SOCSettlement(ourPlayer, location, null));
 	}
 
+	/**
+	 * 
+	 * @param msg
+	 */
 	private void handleResourceCount(SOCMessage msg) {
 		SOCPlayer pl = game.getPlayer(((SOCResourceCount) msg).getPlayerNumber());
-		if (((SOCResourceCount) msg).getCount() != pl.getResources().getTotal()) {
-			// TODO handle mistmatches
+
+		if (pl.getPlayerNumber() == ourPlayer.getPlayerNumber()) {
+			if (((SOCResourceCount) msg).getCount() != pl.getResources().getTotal()) {
+				System.out.println("RESOURCE MISMATCH!!!!!!");
+			}
 		}
 	}
 
-	private void handePlayerElement(SOCPlayerElement socPlayerElement) {
+	private void handlePlayerElement(SOCPlayerElement socPlayerElement) {
+		//If the message is applying to us.
+		if(socPlayerElement.getPlayerNumber() == ourPlayer.getPlayerNumber()){
+			switch (socPlayerElement.getAction()) {
+			case SOCPlayerElement.SET:
+				ourPlayer.getResources().setAmount(socPlayerElement.getValue(), socPlayerElement.getElementType());
+				break;
+			case SOCPlayerElement.GAIN:
+				
+				break;
+				
+			case SOCPlayerElement.LOSE:
+				break;
 
+			default:
+				System.out.println("Unrecognised message");
+				break;
+			}
+		}
 	}
 
 	/**
@@ -396,6 +466,7 @@ public class BotBrain extends Thread {
 		if (game.getCurrentPlayerNumber() == ourPlayer.getPlayerNumber()) {
 			ourTurn = true;
 			expectingMove = true;
+			expectingDiceRoll = true;
 		} else {
 			ourTurn = false;
 		}
@@ -460,7 +531,8 @@ public class BotBrain extends Thread {
 	/**
 	 * Helper method to insert a pause into the execution of this thread.
 	 * 
-	 * @param ms The length of the pause in MS.
+	 * @param ms
+	 *            The length of the pause in MS.
 	 */
 	private void pause(int ms) {
 		try {

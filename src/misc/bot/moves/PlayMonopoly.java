@@ -13,4 +13,10 @@ public class PlayMonopoly extends PlayDevCard{
 		return targetResource;
 	}
 	
+	public String toString(){
+		return "|Play Monopoly Card - Resource: " + targetResource + "|";
+	}
+	
+	
+	
 }

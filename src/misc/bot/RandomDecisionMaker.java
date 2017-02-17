@@ -15,10 +15,8 @@ public class RandomDecisionMaker extends DecisionMaker{
 
 	@Override
 	public ArrayList<BotMove> getMoveDecision() {
-		System.out.println("Getting all possible moves");
 		ArrayList<ArrayList<BotMove>> possMoves = getAllPossibleMoves();
-		System.out.println("All possible moves received");
-		
+		System.out.println("Possible Moves: " + possMoves.size());
 		Random rand = new Random();
 		return possMoves.get(rand.nextInt(possMoves.size()));
 	}

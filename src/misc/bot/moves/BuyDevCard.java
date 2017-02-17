@@ -6,4 +6,8 @@ public class BuyDevCard extends BotMove{
 		super(BotMove.DEV_CARD_BUY);
 	}
 	
+	public String toString(){
+		return "|Buy Dev Card|";
+	}
+	
 }

@@ -25,4 +25,8 @@ public class PiecePlacement extends BotMove {
 		return coord;
 	}
 	
+	public String toString(){
+		return "|Place Piece: " + pieceType + " at coord " + String.format("%02X", coord) + "|";
+	}
+	
 }

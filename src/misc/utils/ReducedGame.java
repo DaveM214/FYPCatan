@@ -39,6 +39,8 @@ public class ReducedGame {
 			players.add(reducedPlayer);
 		}
 		
+		System.out.println("Reduced Game Resources: " + players.get(ourPlayerNumber).getResources().toString());
+		
 	}
 
 	/**
@@ -51,7 +53,6 @@ public class ReducedGame {
 		this.ourPlayerNumber = orig.getOurPlayerNumber();
 		this.devCardsLeft = orig.getDevCardsLeft();
 		this.board = new ReducedBoard(orig.getBoard());
-
 		players = new ArrayList<ReducedPlayer>();
 		for (ReducedPlayer player : orig.getPlayers()) {
 			ReducedPlayer newPlayer = new ReducedPlayer(player);

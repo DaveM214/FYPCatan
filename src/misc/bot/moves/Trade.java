@@ -10,15 +10,14 @@ package misc.bot.moves;
  *
  */
 public class Trade extends BotMove {
-	
-	//In the future this will be a player number
+
+	// In the future this will be a player number
 	private final int tradeTarget;
 	private final int giveType;
 	private final int giveAmount;
 	private final int recType;
 	private final int recAmount;
-	
-	
+
 	public Trade(int giveType, int giveAmount, int recType, int recAmount, int tradeTarget) {
 		super(BotMove.TRADE);
 		this.giveType = giveType;
@@ -27,33 +26,30 @@ public class Trade extends BotMove {
 		this.recAmount = recAmount;
 		this.tradeTarget = tradeTarget;
 	}
-	
-	
-	public int getTradeTarget(){
+
+	public int getTradeTarget() {
 		return tradeTarget;
 	}
 
-	
 	public int getGiveType() {
 		return giveType;
 	}
-
 
 	public int getGiveAmount() {
 		return giveAmount;
 	}
 
-
 	public int getRecType() {
 		return recType;
 	}
 
-	
 	public int getRecAmount() {
 		return recAmount;
 	}
-	
-	
-	
+
+	public String toString() {
+		return "|Trade Move - Giving: " + giveType + ", Receiving:  " + recType + ",  Give Amount: " + giveAmount
+				+ " , Receive Amount: " + recAmount + " ,Trade Target: " + tradeTarget + "|";
+	}
 
 }

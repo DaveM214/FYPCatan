@@ -54,7 +54,7 @@ public abstract class DecisionMaker {
 	 * Update the game state that we are making our decision based on.
 	 */
 	public void updateGame(SOCGame updatedGame) {
-		game = updatedGame;
+		this.game = updatedGame;
 	}
 
 	/**
@@ -81,7 +81,19 @@ public abstract class DecisionMaker {
 
 		// ArrayList<BotMove> devCardsMoves = getDevCardMoves();
 
-		ArrayList<ArrayList<BotMove>> buildMoves = getBuildMoves();
+		ArrayList<ArrayList<BotMove>> buildMoves = checkForBuilds();
+		
+		/*
+		System.out.println("Moves available: " +buildMoves.size());
+		int i =1;
+		for (ArrayList<BotMove> arrayList : buildMoves) {
+			System.out.println("Combo:" + i);
+			i++;
+			for (BotMove botMove : arrayList) {
+				System.out.println(botMove.toString());
+			}
+		}
+		*/
 		
 		return buildMoves;
 	}
@@ -278,22 +290,6 @@ public abstract class DecisionMaker {
 	}
 
 	/**
-	 * Return all of the things that we can build this includes dev cards that
-	 * we can buy.
-	 * 
-	 * @return
-	 */
-	private ArrayList<ArrayList<BotMove>> getBuildMoves() {
-		// Find all the things we can build
-
-		// Check for all of the possible buys and builds - this should get all
-		// permutations
-		ArrayList<ArrayList<BotMove>> possibleBuilds = checkForBuilds();
-
-		return possibleBuilds;
-	}
-
-	/**
 	 * 
 	 * @return
 	 */
@@ -301,10 +297,7 @@ public abstract class DecisionMaker {
 
 		ReducedGame reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(), game);
 		ArrayList<ArrayList<BotMove>> moveCombos = new ArrayList<ArrayList<BotMove>>();
-		
-		System.out.println("Preparing to generate game states");
 		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
-		System.out.println("Game states generated");
 		
 		List<BuildNode> nodes = new ArrayList<BuildNode>();
 		gatherChildren(root, nodes);
@@ -313,7 +306,7 @@ public abstract class DecisionMaker {
 		for (BuildNode buildNode : nodes) {
 			moveCombos.add(generateMovesFromNode(buildNode));
 		}
-
+		
 		return moveCombos;
 	}
 

@@ -35,4 +35,6 @@ public class BotMove {
 		return moveType;
 	}
 
+
+	
 }

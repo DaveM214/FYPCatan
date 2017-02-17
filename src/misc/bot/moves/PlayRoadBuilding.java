@@ -19,4 +19,8 @@ public class PlayRoadBuilding extends PlayDevCard {
 		return loc2;
 	}
 	
+	public String toString(){
+		return "|Play Road Building Card: " + String.format("%02X", loc1) + " & " + String.format("%02X", loc2) + "|";
+	}
+	
 }

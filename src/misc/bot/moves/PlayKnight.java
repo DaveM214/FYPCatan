@@ -13,4 +13,8 @@ public class PlayKnight extends PlayDevCard{
 		return targetHex;
 	}
 	
+	public String toString(){
+		return "|Play Knight Card at " + String.format("%02X", targetHex) +  "|";
+	}
+	
 }

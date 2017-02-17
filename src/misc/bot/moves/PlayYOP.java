@@ -36,5 +36,9 @@ public class PlayYOP extends PlayDevCard {
 	public int getResource2() {
 		return resource2;
 	}
+	
+	public String toString(){
+		return "|Play YOP card: " + String.format("%02X", resource1) + ", "  + String.format("%02X", resource2) + "|"; 
+	}
 
 }
