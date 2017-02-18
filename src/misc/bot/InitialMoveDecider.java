@@ -38,7 +38,7 @@ public class InitialMoveDecider {
 	private static final double ORE_MUTLIPLIER = 0.92;
 	private static final double ALL_RESOURCE_MULTIPLIER = 0.88;
 	private static final double CORRECT_STRAT_MULTIPLIER = 0.85;
-	private static final double DOUBLE_RESOURCE_MULTIPLIER = 0.85;
+	private static final double DOUBLE_RESOURCE_MULTIPLIER = 1.2;
 
 	private static final double INIT = Double.MAX_VALUE;
 

@@ -11,11 +11,13 @@ import misc.bot.moves.BotMove;
 import misc.bot.moves.PiecePlacement;
 import misc.bot.moves.PlayDevCard;
 import misc.bot.moves.Trade;
+import soc.baseclient.SOCDisplaylessPlayerClient;
 import soc.game.SOCBoard;
 import soc.game.SOCCity;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
+import soc.game.SOCResourceConstants;
 import soc.game.SOCResourceSet;
 import soc.game.SOCRoad;
 import soc.game.SOCSettlement;
@@ -68,6 +70,8 @@ public class BotBrain extends Thread {
 	private boolean waitingForGameState = false;
 	private boolean expectingDiceRoll = false;
 	private ArrayList<BotMove> movesToProcess;
+	private boolean expectingPiecePlacement;
+	private List<PiecePlacement> buildList;
 
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue<SOCMessage> msgQueue) {
 		msgQ = msgQueue;
@@ -76,6 +80,7 @@ public class BotBrain extends Thread {
 		alive = true;
 		dm = new RandomDecisionMaker(game);
 		movesToProcess = new ArrayList<BotMove>();
+		buildList = new ArrayList<PiecePlacement>();
 	}
 
 	/**
@@ -217,7 +222,25 @@ public class BotBrain extends Thread {
 			expectingDiceRoll = false;
 		}
 
-		if (currentState >= SOCGame.PLAY1) {
+		if (currentState == SOCGame.PLACING_CITY || currentState == SOCGame.PLACING_ROAD
+				|| currentState == SOCGame.PLACING_SETTLEMENT) {
+			expectingPiecePlacement = false;
+			handlePiecePlacement(buildList.get(0));
+			buildList.remove(0);
+			if(buildList.isEmpty()){
+				expectingDiceRoll = true;
+				waitingForGameState = true;
+				expectingMove = false;
+				client.endTurn(game);
+				System.out.println("");
+			}else{
+				requestPiecePlacement(buildList.get(0));
+			}
+
+		}
+
+		if (currentState == SOCGame.PLAY1 && !expectingPiecePlacement) {
+
 			System.out.println("\nHandling our turn");
 			handleMainTurn();
 			expectingDiceRoll = true;
@@ -242,14 +265,19 @@ public class BotBrain extends Thread {
 		System.out.println("Playing Following Moves:" + movesToProcess.toString());
 
 		List<BotMove> trades = new ArrayList<>();
-		List<BotMove> builds = new ArrayList<>();
+		List<PiecePlacement> builds = new ArrayList<>();
+		List<BotMove> buys = new ArrayList<>();
 
 		for (BotMove botMove : movesToProcess) {
+
 			if (botMove.getMoveType() == 2) {
 				trades.add(botMove);
 			}
-			if (botMove.getMoveType() == 1 || botMove.getMoveType() == 3) {
-				builds.add(botMove);
+			if (botMove.getMoveType() == 1) {
+				builds.add((PiecePlacement)botMove);
+			}
+			if (botMove.getMoveType() == 3) {
+				buys.add(botMove);
 			}
 
 		}
@@ -259,16 +287,24 @@ public class BotBrain extends Thread {
 			processMove(trade);
 		}
 
-		for (BotMove build : builds) {
-			processMove(build);
+		// Then the dev card buying
+		for (BotMove buy : buys) {
+			processMove(buy);
 		}
 
-		expectingDiceRoll = true;
-		waitingForGameState = true;
-		expectingMove = false;
-		client.endTurn(game);
+		if (!builds.isEmpty()) {
+			expectingPiecePlacement = true;
+			buildList = builds;
+			requestPiecePlacement(buildList.get(0));
+		} else {
 
-		System.out.println("");
+			expectingDiceRoll = true;
+			waitingForGameState = true;
+			expectingMove = false;
+			client.endTurn(game);
+
+			System.out.println("");
+		}
 	}
 
 	/**
@@ -283,7 +319,7 @@ public class BotBrain extends Thread {
 		switch (move.getMoveType()) {
 
 		case BotMove.PIECE_PLACEMENT:
-			handlePiecePlacement((PiecePlacement) move);
+			requestPiecePlacement(move);
 			break;
 
 		case BotMove.DEV_CARD_BUY:
@@ -299,6 +335,13 @@ public class BotBrain extends Thread {
 			break;
 
 		}
+	}
+
+	private void requestPiecePlacement(BotMove botMove) {
+		// TODO Auto-generated method stub
+		expectingPiecePlacement = true;
+		PiecePlacement move = (PiecePlacement) botMove;
+		client.buildRequest(game, move.getPieceType());
 	}
 
 	/**
@@ -330,7 +373,7 @@ public class BotBrain extends Thread {
 			break;
 
 		case SOCPlayingPiece.SETTLEMENT:
-			piece = new SOCRoad(ourPlayer, move.getCoordinate(), game.getBoard());
+			piece = new SOCSettlement(ourPlayer, move.getCoordinate(), game.getBoard());
 			break;
 
 		}
@@ -430,24 +473,58 @@ public class BotBrain extends Thread {
 		}
 	}
 
-	private void handlePlayerElement(SOCPlayerElement socPlayerElement) {
-		//If the message is applying to us.
-		if(socPlayerElement.getPlayerNumber() == ourPlayer.getPlayerNumber()){
-			switch (socPlayerElement.getAction()) {
-			case SOCPlayerElement.SET:
-				ourPlayer.getResources().setAmount(socPlayerElement.getValue(), socPlayerElement.getElementType());
-				break;
-			case SOCPlayerElement.GAIN:
-				
-				break;
-				
-			case SOCPlayerElement.LOSE:
-				break;
+	private void handlePlayerElement(SOCPlayerElement mes) {
+		SOCPlayer pl = null;
+		if (mes.getPlayerNumber() >= 0) {
+			pl = game.getPlayer(mes.getPlayerNumber());
+		}
 
-			default:
-				System.out.println("Unrecognised message");
-				break;
-			}
+		switch (mes.getElementType()) {
+		case SOCPlayerElement.ROADS:
+
+			SOCDisplaylessPlayerClient.handlePLAYERELEMENT_numPieces(mes, pl, SOCPlayingPiece.ROAD);
+			break;
+
+		case SOCPlayerElement.SETTLEMENTS:
+
+			SOCDisplaylessPlayerClient.handlePLAYERELEMENT_numPieces(mes, pl, SOCPlayingPiece.SETTLEMENT);
+			break;
+
+		case SOCPlayerElement.CITIES:
+
+			SOCDisplaylessPlayerClient.handlePLAYERELEMENT_numPieces(mes, pl, SOCPlayingPiece.CITY);
+			break;
+
+		case SOCPlayerElement.NUMKNIGHTS:
+
+			// PLAYERELEMENT(NUMKNIGHTS) is sent after a Soldier card is played.
+			SOCDisplaylessPlayerClient.handlePLAYERELEMENT_numKnights(mes, pl, game);
+			break;
+
+		case SOCPlayerElement.CLAY:
+
+			SOCDisplaylessPlayerClient.handlePLAYERELEMENT_numRsrc(mes, pl, SOCResourceConstants.CLAY);
+			break;
+
+		case SOCPlayerElement.ORE:
+
+			SOCDisplaylessPlayerClient.handlePLAYERELEMENT_numRsrc(mes, pl, SOCResourceConstants.ORE);
+			break;
+
+		case SOCPlayerElement.SHEEP:
+
+			SOCDisplaylessPlayerClient.handlePLAYERELEMENT_numRsrc(mes, pl, SOCResourceConstants.SHEEP);
+			break;
+
+		case SOCPlayerElement.WHEAT:
+
+			SOCDisplaylessPlayerClient.handlePLAYERELEMENT_numRsrc(mes, pl, SOCResourceConstants.WHEAT);
+			break;
+
+		case SOCPlayerElement.WOOD:
+
+			SOCDisplaylessPlayerClient.handlePLAYERELEMENT_numRsrc(mes, pl, SOCResourceConstants.WOOD);
+			break;
 		}
 	}
 
