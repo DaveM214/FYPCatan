@@ -36,8 +36,8 @@ public class InitialMoveDecider {
 	// MAGIC NUMBERS - Weights for various types of decision.
 	private static final double BRICK_MUTLIPLIER = 0.90;
 	private static final double ORE_MUTLIPLIER = 0.92;
-	private static final double ALL_RESOURCE_MULTIPLIER = 0.88;
-	private static final double CORRECT_STRAT_MULTIPLIER = 0.85;
+	private static final double ALL_RESOURCE_MULTIPLIER = 0.75;
+	private static final double CORRECT_STRAT_MULTIPLIER = 0.80;
 	private static final double DOUBLE_RESOURCE_MULTIPLIER = 1.2;
 
 	private static final double INIT = Double.MAX_VALUE;
@@ -84,7 +84,7 @@ public class InitialMoveDecider {
 			// If this is the first settlement we are placing then it decides on
 			// the strategy we are playing
 			if (state == SOCGame.START1A) {
-				// decideStrategy(result);
+				decideStrategy(result);
 			}
 
 			// Otherwise we are building a road
@@ -179,7 +179,8 @@ public class InitialMoveDecider {
 	}
 
 	/**
-	 * Given a list of all the possible settlements that we can build
+	 * Given a list of all the possible settlements that we can build return a
+	 * decision of the one that we are building.
 	 * 
 	 * @param possSetInfo
 	 *            The list of all possible settlements that we can build and
@@ -253,13 +254,16 @@ public class InitialMoveDecider {
 		double multiplier = 1;
 
 		if (containsBrick) {
-			multiplier += multiplier * BRICK_MUTLIPLIER;
+			multiplier = multiplier * BRICK_MUTLIPLIER;
 		}
 		if (containsOre) {
-			multiplier += multiplier * ORE_MUTLIPLIER;
+			multiplier = multiplier * ORE_MUTLIPLIER;
 		}
 		if (allResource) {
-			multiplier += multiplier * ALL_RESOURCE_MULTIPLIER;
+			multiplier = multiplier * ALL_RESOURCE_MULTIPLIER;
+		}
+		if (compliesWithStrategy) {
+			multiplier = multiplier * CORRECT_STRAT_MULTIPLIER;
 		}
 
 		return multiplier * settlementResourceInfo.getAdjustedResourceWeight();
@@ -269,7 +273,8 @@ public class InitialMoveDecider {
 	 * Helper method to check whether the second locations are in agreement with
 	 * the strategy that is dictated from the first one.
 	 * 
-	 * @param settlementResourceInfo The location being checked
+	 * @param settlementResourceInfo
+	 *            The location being checked
 	 * @return Whether it agrees with our strategy.
 	 */
 	private boolean checkStrategyAgreement(SettlementResourceInfo settlementResourceInfo) {
