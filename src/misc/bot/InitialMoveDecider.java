@@ -1,6 +1,7 @@
 package misc.bot;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
@@ -32,13 +33,14 @@ public class InitialMoveDecider {
 	private int strategy;
 	private SOCPlayer ourPlayer;
 	private SOCBoard board;
+	private int lastSettlementLocation;
 
 	// MAGIC NUMBERS - Weights for various types of decision.
 	private static final double BRICK_MUTLIPLIER = 0.90;
-	private static final double ORE_MUTLIPLIER = 0.92;
-	private static final double ALL_RESOURCE_MULTIPLIER = 0.75;
-	private static final double CORRECT_STRAT_MULTIPLIER = 0.80;
-	private static final double DOUBLE_RESOURCE_MULTIPLIER = 1.2;
+	private static final double ORE_MUTLIPLIER = 0.85;
+	private static final double ALL_RESOURCE_MULTIPLIER = 0.65;
+	private static final double CORRECT_STRAT_MULTIPLIER = 0.5;
+	private static final double DOUBLE_RESOURCE_MULTIPLIER = 2.5;
 
 	private static final double INIT = Double.MAX_VALUE;
 
@@ -80,7 +82,7 @@ public class InitialMoveDecider {
 		// If we need to build a settlement then build it
 		if (state == SOCGame.START1A || state == SOCGame.START2A) {
 			result = handleSettlementBuild();
-
+			lastSettlementLocation = result;
 			// If this is the first settlement we are placing then it decides on
 			// the strategy we are playing
 			if (state == SOCGame.START1A) {
@@ -121,12 +123,12 @@ public class InitialMoveDecider {
 		// Loop over the hexes it connects too.
 		for (int i = 0; i < resources.size(); i++) {
 			double score = Math.abs(7 - values.get(i));
-			int value = values.get(i);
+			int resource = resources.get(i);
 
-			if (resourceCount[value - 1] != INIT) {
-				resourceCount[value - 1] = ((resourceCount[value - 1] + score) / 2) * DOUBLE_RESOURCE_MULTIPLIER;
+			if (resourceCount[resource-1] != INIT) {
+				resourceCount[resource-1] = ((resourceCount[resource-1] + score) / 2) * DOUBLE_RESOURCE_MULTIPLIER;
 			} else {
-				resourceCount[value - 1] = score;
+				resourceCount[resource-1] = score;
 			}
 		}
 
@@ -152,6 +154,8 @@ public class InitialMoveDecider {
 		} else {
 			strategy = BotBrain.MIXED_STRATEGY;
 		}
+		
+		System.out.println("Strat = " + strategy);
 
 		return strategy;
 	}
@@ -344,7 +348,7 @@ public class InitialMoveDecider {
 	 */
 	private int handleRoadBuild() {
 		// Get all possible road locations
-		ArrayList<Integer> possibleRoadLocations = generatePossibleRoadLocs();
+		List<Integer> possibleRoadLocations = generatePossibleRoadLocs();
 
 		/**
 		 * Get the locations of all of the possible settlements and use this to
@@ -408,14 +412,15 @@ public class InitialMoveDecider {
 	 * 
 	 * @return List of all the possible locations of the roads
 	 */
-	private ArrayList<Integer> generatePossibleRoadLocs() {
+	private List<Integer> generatePossibleRoadLocs() {
 		// Hex values representing the board
 		// TODO extract these to a proper constant
 		int minEdge = 0x22;
 		int maxEdge = 0xCC;
 
-		ArrayList<Integer> roadLocs = new ArrayList<Integer>();
-
+		List<Integer> roadLocs = board.getAdjacentEdgesToNode(lastSettlementLocation);
+		
+		/*
 		// Loop through all coordinates that may be buildable edges
 		for (int i = minEdge; i <= maxEdge; i++) {
 			if (ourPlayer.isPotentialRoad(i) && ourPlayer.isLegalRoad(i)) {
@@ -424,6 +429,8 @@ public class InitialMoveDecider {
 				// System.out.println(String.format("%02X", i));
 			}
 		}
+		*/
+		
 		return roadLocs;
 	}
 

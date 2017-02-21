@@ -342,5 +342,18 @@ public abstract class DecisionMaker {
 	 * @return A list of moves that should be implemented in the coming turn.
 	 */
 	public abstract ArrayList<BotMove> getMoveDecision();
+	
+	
+	/**
+	 * If a 7 is rolled select the cards that are needed to be discarded.
+	 * 
+	 * @param discardNumber The number of cards that need discarding.
+	 * @return
+	 */
+	public int[] getRobberDiscard(int discardNumber){
+		
+		return null;
+	}
+	
 
 }

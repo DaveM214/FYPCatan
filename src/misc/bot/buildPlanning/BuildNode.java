@@ -36,7 +36,7 @@ public class BuildNode {
 
 	private BuildNode parentNode;
 	private List<BuildNode> children;
-
+	private boolean[] bankRecResources;
 	// The Move that got us to this state. Null if it is the root of the tree;
 	private final BotMove parentMove;
 
@@ -74,6 +74,7 @@ public class BuildNode {
 		this.parentMove = parentMove;
 		this.parentNode = parentNode;
 		generateChildNodes();
+
 	}
 
 	public void generateChildNodes() {
@@ -176,6 +177,9 @@ public class BuildNode {
 	 * Handle populating all possible bank trades deals. We need to take into
 	 * account the regular bank trade rate as well as possible reduced trade
 	 * rate if we have a port and also specific resource ports.
+	 * 
+	 * TODO modify this method so that we can not try and receive a resource
+	 * that we have used in the past.
 	 */
 	private void handleBankTradeChildren(int player) {
 		int baseTradeRate = 4;
@@ -188,7 +192,7 @@ public class BuildNode {
 		int[] tradeRates = new int[5];
 
 		// Initialise an array of the trade rates.
-		for (int i = 0;i<tradeRates.length;i++) {
+		for (int i = 0; i < tradeRates.length; i++) {
 			tradeRates[i] = baseTradeRate;
 		}
 
@@ -205,20 +209,24 @@ public class BuildNode {
 
 		for (int i = 0; i < resources.length; i++) {
 			// We can trade this the resource to the bank
-			//i =  what we are trading
-			//j = what we are receiving
-			if (resources[i] >= tradeRates[i]) {
+			// i = what we are trading --Check we haven't received this from the bank before
+			// j = what we are receiving
+			if (resources[i] >= tradeRates[i] && (game.getPlayer(player).getTradedResourceArray()[i] == false)) {
 				for (int j = 0; j < resources.length; j++) {
 					// We don't want to trade for itself
 					if (j != i) {
 						ReducedGame gameCopy = new ReducedGame(game);
 						ReducedPlayer copyPlayer = gameCopy.getPlayer(player);
+
+						// Set that we have received this resource and therefore
+						// don't want to give it away
+						copyPlayer.setTradedResourceArray(j, true);
 						copyPlayer.incrementResource(j);
 						for (int k = 0; k < tradeRates[i]; k++) {
 							copyPlayer.decrementResource(i);
 						}
-						BotMove move = new Trade(i+1,tradeRates[i],j+1,1,-1);
-						BuildNode  child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
+						BotMove move = new Trade(i + 1, tradeRates[i], j + 1, 1, -1);
+						BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
 						children.add(child);
 					}
 				}
@@ -246,12 +254,13 @@ public class BuildNode {
 	public List<BuildNode> getChildren() {
 		return children;
 	}
-	
+
 	/**
 	 * Get the move that resulted in this state.
+	 * 
 	 * @return
 	 */
-	public BotMove getParentMove(){
+	public BotMove getParentMove() {
 		return parentMove;
 	}
 

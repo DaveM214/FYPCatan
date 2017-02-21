@@ -78,7 +78,7 @@ public class BotBrain extends Thread {
 		this.client = client;
 		this.game = game;
 		alive = true;
-		dm = new RandomDecisionMaker(game);
+		dm = new SimpleHeuristicDecisionMaker(game);
 		movesToProcess = new ArrayList<BotMove>();
 		buildList = new ArrayList<PiecePlacement>();
 	}

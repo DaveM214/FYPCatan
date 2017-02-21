@@ -18,6 +18,7 @@ public class ReducedPlayer {
 	private int playerNumber;
 	private int victoryPoints;
 	private int[] resources;
+	private boolean[] bankTradedRec;
 	private int settlementPieces;
 	private int cityPieces;
 	private int roadPieces;
@@ -34,6 +35,7 @@ public class ReducedPlayer {
 		this.playerNumber = playerNumber;
 		this.victoryPoints = victoryPoints;
 		resources = new int[5]; // Using standard constants
+		bankTradedRec = new boolean[] { false, false, false, false, false };
 	}
 
 	public ReducedPlayer(SOCPlayer player) {
@@ -51,7 +53,7 @@ public class ReducedPlayer {
 		settlementPieces = player.getNumPieces(SOCPlayingPiece.SETTLEMENT);
 		cityPieces = player.getNumPieces(SOCPlayingPiece.CITY);
 		roadPieces = player.getNumPieces(SOCPlayingPiece.ROAD);
-
+		bankTradedRec = new boolean[] { false, false, false, false, false };
 	}
 
 	/**
@@ -65,15 +67,55 @@ public class ReducedPlayer {
 
 		resources = new int[5];
 		int[] temp = orig.getResources();
-		
-		for (int i =0;i<temp.length ; i++) {
+
+		for (int i = 0; i < temp.length; i++) {
 			resources[i] = temp[i];
 		}
 
 		settlementPieces = orig.getSettlementPieces();
 		cityPieces = orig.getCityPieces();
 		roadPieces = orig.getRoadPieces();
+		bankTradedRec = orig.copyResourceArray();
+	}
 
+	/**
+	 * Helper method for copying resource array
+	 * 
+	 * @return
+	 */
+	private boolean[] copyResourceArray() {
+		boolean[] copyArray = new boolean[5];
+		for (int i = 0; i < bankTradedRec.length; i++) {
+			copyArray[i] = bankTradedRec[i];
+		}
+		return copyArray;
+	}
+
+	/**
+	 * Get the resources that the player has received from the bank
+	 * 
+	 * @return
+	 */
+	public boolean[] getTradedResourceArray() {
+		return this.bankTradedRec;
+	}
+	
+	/**
+	 * Set the array of resource that we have traded.
+	 * @param array
+	 */
+	public void setTradedResourceArray(boolean[] array){
+		this.bankTradedRec = array;
+	}
+	
+	/**
+	 * Change as value indicating whether or not we have traded this resource from the bank.
+	 * 
+	 * @param resource The resource being set. 0-4
+	 * @param value The boolean value it is changing to.
+	 */
+	public void setTradedResourceArray(int resource, boolean value){
+		bankTradedRec[resource] = value;
 	}
 
 	/**
@@ -190,7 +232,7 @@ public class ReducedPlayer {
 	 *         port it and false if we do not.
 	 */
 	public boolean[] hasSpecPorts() {
-		return new boolean[]{false,false,false,false,false};
+		return new boolean[] { false, false, false, false, false };
 	}
 
 }

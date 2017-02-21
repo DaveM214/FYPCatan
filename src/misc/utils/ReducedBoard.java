@@ -126,6 +126,14 @@ public class ReducedBoard {
 				validSettlements.add(settlementLocation);
 			}
 		}
+		
+		//Check that those nodes do not already contain settlements.
+		for(ReducedBoardPiece settlement: getSettlements()){
+			Integer location = settlement.getLocation();
+			if(validSettlements.contains(location)){
+				validSettlements.remove(location);
+			}
+		}
 
 		return validSettlements;
 
@@ -150,7 +158,7 @@ public class ReducedBoard {
 			possibleLocations.addAll(referenceBoard.getAdjacentEdgesToEdge(road.getLocation()));
 		}
 		
-		for (ReducedBoardPiece road: playersRoads){
+		for (ReducedBoardPiece road: getRoads()){
 			int location = road.getLocation();
 			if(possibleLocations.contains(location)){
 				possibleLocations.remove(location);
