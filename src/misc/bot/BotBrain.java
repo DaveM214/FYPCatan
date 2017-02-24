@@ -10,10 +10,14 @@ import misc.bot.BotClient;
 import misc.bot.moves.BotMove;
 import misc.bot.moves.PiecePlacement;
 import misc.bot.moves.PlayDevCard;
+import misc.bot.moves.PlayMonopoly;
+import misc.bot.moves.PlayRoadBuilding;
+import misc.bot.moves.PlayYOP;
 import misc.bot.moves.Trade;
 import soc.baseclient.SOCDisplaylessPlayerClient;
 import soc.game.SOCBoard;
 import soc.game.SOCCity;
+import soc.game.SOCDevCardConstants;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
@@ -72,12 +76,14 @@ public class BotBrain extends Thread {
 	private ArrayList<BotMove> movesToProcess;
 	private boolean expectingPiecePlacement;
 	private List<PiecePlacement> buildList;
+	private boolean expectingDevCard;
 
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue<SOCMessage> msgQueue) {
 		msgQ = msgQueue;
 		this.client = client;
 		this.game = game;
 		alive = true;
+		expectingDevCard = false;
 		dm = new SimpleHeuristicDecisionMaker(game);
 		movesToProcess = new ArrayList<BotMove>();
 		buildList = new ArrayList<PiecePlacement>();
@@ -227,13 +233,13 @@ public class BotBrain extends Thread {
 			expectingPiecePlacement = false;
 			handlePiecePlacement(buildList.get(0));
 			buildList.remove(0);
-			if(buildList.isEmpty()){
+			if (buildList.isEmpty()) {
 				expectingDiceRoll = true;
 				waitingForGameState = true;
 				expectingMove = false;
 				client.endTurn(game);
 				System.out.println("");
-			}else{
+			} else {
 				requestPiecePlacement(buildList.get(0));
 			}
 
@@ -264,6 +270,7 @@ public class BotBrain extends Thread {
 		System.out.println(game.getPlayer(ourPlayer.getPlayerNumber()).getResources().toFriendlyString());
 		System.out.println("Playing Following Moves:" + movesToProcess.toString());
 
+		List<BotMove> devCard = new ArrayList<>();
 		List<BotMove> trades = new ArrayList<>();
 		List<PiecePlacement> builds = new ArrayList<>();
 		List<BotMove> buys = new ArrayList<>();
@@ -274,36 +281,59 @@ public class BotBrain extends Thread {
 				trades.add(botMove);
 			}
 			if (botMove.getMoveType() == 1) {
-				builds.add((PiecePlacement)botMove);
+				builds.add((PiecePlacement) botMove);
 			}
 			if (botMove.getMoveType() == 3) {
 				buys.add(botMove);
 			}
-
+			if (botMove.getMoveType() == 4) {
+				devCard.add(botMove);
+			}
 		}
 
-		// Handle the trades first
-		for (BotMove trade : trades) {
-			processMove(trade);
-		}
+		// Handle dev card playing first if necessary
+		if (!devCard.isEmpty()) {
+			PlayDevCard move = (PlayDevCard) devCard.get(0);
+			expectingDevCard = true;
+			switch (move.getDevCardType()) {
+			case PlayDevCard.MONOPOLY:
+				client.playDevCard(game, SOCDevCardConstants.MONO);
 
-		// Then the dev card buying
-		for (BotMove buy : buys) {
-			processMove(buy);
-		}
+				break;
 
-		if (!builds.isEmpty()) {
-			expectingPiecePlacement = true;
-			buildList = builds;
-			requestPiecePlacement(buildList.get(0));
+			case PlayDevCard.YEAR_OF_PLENTY:
+				client.playDevCard(game, SOCDevCardConstants.DISC);
+				break;
+
+			case PlayDevCard.ROAD_BUILDING:
+				client.playDevCard(game, SOCDevCardConstants.ROADS);
+				break;
+			}
 		} else {
 
-			expectingDiceRoll = true;
-			waitingForGameState = true;
-			expectingMove = false;
-			client.endTurn(game);
+			// Handle the trades first
+			for (BotMove trade : trades) {
+				processMove(trade);
+			}
 
-			System.out.println("");
+			// Then the dev card buying
+			for (BotMove buy : buys) {
+				processMove(buy);
+			}
+
+			if (!builds.isEmpty()) {
+				expectingPiecePlacement = true;
+				buildList = builds;
+				requestPiecePlacement(buildList.get(0));
+			} else {
+
+				expectingDiceRoll = true;
+				waitingForGameState = true;
+				expectingMove = false;
+				client.endTurn(game);
+
+				System.out.println("");
+			}
 		}
 	}
 

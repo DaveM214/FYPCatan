@@ -6,8 +6,10 @@ import java.util.List;
 import misc.bot.moves.BotMove;
 import misc.bot.moves.PiecePlacement;
 import misc.bot.moves.Trade;
+import misc.utils.ReducedGame;
 import soc.game.SOCGame;
 import soc.game.SOCPlayingPiece;
+import soc.game.SOCResourceSet;
 
 /**
  * A basic decision maker that uses some light heuristics to make better
@@ -93,6 +95,29 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 		}
 
 		return score;
+	}
+
+	@Override
+	public int getNewRobberLocation() {
+		List<Integer> robberLocations = getPossibleRobberLocations();
+		List<Integer> robberLocationScores = scoreRobberLocations(robberLocations);
+		return robberLocations.get((getBestIndex(robberLocationScores)));
+	}
+
+	private int getBestIndex(List<Integer> robberLocationScores) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	private List<Integer> scoreRobberLocations(List<Integer> robberLocations) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int[] getRobberDiscard() {
+		int[] resources = getOurResources();
+		return new int[4];
 	}
 
 }

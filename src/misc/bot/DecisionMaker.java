@@ -37,6 +37,7 @@ import soc.game.SOCSettlement;
 public abstract class DecisionMaker {
 
 	private SOCGame game;
+	private ReducedGame reducedGame;
 	private SOCPlayer ourPlayer;
 	private static final int NUMBER_RESOURCES = 5;
 
@@ -49,12 +50,21 @@ public abstract class DecisionMaker {
 	public DecisionMaker(SOCGame game) {
 		this.game = game;
 	}
+	
+	public void setReducedGame(ReducedGame game){
+		this.reducedGame = new ReducedGame(game);
+	}
+	
+	public void setReducedGame(SOCGame game){
+		this.reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(),game);
+	}
 
 	/**
 	 * Update the game state that we are making our decision based on.
 	 */
 	public void updateGame(SOCGame updatedGame) {
 		this.game = updatedGame;
+		reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(),updatedGame);
 	}
 
 	/**
@@ -74,28 +84,9 @@ public abstract class DecisionMaker {
 	 */
 	public ArrayList<ArrayList<BotMove>> getAllPossibleMoves() {
 
-		// Temp leave out dev cards moves. Will add in later. Might want to add
-		// to simulator to improve how far ahead it can look
-		// ArrayList<ArrayList<BotMove>> possibles = new
-		// ArrayList<ArrayList<BotMove>>();
-
-		// ArrayList<BotMove> devCardsMoves = getDevCardMoves();
-
-		ArrayList<ArrayList<BotMove>> buildMoves = checkForBuilds();
+		ArrayList<ArrayList<BotMove>> moves = getMoves();
 		
-		/*
-		System.out.println("Moves available: " +buildMoves.size());
-		int i =1;
-		for (ArrayList<BotMove> arrayList : buildMoves) {
-			System.out.println("Combo:" + i);
-			i++;
-			for (BotMove botMove : arrayList) {
-				System.out.println(botMove.toString());
-			}
-		}
-		*/
-		
-		return buildMoves;
+		return moves;
 	}
 
 	/**
@@ -232,7 +223,7 @@ public abstract class DecisionMaker {
 	 * 
 	 * @return
 	 */
-	private ArrayList<Integer> getPossibleRobberLocations() {
+	protected ArrayList<Integer> getPossibleRobberLocations() {
 		// Find all hexes our settlements touch
 		// Get all touching hexes. Remove ours from list.
 		// All the remaining hexes are possible places to place it.
@@ -293,9 +284,7 @@ public abstract class DecisionMaker {
 	 * 
 	 * @return
 	 */
-	private ArrayList<ArrayList<BotMove>> checkForBuilds() {
-
-		ReducedGame reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(), game);
+	private ArrayList<ArrayList<BotMove>> getMoves() {
 		ArrayList<ArrayList<BotMove>> moveCombos = new ArrayList<ArrayList<BotMove>>();
 		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
 		
@@ -334,6 +323,14 @@ public abstract class DecisionMaker {
 			gatherChildren(childNode, visited);
 		}
 	}
+	
+	/**
+	 * Helper method returns all the resources that a player has.
+	 * @return
+	 */
+	protected int[] getOurResources(){
+		return new int[5];
+	}
 
 	/**
 	 * Abstract method that must be implemented. Return a list of
@@ -344,16 +341,9 @@ public abstract class DecisionMaker {
 	public abstract ArrayList<BotMove> getMoveDecision();
 	
 	
-	/**
-	 * If a 7 is rolled select the cards that are needed to be discarded.
-	 * 
-	 * @param discardNumber The number of cards that need discarding.
-	 * @return
-	 */
-	public int[] getRobberDiscard(int discardNumber){
-		
-		return null;
-	}
+	public abstract int getNewRobberLocation();
+
+	public abstract int[] getRobberDiscard();
 	
 
 }

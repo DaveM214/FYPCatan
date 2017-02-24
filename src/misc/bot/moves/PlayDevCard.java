@@ -14,6 +14,9 @@ public class PlayDevCard extends BotMove{
 		this.devCardType  = devCardType;
 	}
 	
+	public int getDevCardType(){
+		return this.devCardType;
+	}
 	
 	
 	

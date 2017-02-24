@@ -17,6 +17,18 @@ public class MixedDecisionMaker extends DecisionMaker{
 		return null;
 		
 	}
+
+	@Override
+	public int getNewRobberLocation() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int[] getRobberDiscard() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 	

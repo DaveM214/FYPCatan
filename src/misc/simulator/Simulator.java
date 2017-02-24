@@ -1,5 +1,7 @@
 package misc.simulator;
 
+import misc.bot.DecisionMaker;
+import misc.bot.SimpleHeuristicDecisionMaker;
 import misc.utils.ReducedGame;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
@@ -14,8 +16,10 @@ import soc.game.SOCPlayer;
 public class Simulator {
 
 	ReducedGame reducedGame;
+	SOCGame game;
 	int ourPlayerNumber;
 	SOCPlayer[] players;
+	DecisionMaker[] dmArr;
 
 	/**
 	 * Constructor. Given a player number and a SOCGame creates a simulator
@@ -32,8 +36,13 @@ public class Simulator {
 	}
 
 	private void initialiseDecisionMakers() {
-		// TODO Auto-generated method stub
-
+		dmArr = new DecisionMaker[players.length];
+		
+		for (SOCPlayer socPlayer : players) {
+			DecisionMaker dm = new SimpleHeuristicDecisionMaker(game);
+			dm.setOurPlayerInformation(socPlayer);
+		}
+		
 	}
 
 }

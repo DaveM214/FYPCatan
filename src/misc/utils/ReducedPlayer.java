@@ -2,6 +2,7 @@ package misc.utils;
 
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
+import soc.game.SOCInventory;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
 import soc.game.SOCResourceConstants;
@@ -17,8 +18,10 @@ public class ReducedPlayer {
 
 	private int playerNumber;
 	private int victoryPoints;
+	private int[] developmentCards;
 	private int[] resources;
 	private boolean[] bankTradedRec;
+	private boolean devCardPlayed;
 	private int settlementPieces;
 	private int cityPieces;
 	private int roadPieces;
@@ -54,7 +57,16 @@ public class ReducedPlayer {
 		cityPieces = player.getNumPieces(SOCPlayingPiece.CITY);
 		roadPieces = player.getNumPieces(SOCPlayingPiece.ROAD);
 		bankTradedRec = new boolean[] { false, false, false, false, false };
+		
+		developmentCards = new int[10];
+		SOCInventory inv = player.getInventory();
+		
+		for(int i=0;i<developmentCards.length;i++){
+			developmentCards[i] = inv.getAmount(i);
+		}
+		devCardPlayed = false;
 	}
+	
 
 	/**
 	 * Copy constructor. Create new object from an original
@@ -66,11 +78,16 @@ public class ReducedPlayer {
 		this.victoryPoints = orig.getVictoryPoints();
 
 		resources = new int[5];
-		int[] temp = orig.getResources();
+		int[] tempResources = orig.getResources();
 
-		for (int i = 0; i < temp.length; i++) {
-			resources[i] = temp[i];
+		for (int i = 0; i < tempResources.length; i++) {
+			resources[i] = tempResources[i];
 		}
+		
+		
+		int[] developmentCardsTemp = orig.getDevelopmentCards();
+		developmentCards = new int[10];
+		System.arraycopy(developmentCardsTemp, 0, developmentCards, 0, developmentCardsTemp.length);
 
 		settlementPieces = orig.getSettlementPieces();
 		cityPieces = orig.getCityPieces();
@@ -153,6 +170,10 @@ public class ReducedPlayer {
 	public int[] getResources() {
 		return this.resources;
 	}
+	
+	public int getResource(int rNumber){
+		return this.resources[rNumber];
+	}
 
 	/**
 	 * Set the specified resource that the player possesses to be a certain
@@ -223,6 +244,14 @@ public class ReducedPlayer {
 	public boolean hasGeneralPort() {
 		return false;
 	}
+	
+	public void setDevCardPlayed(boolean played){
+		this.devCardPlayed = played;
+	}
+	
+	public boolean getDevCardPlayed(){
+		return devCardPlayed;
+	}
 
 	/**
 	 * Return boolean array of whether we have specialist 2:1 trade ports for a
@@ -233,6 +262,14 @@ public class ReducedPlayer {
 	 */
 	public boolean[] hasSpecPorts() {
 		return new boolean[] { false, false, false, false, false };
+	}
+	
+	public int[] getDevelopmentCards(){
+		return this.developmentCards;
+	}
+
+	public void decrementDevelopmentCards(int i) {
+		developmentCards[i]--;
 	}
 
 }

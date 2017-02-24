@@ -126,11 +126,11 @@ public class ReducedBoard {
 				validSettlements.add(settlementLocation);
 			}
 		}
-		
-		//Check that those nodes do not already contain settlements.
-		for(ReducedBoardPiece settlement: getSettlements()){
+
+		// Check that those nodes do not already contain settlements.
+		for (ReducedBoardPiece settlement : getSettlements()) {
 			Integer location = settlement.getLocation();
-			if(validSettlements.contains(location)){
+			if (validSettlements.contains(location)) {
 				validSettlements.remove(location);
 			}
 		}
@@ -152,20 +152,20 @@ public class ReducedBoard {
 	public List<Integer> getLegalRoadLocations(int player) {
 		List<ReducedBoardPiece> playersRoads = getPlayersRoads(player);
 		Set<Integer> possibleLocations = new HashSet<Integer>();
-		
-		//Add all connecting edges
+
+		// Add all connecting edges
 		for (ReducedBoardPiece road : playersRoads) {
 			possibleLocations.addAll(referenceBoard.getAdjacentEdgesToEdge(road.getLocation()));
 		}
-		
-		for (ReducedBoardPiece road: getRoads()){
+
+		for (ReducedBoardPiece road : getRoads()) {
 			int location = road.getLocation();
-			if(possibleLocations.contains(location)){
+			if (!isValidRoad(location, player)) {
 				possibleLocations.remove(location);
 			}
 		}
-		
-		return new ArrayList<Integer>(possibleLocations);	
+
+		return new ArrayList<Integer>(possibleLocations);
 	}
 
 	/**
@@ -200,6 +200,137 @@ public class ReducedBoard {
 	 * @return
 	 */
 	public boolean isValidRoad(int location, int owner) {
+
+		// Check nothing blocks the node
+		if (roadAtLocation(location)) {
+			return false;
+		}
+
+		List<Integer> joiningNodes = referenceBoard.getAdjacentNodesToEdge(location);
+		List<Integer> joiningEdges = referenceBoard.getAdjacentEdgesToEdge(location);
+		
+		List<ReducedBoardPiece> joiningSettlements = new ArrayList<ReducedBoardPiece>();
+
+		// Find if any settlements are joining
+		for (Integer node : joiningNodes) {
+			for (ReducedBoardPiece settlement : settlements) {
+				if (settlement.getLocation() == node.intValue()) {
+					joiningSettlements.add(settlement);
+				}
+			}
+
+			for (ReducedBoardPiece city : cities) {
+				if (city.getLocation() == node.intValue()) {
+					joiningSettlements.add(city);
+				}
+			}
+		}
+
+		// If no joining settlements then check that a player has a road that
+		// links to it.
+		if (joiningSettlements.isEmpty()) {
+			return checkRoadAdjacentToEdge(location, owner);
+		}
+
+		// There is one settlement joining to the road location
+		// (Two joins cannot exist)
+		else {
+			ReducedBoardPiece joiningSettlement = joiningSettlements.get(0);
+			if (joiningSettlement.getOwner() == owner) {
+				return true;
+			} else {
+				// The settlement belongs to someone else
+
+				// We have a road next to this settlement.
+				if (checkRoadAdjacentToEdge(location, owner)) {
+					// We need to make sure it is not adjacent to the city.
+					List<Integer> adjacentEdgesToCity = referenceBoard
+							.getAdjacentEdgesToNode(joiningSettlement.getLocation());
+					for (Integer edge : joiningEdges) {
+						//If there is a road we own adjacent to the edge and it is not adjacent to the settlement we can build
+						if(roadAtLocation(edge.intValue(), owner) && !adjacentEdgesToCity.contains(edge)){
+							return true;
+						}
+					}
+
+				}
+				return false;
+			}
+		}
+
+	}
+
+	/**
+	 * Given the location of an edge check whether the player specified has an
+	 * adjacent road.
+	 * 
+	 * @param location
+	 *            The location of an edge
+	 * @param owner
+	 *            The player that we are checking ownership for
+	 * @return Whether there is a road adjacent to the edge.
+	 */
+	private boolean checkRoadAdjacentToEdge(int location, int owner) {
+		List<Integer> adjacentEdgeLocations = referenceBoard.getAdjacentEdgesToEdge(location);
+		for (Integer adjacentEdgeLocation : adjacentEdgeLocations) {
+			if (roadAtLocation(adjacentEdgeLocation, owner)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean roadAtLocation(int location) {
+		for (ReducedBoardPiece road : roads) {
+			if (road.getLocation() == location) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean roadAtLocation(int location, int player) {
+		for (ReducedBoardPiece road : roads) {
+			if (road.getLocation() == location && road.getOwner() == player) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean settlementAtLocation(int location) {
+		for (ReducedBoardPiece settlement : settlements) {
+			if (settlement.getLocation() == location) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean settlementAtLocation(int location, int player) {
+		for (ReducedBoardPiece settlement : settlements) {
+			if (settlement.getLocation() == location && settlement.getOwner() == player) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean cityAtLocation(int location) {
+		for (ReducedBoardPiece city : cities) {
+			if (city.getLocation() == location) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean cityAtLocation(int location, int player) {
+		for (ReducedBoardPiece city : cities) {
+			if (city.getLocation() == location && city.getOwner() == player) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -232,30 +363,29 @@ public class ReducedBoard {
 				adjRoads.add(road);
 			}
 		}
-		
-		if(adjRoads.isEmpty()){
+
+		if (adjRoads.isEmpty()) {
 			return false;
 		}
 
-	
 		// Check all the adjacent roads. One must be ours. The others must
 		// either be blank or belong to two separate players
 		boolean playerAdjacent = false;
 		boolean opponentAdjacent = false;
-		
+
 		for (ReducedBoardPiece road : adjRoads) {
-			int roadOwner =  road.getOwner();
-			
-			if(owner == roadOwner){
+			int roadOwner = road.getOwner();
+
+			if (owner == roadOwner) {
 				playerAdjacent = true;
-			}else{
-				if(opponentAdjacent == true){
-					return false; //its blocked
+			} else {
+				if (opponentAdjacent == true) {
+					return false; // its blocked
 				}
 				opponentAdjacent = true;
 			}
 		}
-		
+
 		return playerAdjacent;
 
 	}

@@ -6,11 +6,15 @@ import java.util.List;
 import misc.bot.moves.BotMove;
 import misc.bot.moves.BuyDevCard;
 import misc.bot.moves.PiecePlacement;
+import misc.bot.moves.PlayMonopoly;
+import misc.bot.moves.PlayRoadBuilding;
+import misc.bot.moves.PlayYOP;
 import misc.bot.moves.Trade;
 import misc.utils.ReducedBoard;
 import misc.utils.ReducedGame;
 import misc.utils.ReducedPlayer;
 import soc.game.SOCBoard;
+import soc.game.SOCDevCardConstants;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
@@ -82,25 +86,16 @@ public class BuildNode {
 		ReducedPlayer us = game.getPlayer(ourPlayerNumber);
 		int[] resources = us.getResources();
 
+		// Playing Dev Cards
+		handlePlayDevCard();
+
 		// Bank trades
 		handleBankTradeChildren(ourPlayerNumber);
 
 		// If we have enough for a road find all the road building locations
 		if (resources[SOCResourceConstants.WOOD - 1] >= 1 && resources[SOCResourceConstants.CLAY - 1] >= 1
 				&& game.getOurPlayer().getRoadPieces() > 0) {
-			ReducedBoard board = game.getBoard();
-			List<Integer> locations = board.getLegalRoadLocations(ourPlayerNumber);
-			for (Integer location : locations) {
-				ReducedGame gameCopy = new ReducedGame(game);
-				gameCopy.getBoard().addRoad(location, ourPlayerNumber);
-				ReducedPlayer usInCopy = gameCopy.getOurPlayer();
-				usInCopy.decrementResource(SOCResourceConstants.CLAY - 1);
-				usInCopy.decrementResource(SOCResourceConstants.WOOD - 1);
-				usInCopy.decrementRoadPieces();
-				BotMove move = new PiecePlacement(location, SOCPlayingPiece.ROAD);
-				BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
-				children.add(child);
-			}
+			handleRoadBuild();
 		}
 
 		// If we have enough for a settlement find all the locations that we can
@@ -108,69 +103,178 @@ public class BuildNode {
 		if (resources[SOCResourceConstants.WOOD - 1] >= 1 && resources[SOCResourceConstants.CLAY - 1] >= 1
 				&& resources[SOCResourceConstants.WHEAT - 1] >= 1 && resources[SOCResourceConstants.SHEEP - 1] >= 1
 				&& game.getOurPlayer().getSettlementPieces() > 0) {
-			// Find all the places that we can build a settlement
-			ReducedBoard board = game.getBoard();
-			List<Integer> locations = board.getLegalSettlementLocations(ourPlayerNumber);
-
-			// Add all the possible locations as child moves
-			for (Integer location : locations) {
-				ReducedGame gameCopy = new ReducedGame(game);
-				gameCopy.getBoard().addSettlement(location, ourPlayerNumber);
-				ReducedPlayer usInCopy = gameCopy.getOurPlayer();
-				usInCopy.decrementResource(SOCResourceConstants.CLAY - 1);
-				usInCopy.decrementResource(SOCResourceConstants.WOOD - 1);
-				usInCopy.decrementResource(SOCResourceConstants.SHEEP - 1);
-				usInCopy.decrementResource(SOCResourceConstants.WHEAT - 1);
-				usInCopy.decrementSettlementPieces();
-				BotMove move = new PiecePlacement(location, SOCPlayingPiece.SETTLEMENT);
-				BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
-				children.add(child);
-			}
-
+			handleSettlementBuild();
 		}
 
 		if (resources[SOCResourceConstants.ORE - 1] >= 3 && resources[SOCResourceConstants.WHEAT - 1] >= 2
 				&& game.getOurPlayer().getCityPieces() > 0) {
 			// BuildCities
-			ReducedBoard board = game.getBoard();
-			List<Integer> locations = board.getLegalCityLocations(ourPlayerNumber);
-
-			for (Integer location : locations) {
-				ReducedGame gameCopy = new ReducedGame(game);
-				gameCopy.getBoard().addCity(location, ourPlayerNumber);
-				ReducedPlayer usInCopy = gameCopy.getOurPlayer();
-
-				for (int i = 0; i < 2; i++) {
-					usInCopy.decrementResource(SOCResourceConstants.ORE - 1);
-					usInCopy.decrementResource(SOCResourceConstants.WOOD - 1);
-				}
-
-				usInCopy.decrementResource(SOCResourceConstants.ORE - 1);
-				usInCopy.decrementCityPieces();
-				usInCopy.incrementSettlementPieces();
-				BotMove move = new PiecePlacement(location, SOCPlayingPiece.CITY);
-				BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
-				children.add(child);
-			}
+			handleCityBuild();
 		}
-
 		// We are only allowed one dev card so it is allowed set it to possible
 		// buy
 		if (resources[SOCResourceConstants.ORE - 1] >= 1 && resources[SOCResourceConstants.WHEAT - 1] >= 1
 				&& resources[SOCResourceConstants.SHEEP - 1] >= 1 && game.getDevCardsLeft() > 0) {
-			BotMove move = new BuyDevCard();
+			handleBuyDevCard();
+		}
+
+	}
+
+	private void handlePlayDevCard() {
+
+		ReducedPlayer us = game.getOurPlayer();
+		int[] devCards = us.getDevelopmentCards();
+		if (us.getDevCardPlayed()) {
+			// If we have already played a dev card then add no child states
+			return;
+		} else {
+			// We have road building
+			if (devCards[SOCDevCardConstants.ROADS] > 0) {
+				//Get all the valid 2 road permutations.
+				//Do this by getting all valid roads and then all the valid roads on top of that.
+				List<Integer> firstLocations = game.getBoard().getLegalRoadLocations(ourPlayerNumber);
+				for (Integer firstLocation : firstLocations) {
+					ReducedGame gameCopy1 = new ReducedGame(game);
+					gameCopy1.getBoard().addRoad(firstLocation, ourPlayerNumber);
+					List<Integer> secondLocations = gameCopy1.getBoard().getLegalRoadLocations(ourPlayerNumber);
+					for (Integer secondLocation : secondLocations) {
+						ReducedGame gameCopy2 = new ReducedGame(gameCopy1);
+						gameCopy2.getBoard().addRoad(secondLocation, ourPlayerNumber);
+						ReducedPlayer playerCopy = gameCopy2.getOurPlayer();
+						playerCopy.setDevCardPlayed(true);
+						playerCopy.decrementDevelopmentCards(SOCDevCardConstants.ROADS);
+						BotMove move = new PlayRoadBuilding(firstLocation, secondLocation);
+						BuildNode child = new BuildNode(gameCopy2, move, this, ourPlayer, referenceGame);
+						children.add(child);
+					}
+				}	
+			}
+
+			// Year of plenty
+			if (devCards[SOCDevCardConstants.DISC] > 0) {
+				// Add all permutations of the two resources
+				int[] resources = game.getOurPlayer().getResources();
+
+				for (int i = 0; i < resources.length; i++) {
+					for (int j = 0; j < resources.length; j++) {
+						ReducedGame gameCopy = new ReducedGame(game);
+						ReducedPlayer playerCopy = gameCopy.getOurPlayer();
+						playerCopy.incrementResource(i);
+						playerCopy.incrementResource(j);
+						playerCopy.setDevCardPlayed(true);
+						playerCopy.decrementDevelopmentCards(SOCDevCardConstants.DISC);
+						BotMove move = new PlayYOP(i + 1, j + 1);
+						BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
+						children.add(child);
+					}
+				}
+			}
+
+			// Year of plenty
+			if (devCards[SOCDevCardConstants.MONO] > 0) {
+				int[] resources = game.getOurPlayer().getResources();
+				for(int i = 0; i<resources.length; i++){
+					//Check each resource
+					ReducedGame gameCopy = new ReducedGame(game);
+					int resourcesStolen =0;
+					for (ReducedPlayer opponent : gameCopy.getPlayers()) {
+						if(opponent.getPlayerNumber()!= ourPlayerNumber){
+							resourcesStolen += opponent.getResource(i);
+							opponent.setResource(i, 0);
+						}
+					}
+					ReducedPlayer playerCopy = game.getOurPlayer();
+					int resource = playerCopy.getResource(i);
+					playerCopy.setResource(i, resource + resourcesStolen);
+					playerCopy.setDevCardPlayed(true);
+					playerCopy.decrementDevelopmentCards(SOCDevCardConstants.MONO);
+					BotMove move = new PlayMonopoly(i+1);
+					BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
+					children.add(child);
+				}
+			}
+
+			//We won't put in playing knights atm
+			if (devCards[SOCDevCardConstants.KNIGHT] > 0) {
+
+			}
+
+		}
+
+	}
+
+	private void handleBuyDevCard() {
+		BotMove move = new BuyDevCard();
+		ReducedGame gameCopy = new ReducedGame(game);
+
+		ReducedPlayer usInCopy = gameCopy.getOurPlayer();
+		usInCopy.decrementResource(SOCResourceConstants.ORE - 1);
+		usInCopy.decrementResource(SOCResourceConstants.WHEAT - 1);
+		usInCopy.decrementResource(SOCResourceConstants.SHEEP - 1);
+		gameCopy.decrementDevCards();
+
+		BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
+		children.add(child);
+	}
+
+	private void handleCityBuild() {
+		ReducedBoard board = game.getBoard();
+		List<Integer> locations = board.getLegalCityLocations(ourPlayerNumber);
+
+		for (Integer location : locations) {
 			ReducedGame gameCopy = new ReducedGame(game);
-
+			gameCopy.getBoard().addCity(location, ourPlayerNumber);
 			ReducedPlayer usInCopy = gameCopy.getOurPlayer();
-			usInCopy.decrementResource(SOCResourceConstants.ORE - 1);
-			usInCopy.decrementResource(SOCResourceConstants.WHEAT - 1);
-			usInCopy.decrementResource(SOCResourceConstants.SHEEP - 1);
-			gameCopy.decrementDevCards();
 
+			for (int i = 0; i < 2; i++) {
+				usInCopy.decrementResource(SOCResourceConstants.ORE - 1);
+				usInCopy.decrementResource(SOCResourceConstants.WOOD - 1);
+			}
+
+			usInCopy.decrementResource(SOCResourceConstants.ORE - 1);
+			usInCopy.decrementCityPieces();
+			usInCopy.incrementSettlementPieces();
+			BotMove move = new PiecePlacement(location, SOCPlayingPiece.CITY);
 			BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
 			children.add(child);
 		}
+	}
 
+	private void handleSettlementBuild() {
+		// Find all the places that we can build a settlement
+		ReducedBoard board = game.getBoard();
+		List<Integer> locations = board.getLegalSettlementLocations(ourPlayerNumber);
+
+		// Add all the possible locations as child moves
+		for (Integer location : locations) {
+			ReducedGame gameCopy = new ReducedGame(game);
+			gameCopy.getBoard().addSettlement(location, ourPlayerNumber);
+			ReducedPlayer usInCopy = gameCopy.getOurPlayer();
+			usInCopy.decrementResource(SOCResourceConstants.CLAY - 1);
+			usInCopy.decrementResource(SOCResourceConstants.WOOD - 1);
+			usInCopy.decrementResource(SOCResourceConstants.SHEEP - 1);
+			usInCopy.decrementResource(SOCResourceConstants.WHEAT - 1);
+			usInCopy.decrementSettlementPieces();
+			BotMove move = new PiecePlacement(location, SOCPlayingPiece.SETTLEMENT);
+			BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
+			children.add(child);
+		}
+	}
+
+	private void handleRoadBuild() {
+		ReducedBoard board = game.getBoard();
+		List<Integer> locations = board.getLegalRoadLocations(ourPlayerNumber);
+		for (Integer location : locations) {
+			ReducedGame gameCopy = new ReducedGame(game);
+			gameCopy.getBoard().addRoad(location, ourPlayerNumber);
+			ReducedPlayer usInCopy = gameCopy.getOurPlayer();
+			usInCopy.decrementResource(SOCResourceConstants.CLAY - 1);
+			usInCopy.decrementResource(SOCResourceConstants.WOOD - 1);
+			usInCopy.decrementRoadPieces();
+			BotMove move = new PiecePlacement(location, SOCPlayingPiece.ROAD);
+			BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
+			children.add(child);
+		}
 	}
 
 	/**
@@ -209,7 +313,8 @@ public class BuildNode {
 
 		for (int i = 0; i < resources.length; i++) {
 			// We can trade this the resource to the bank
-			// i = what we are trading --Check we haven't received this from the bank before
+			// i = what we are trading --Check we haven't received this from the
+			// bank before
 			// j = what we are receiving
 			if (resources[i] >= tradeRates[i] && (game.getPlayer(player).getTradedResourceArray()[i] == false)) {
 				for (int j = 0; j < resources.length; j++) {

@@ -21,4 +21,16 @@ public class RandomDecisionMaker extends DecisionMaker{
 		return possMoves.get(rand.nextInt(possMoves.size()));
 	}
 
+	@Override
+	public int getNewRobberLocation() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int[] getRobberDiscard() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
