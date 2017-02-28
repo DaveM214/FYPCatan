@@ -1,5 +1,7 @@
 package misc.utils;
 
+import soc.game.SOCPlayingPiece;
+
 /**
  * Class representing the basic information about a city.
  * @author david
@@ -8,7 +10,7 @@ package misc.utils;
 public class ReducedCity extends ReducedBoardPiece{
 
 	public ReducedCity(int location, int owner){
-		super(location,owner);
+		super(location,owner,SOCPlayingPiece.CITY);
 	}
 	
 	/**
@@ -16,7 +18,7 @@ public class ReducedCity extends ReducedBoardPiece{
 	 * @param orig
 	 */
 	public ReducedCity(ReducedBoardPiece orig){
-		super(orig.getLocation(),orig.getOwner());
+		super(orig.getLocation(),orig.getOwner(),orig.getType());
 	}
 	
 }

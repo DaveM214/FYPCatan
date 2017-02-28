@@ -129,7 +129,7 @@ public class BuildNode {
 			return;
 		} else {
 			// We have road building
-			if (devCards[SOCDevCardConstants.ROADS] > 0) {
+			if (devCards[SOCDevCardConstants.ROADS] > 0 && us.getRoadPieces() >= 2) {
 				//Get all the valid 2 road permutations.
 				//Do this by getting all valid roads and then all the valid roads on top of that.
 				List<Integer> firstLocations = game.getBoard().getLegalRoadLocations(ourPlayerNumber);
@@ -143,6 +143,8 @@ public class BuildNode {
 						ReducedPlayer playerCopy = gameCopy2.getOurPlayer();
 						playerCopy.setDevCardPlayed(true);
 						playerCopy.decrementDevelopmentCards(SOCDevCardConstants.ROADS);
+						playerCopy.decrementRoadPieces();
+						playerCopy.decrementRoadPieces();
 						BotMove move = new PlayRoadBuilding(firstLocation, secondLocation);
 						BuildNode child = new BuildNode(gameCopy2, move, this, ourPlayer, referenceGame);
 						children.add(child);
@@ -234,6 +236,7 @@ public class BuildNode {
 			usInCopy.decrementResource(SOCResourceConstants.ORE - 1);
 			usInCopy.decrementCityPieces();
 			usInCopy.incrementSettlementPieces();
+			usInCopy.incrementVictoryPoints();
 			BotMove move = new PiecePlacement(location, SOCPlayingPiece.CITY);
 			BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
 			children.add(child);
@@ -255,6 +258,7 @@ public class BuildNode {
 			usInCopy.decrementResource(SOCResourceConstants.SHEEP - 1);
 			usInCopy.decrementResource(SOCResourceConstants.WHEAT - 1);
 			usInCopy.decrementSettlementPieces();
+			usInCopy.incrementVictoryPoints();
 			BotMove move = new PiecePlacement(location, SOCPlayingPiece.SETTLEMENT);
 			BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
 			children.add(child);
@@ -264,6 +268,7 @@ public class BuildNode {
 	private void handleRoadBuild() {
 		ReducedBoard board = game.getBoard();
 		List<Integer> locations = board.getLegalRoadLocations(ourPlayerNumber);
+		System.out.println(locations.toString());
 		for (Integer location : locations) {
 			ReducedGame gameCopy = new ReducedGame(game);
 			gameCopy.getBoard().addRoad(location, ourPlayerNumber);

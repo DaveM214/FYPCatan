@@ -1,5 +1,7 @@
 package misc.utils;
 
+import soc.game.SOCPlayingPiece;
+
 /**
  * Class representing a reduced settlement.
  * 
@@ -9,7 +11,7 @@ package misc.utils;
 public class ReducedSettlement extends ReducedBoardPiece{
 
 	public ReducedSettlement(int location, int owner){
-		super(location,owner);
+		super(location,owner,SOCPlayingPiece.SETTLEMENT);
 	}
 	
 	/**
@@ -17,7 +19,7 @@ public class ReducedSettlement extends ReducedBoardPiece{
 	 * @param orig
 	 */
 	public ReducedSettlement(ReducedBoardPiece orig){
-		super(orig.getLocation(),orig.getOwner());
+		super(orig.getLocation(),orig.getOwner(),orig.getType());
 	}
 
 }

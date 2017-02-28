@@ -1,7 +1,12 @@
 package misc.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
+import soc.game.SOCDevCardConstants;
 import soc.game.SOCInventory;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
@@ -25,6 +30,7 @@ public class ReducedPlayer {
 	private int settlementPieces;
 	private int cityPieces;
 	private int roadPieces;
+	private boolean hasLongestRoad;
 
 	/**
 	 * Constructor. Create a reduced player.
@@ -43,7 +49,7 @@ public class ReducedPlayer {
 
 	public ReducedPlayer(SOCPlayer player) {
 		this.playerNumber = player.getPlayerNumber();
-		this.victoryPoints = player.getTotalVP();
+		this.victoryPoints = player.getCities().size() + player.getSettlements().size();
 		resources = new int[5];
 		SOCResourceSet resourceSet = player.getResources();
 
@@ -57,16 +63,16 @@ public class ReducedPlayer {
 		cityPieces = player.getNumPieces(SOCPlayingPiece.CITY);
 		roadPieces = player.getNumPieces(SOCPlayingPiece.ROAD);
 		bankTradedRec = new boolean[] { false, false, false, false, false };
-		
+
 		developmentCards = new int[10];
 		SOCInventory inv = player.getInventory();
-		
-		for(int i=0;i<developmentCards.length;i++){
+
+		for (int i = 0; i < developmentCards.length; i++) {
 			developmentCards[i] = inv.getAmount(i);
 		}
 		devCardPlayed = false;
+		hasLongestRoad = player.hasLongestRoad();
 	}
-	
 
 	/**
 	 * Copy constructor. Create new object from an original
@@ -83,8 +89,7 @@ public class ReducedPlayer {
 		for (int i = 0; i < tempResources.length; i++) {
 			resources[i] = tempResources[i];
 		}
-		
-		
+
 		int[] developmentCardsTemp = orig.getDevelopmentCards();
 		developmentCards = new int[10];
 		System.arraycopy(developmentCardsTemp, 0, developmentCards, 0, developmentCardsTemp.length);
@@ -93,6 +98,7 @@ public class ReducedPlayer {
 		cityPieces = orig.getCityPieces();
 		roadPieces = orig.getRoadPieces();
 		bankTradedRec = orig.copyResourceArray();
+		hasLongestRoad = orig.hasLongestRoad();
 	}
 
 	/**
@@ -116,22 +122,26 @@ public class ReducedPlayer {
 	public boolean[] getTradedResourceArray() {
 		return this.bankTradedRec;
 	}
-	
+
 	/**
 	 * Set the array of resource that we have traded.
+	 * 
 	 * @param array
 	 */
-	public void setTradedResourceArray(boolean[] array){
+	public void setTradedResourceArray(boolean[] array) {
 		this.bankTradedRec = array;
 	}
-	
+
 	/**
-	 * Change as value indicating whether or not we have traded this resource from the bank.
+	 * Change as value indicating whether or not we have traded this resource
+	 * from the bank.
 	 * 
-	 * @param resource The resource being set. 0-4
-	 * @param value The boolean value it is changing to.
+	 * @param resource
+	 *            The resource being set. 0-4
+	 * @param value
+	 *            The boolean value it is changing to.
 	 */
-	public void setTradedResourceArray(int resource, boolean value){
+	public void setTradedResourceArray(int resource, boolean value) {
 		bankTradedRec[resource] = value;
 	}
 
@@ -150,7 +160,12 @@ public class ReducedPlayer {
 	 * @return
 	 */
 	public int getVictoryPoints() {
-		return victoryPoints;
+		int total = 0;
+		total += victoryPoints;
+		if(hasLongestRoad){
+			victoryPoints += 2;
+		}
+		return total+=getNumVPCards();
 	}
 
 	/**
@@ -161,6 +176,14 @@ public class ReducedPlayer {
 	public void setVictoryPoints(int vp) {
 		this.victoryPoints = vp;
 	}
+	
+	private int getNumVPCards(){
+		int total = 0;
+		for (int i = SOCDevCardConstants.CAP; i<= SOCDevCardConstants.CAP ; i++) {
+			total+=developmentCards[i];
+		}
+		return total;
+	}
 
 	/**
 	 * Get the list of resources that a player has.
@@ -170,8 +193,8 @@ public class ReducedPlayer {
 	public int[] getResources() {
 		return this.resources;
 	}
-	
-	public int getResource(int rNumber){
+
+	public int getResource(int rNumber) {
 		return this.resources[rNumber];
 	}
 
@@ -228,6 +251,10 @@ public class ReducedPlayer {
 		cityPieces--;
 	}
 
+	public void incrementVictoryPoints() {
+		victoryPoints++;
+	}
+
 	/**
 	 * Settlements are the only ones we need to be able to increment. Everything
 	 * else when placed is final. We get settlements back when we build cities.
@@ -244,12 +271,12 @@ public class ReducedPlayer {
 	public boolean hasGeneralPort() {
 		return false;
 	}
-	
-	public void setDevCardPlayed(boolean played){
+
+	public void setDevCardPlayed(boolean played) {
 		this.devCardPlayed = played;
 	}
-	
-	public boolean getDevCardPlayed(){
+
+	public boolean getDevCardPlayed() {
 		return devCardPlayed;
 	}
 
@@ -263,13 +290,46 @@ public class ReducedPlayer {
 	public boolean[] hasSpecPorts() {
 		return new boolean[] { false, false, false, false, false };
 	}
-	
-	public int[] getDevelopmentCards(){
+
+	public int[] getDevelopmentCards() {
 		return this.developmentCards;
 	}
 
 	public void decrementDevelopmentCards(int i) {
 		developmentCards[i]--;
+	}
+	
+	public void setHasLongestRoad(boolean b){
+		this.hasLongestRoad = b;
+	}
+	
+	public boolean hasLongestRoad(){
+		return hasLongestRoad;
+	}
+
+	/**
+	 * Method that will randomly select a resource that the player has and
+	 * remove one of it.
+	 * 
+	 * @return
+	 */
+	public int robPlayer() {
+		List<Integer> choiceList = new ArrayList<Integer>();
+		for(int i =0; i<resources.length;i++){
+			int resNum = resources[i];
+			for(int j=0;j<resNum;j++){
+				choiceList.add(i);
+			}
+		}
+		
+		if(choiceList.size() == 0){
+			return -1;
+		}
+		
+		Random rand = new Random();
+		int choice = choiceList.get(rand.nextInt(choiceList.size()));
+		decrementResource(choice);
+		return choice;
 	}
 
 }

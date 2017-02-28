@@ -1,7 +1,8 @@
-package misc.bot;
+package misc.bot.decisionMakers;
 
 import java.util.*;
 
+import misc.bot.BotBrain;
 import misc.bot.buildPlanning.BuildNode;
 import misc.bot.moves.BotMove;
 import misc.bot.moves.BuyDevCard;
@@ -36,10 +37,10 @@ import soc.game.SOCSettlement;
  */
 public abstract class DecisionMaker {
 
-	private SOCGame game;
-	private ReducedGame reducedGame;
-	private SOCPlayer ourPlayer;
-	private static final int NUMBER_RESOURCES = 5;
+	protected SOCGame game;
+	protected ReducedGame reducedGame;
+	protected SOCPlayer ourPlayer;
+	public static final int NUMBER_RESOURCES = 5;
 
 	/**
 	 * Constructor
@@ -64,7 +65,7 @@ public abstract class DecisionMaker {
 	 */
 	public void updateGame(SOCGame updatedGame) {
 		this.game = updatedGame;
-		reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(),updatedGame);
+		this.reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(),updatedGame);
 	}
 
 	/**
@@ -107,7 +108,8 @@ public abstract class DecisionMaker {
 			case SOCDevCardConstants.KNIGHT:
 				ArrayList<Integer> knightLocations = getPossibleRobberLocations();
 				for (Integer location : knightLocations) {
-					BotMove knightMove = new PlayKnight(location);
+					//TODO code to figure out who has settlments at which location
+					BotMove knightMove = new PlayKnight(location,0);
 					devCardMoves.add(knightMove);
 				}
 				break;
@@ -331,6 +333,10 @@ public abstract class DecisionMaker {
 	protected int[] getOurResources(){
 		return new int[5];
 	}
+	
+	public int getOurPlayerNumber(){
+		return ourPlayer.getPlayerNumber();
+	}
 
 	/**
 	 * Abstract method that must be implemented. Return a list of
@@ -344,6 +350,8 @@ public abstract class DecisionMaker {
 	public abstract int getNewRobberLocation();
 
 	public abstract int[] getRobberDiscard();
+
+	public abstract int getRobberTarget();
 	
 
 }

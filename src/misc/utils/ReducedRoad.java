@@ -1,5 +1,7 @@
 package misc.utils;
 
+import soc.game.SOCPlayingPiece;
+
 /**
  * Class representing a reduced road. TODO complete this.
  * @author david
@@ -8,7 +10,7 @@ package misc.utils;
 public class ReducedRoad extends ReducedBoardPiece{
 
 	public ReducedRoad(int location, int owner){
-		super(location,owner);
+		super(location,owner,SOCPlayingPiece.ROAD);
 	}
 	
 	/**
@@ -16,7 +18,7 @@ public class ReducedRoad extends ReducedBoardPiece{
 	 * @param orig
 	 */
 	public ReducedRoad(ReducedBoardPiece orig){
-		super(orig.getLocation(),orig.getOwner());
+		super(orig.getLocation(),orig.getOwner(),orig.getType());
 	}
 	
 }

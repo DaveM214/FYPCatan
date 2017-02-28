@@ -1,21 +1,21 @@
-package misc.bot;
+package misc.bot.decisionMakers;
 
 import java.util.ArrayList;
 
 import misc.bot.moves.BotMove;
 import soc.game.SOCGame;
-import soc.game.SOCPlayer;
 
-public class MixedDecisionMaker extends DecisionMaker{
+public class MonteCarloDecisionMaker extends DecisionMaker {
 
-	public MixedDecisionMaker(SOCGame game){
+	public MonteCarloDecisionMaker(SOCGame game) {
 		super(game);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public ArrayList<BotMove> getMoveDecision() {
+		// TODO Auto-generated method stub
 		return null;
-		
 	}
 
 	@Override
@@ -29,7 +29,11 @@ public class MixedDecisionMaker extends DecisionMaker{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
-	
+
+	@Override
+	public int getRobberTarget() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

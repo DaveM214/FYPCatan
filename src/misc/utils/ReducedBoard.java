@@ -26,6 +26,7 @@ public class ReducedBoard {
 	private List<ReducedBoardPiece> roads;
 	private List<ReducedBoardPiece> settlements;
 	private List<ReducedBoardPiece> cities;
+	private int robberLocation;
 
 	private SOCBoard referenceBoard;
 
@@ -47,6 +48,7 @@ public class ReducedBoard {
 		settlements = new ArrayList<>();
 		cities = new ArrayList<>();
 		this.referenceBoard = board;
+		this.robberLocation = board.getRobberHex();
 
 		List<SOCRoad> socRoads = board.getRoads();
 		List<SOCSettlement> socSettlements = board.getSettlements();
@@ -77,6 +79,7 @@ public class ReducedBoard {
 		settlements = new ArrayList<ReducedBoardPiece>();
 		cities = new ArrayList<ReducedBoardPiece>();
 		referenceBoard = orig.referenceBoard;
+		robberLocation = orig.getRobberLocation();
 
 		for (ReducedBoardPiece city : orig.getCities()) {
 			ReducedCity newCity = new ReducedCity(city);
@@ -208,7 +211,7 @@ public class ReducedBoard {
 
 		List<Integer> joiningNodes = referenceBoard.getAdjacentNodesToEdge(location);
 		List<Integer> joiningEdges = referenceBoard.getAdjacentEdgesToEdge(location);
-		
+
 		List<ReducedBoardPiece> joiningSettlements = new ArrayList<ReducedBoardPiece>();
 
 		// Find if any settlements are joining
@@ -247,8 +250,9 @@ public class ReducedBoard {
 					List<Integer> adjacentEdgesToCity = referenceBoard
 							.getAdjacentEdgesToNode(joiningSettlement.getLocation());
 					for (Integer edge : joiningEdges) {
-						//If there is a road we own adjacent to the edge and it is not adjacent to the settlement we can build
-						if(roadAtLocation(edge.intValue(), owner) && !adjacentEdgesToCity.contains(edge)){
+						// If there is a road we own adjacent to the edge and it
+						// is not adjacent to the settlement we can build
+						if (roadAtLocation(edge.intValue(), owner) && !adjacentEdgesToCity.contains(edge)) {
 							return true;
 						}
 					}
@@ -298,7 +302,7 @@ public class ReducedBoard {
 		return false;
 	}
 
-	private boolean settlementAtLocation(int location) {
+	public boolean settlementAtLocation(int location) {
 		for (ReducedBoardPiece settlement : settlements) {
 			if (settlement.getLocation() == location) {
 				return true;
@@ -307,7 +311,7 @@ public class ReducedBoard {
 		return false;
 	}
 
-	private boolean settlementAtLocation(int location, int player) {
+	public boolean settlementAtLocation(int location, int player) {
 		for (ReducedBoardPiece settlement : settlements) {
 			if (settlement.getLocation() == location && settlement.getOwner() == player) {
 				return true;
@@ -316,7 +320,21 @@ public class ReducedBoard {
 		return false;
 	}
 
-	private boolean cityAtLocation(int location) {
+	/**
+	 * Returns a city a given location. Null if there is no city there;
+	 * 
+	 * @return The city object if it exists at the location. Null if it doesn't
+	 */
+	public ReducedSettlement getSettlementAtLocation(int location) {
+		for (ReducedBoardPiece settlement : settlements) {
+			if (settlement.getLocation() == location) {
+				return (ReducedSettlement) settlement;
+			}
+		}
+		return null;
+	}
+
+	public boolean cityAtLocation(int location) {
 		for (ReducedBoardPiece city : cities) {
 			if (city.getLocation() == location) {
 				return true;
@@ -325,13 +343,27 @@ public class ReducedBoard {
 		return false;
 	}
 
-	private boolean cityAtLocation(int location, int player) {
+	public boolean cityAtLocation(int location, int player) {
 		for (ReducedBoardPiece city : cities) {
 			if (city.getLocation() == location && city.getOwner() == player) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Returns a city a given location. Null if there is no city there;
+	 * 
+	 * @return The city object if it exists at the location. Null if it doesn't
+	 */
+	public ReducedCity getCityAtLocation(int location) {
+		for (ReducedBoardPiece city : cities) {
+			if (city.getLocation() == location) {
+				return (ReducedCity) city;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -390,6 +422,14 @@ public class ReducedBoard {
 
 	}
 
+	public int getRobberLocation() {
+		return this.robberLocation;
+	}
+
+	public void setRobberLocation(int robberLocation) {
+		this.robberLocation = robberLocation;
+	}
+
 	public boolean isValidCity(int location, int owner) {
 		return false;
 	}
@@ -416,6 +456,35 @@ public class ReducedBoard {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Returns the settlements AND cities that surround a hex. The maximum
+	 * number possible is 3 and it is quite possible that there will be zero.
+	 * 
+	 * @return
+	 */
+	public List<ReducedBoardPiece> getSettlementsAroundHex(int hexLocation) {
+		List<ReducedBoardPiece> setList = new ArrayList<>();
+		int[] nodeLocations = referenceBoard.getAdjacentNodesToHex(hexLocation);
+		
+		for (ReducedBoardPiece settlement : settlements) {
+			for (int i : nodeLocations) {
+				if(settlement.getLocation() == i){
+					setList.add(settlement);
+				}
+			}
+		}
+		
+		for (ReducedBoardPiece city : cities) {
+			for (int i : nodeLocations) {
+				if(city.getLocation() == i){
+					setList.add(city);
+				}
+			}
+		}
+		
+		return setList;
 	}
 
 	public List<ReducedBoardPiece> getRoads() {

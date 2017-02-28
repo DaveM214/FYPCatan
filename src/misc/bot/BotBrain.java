@@ -1,12 +1,16 @@
 package misc.bot;
 
 import misc.utils.BotMessageQueue;
+import misc.utils.exceptions.SimNotInitialisedException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import misc.bot.BotClient;
+import misc.bot.decisionMakers.DecisionMaker;
+import misc.bot.decisionMakers.RandomDecisionMaker;
+import misc.bot.decisionMakers.SimpleHeuristicDecisionMaker;
 import misc.bot.moves.BotMove;
 import misc.bot.moves.PiecePlacement;
 import misc.bot.moves.PlayDevCard;
@@ -19,12 +23,14 @@ import soc.game.SOCBoard;
 import soc.game.SOCCity;
 import soc.game.SOCDevCardConstants;
 import soc.game.SOCGame;
+import soc.game.SOCInventory;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
 import soc.game.SOCResourceConstants;
 import soc.game.SOCResourceSet;
 import soc.game.SOCRoad;
 import soc.game.SOCSettlement;
+import soc.message.SOCDevCardAction;
 import soc.message.SOCFirstPlayer;
 import soc.message.SOCGameState;
 import soc.message.SOCMessage;
@@ -84,7 +90,7 @@ public class BotBrain extends Thread {
 		this.game = game;
 		alive = true;
 		expectingDevCard = false;
-		dm = new SimpleHeuristicDecisionMaker(game);
+		dm = new RandomDecisionMaker(game);
 		movesToProcess = new ArrayList<BotMove>();
 		buildList = new ArrayList<PiecePlacement>();
 	}
@@ -155,6 +161,10 @@ public class BotBrain extends Thread {
 					}
 					break;
 
+				case SOCMessage.DEVCARDACTION:
+					handleDEVCARDACTION((SOCDevCardAction) msg);
+					break;
+
 				default:
 					break;
 				}
@@ -176,6 +186,36 @@ public class BotBrain extends Thread {
 	private void handleBuildRequest() {
 		// TODO Auto-generated method stub
 
+	}
+
+	/**
+	 * Handle a DEVCARDACTION for this game. No brain-specific action.
+	 * 
+	 * @since 1.1.08
+	 */
+	private void handleDEVCARDACTION(SOCDevCardAction mes) {
+		if (mes.getPlayerNumber()!= -1) {
+			SOCInventory cardsInv = game.getPlayer(mes.getPlayerNumber()).getInventory();
+			final int cardType = mes.getCardType();
+
+			switch (mes.getAction()) {
+			case SOCDevCardAction.DRAW:
+				cardsInv.addDevCard(1, SOCInventory.NEW, cardType);
+				break;
+
+			case SOCDevCardAction.PLAY:
+				cardsInv.removeDevCard(SOCInventory.OLD, cardType);
+				break;
+
+			case SOCDevCardAction.ADDOLD:
+				cardsInv.addDevCard(1, SOCInventory.OLD, cardType);
+				break;
+
+			case SOCDevCardAction.ADDNEW:
+				cardsInv.addDevCard(1, SOCInventory.NEW, cardType);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -211,7 +251,7 @@ public class BotBrain extends Thread {
 	 */
 	private void handleOurTurn() {
 		int currentState = game.getGameState();
-		System.out.println("Current State: " + currentState);
+		System.out.println("Current State on our turn: " + currentState);
 
 		// IF Initial state
 		if (currentState >= 5 && currentState <= 11) {

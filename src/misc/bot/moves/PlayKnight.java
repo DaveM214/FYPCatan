@@ -2,11 +2,13 @@ package misc.bot.moves;
 
 public class PlayKnight extends PlayDevCard{
 
-	int targetHex;
+	private final int targetHex;
+	private final int targetPlayer;
 	
-	public PlayKnight(int targetHex){
+	public PlayKnight(int targetHex, int robTarget){
 		super(PlayDevCard.KNIGHT);
 		this.targetHex = targetHex;
+		this.targetPlayer = robTarget;
 	}
 	
 	public int getTargetHex(){
@@ -15,6 +17,10 @@ public class PlayKnight extends PlayDevCard{
 	
 	public String toString(){
 		return "|Play Knight Card at " + String.format("%02X", targetHex) +  "|";
+	}
+	
+	public int getTargetPlayer(){
+		return targetPlayer;
 	}
 	
 }
