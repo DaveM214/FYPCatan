@@ -54,10 +54,15 @@ public abstract class DecisionMaker {
 	
 	public void setReducedGame(ReducedGame game){
 		this.reducedGame = new ReducedGame(game);
+		reducedGame.setOurPlayerNumber(ourPlayer.getPlayerNumber());
 	}
 	
 	public void setReducedGame(SOCGame game){
 		this.reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(),game);
+	}
+	
+	public void setOurPlayer(SOCPlayer player){
+		this.ourPlayer = player;
 	}
 
 	/**
@@ -79,16 +84,7 @@ public abstract class DecisionMaker {
 		this.ourPlayer = ourPlayer;
 	}
 
-	/**
-	 * Method works out what moves are possible and returns a list of all the
-	 * lists of moves.
-	 */
-	public ArrayList<ArrayList<BotMove>> getAllPossibleMoves() {
 
-		ArrayList<ArrayList<BotMove>> moves = getMoves();
-		
-		return moves;
-	}
 
 	/**
 	 * Get all the possible moves that involve playing development cards.
@@ -286,7 +282,7 @@ public abstract class DecisionMaker {
 	 * 
 	 * @return
 	 */
-	private ArrayList<ArrayList<BotMove>> getMoves() {
+	public ArrayList<ArrayList<BotMove>> getAllPossibleMoves() {
 		ArrayList<ArrayList<BotMove>> moveCombos = new ArrayList<ArrayList<BotMove>>();
 		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
 		

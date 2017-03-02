@@ -5,6 +5,7 @@ import java.util.Random;
 
 import misc.bot.moves.BotMove;
 import misc.simulator.Simulator;
+import misc.utils.ReducedGame;
 import misc.utils.exceptions.SimNotInitialisedException;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
@@ -19,13 +20,14 @@ public class RandomDecisionMaker extends DecisionMaker{
 	public ArrayList<BotMove> getMoveDecision() {
 		
 	/////////////////SIM//////	
+		
 	Simulator sim = new Simulator(game, getOurPlayerNumber());
 		
 
 		try {
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < 100000 ; i++) {
 				System.out.println("Sim :" + i);
-				sim.setReducedGame(reducedGame);
+				sim.setReducedGame(new ReducedGame(reducedGame));
 				sim.setCurrentTurn(getOurPlayerNumber());
 				int winner = sim.runSimulator();
 				System.out.println("Simulated Winnder: " +  winner);
@@ -36,6 +38,8 @@ public class RandomDecisionMaker extends DecisionMaker{
 		}
 		
 	///////////////////////////////END SIM////////////
+	 
+	 
 		ArrayList<ArrayList<BotMove>> possMoves = getAllPossibleMoves();
 		System.out.println("Possible Moves: " + possMoves.size());
 		Random rand = new Random();

@@ -83,20 +83,18 @@ public class ReducedPlayer {
 		this.playerNumber = orig.getPlayerNumber();
 		this.victoryPoints = orig.getVictoryPoints();
 
-		resources = new int[5];
+		
 		int[] tempResources = orig.getResources();
-
-		for (int i = 0; i < tempResources.length; i++) {
-			resources[i] = tempResources[i];
-		}
+		resources = new int[5];
+		System.arraycopy(tempResources, 0, this.resources, 0, tempResources.length);
 
 		int[] developmentCardsTemp = orig.getDevelopmentCards();
 		developmentCards = new int[10];
-		System.arraycopy(developmentCardsTemp, 0, developmentCards, 0, developmentCardsTemp.length);
+		System.arraycopy(developmentCardsTemp, 0, this.developmentCards, 0, developmentCardsTemp.length);
 
-		settlementPieces = orig.getSettlementPieces();
-		cityPieces = orig.getCityPieces();
-		roadPieces = orig.getRoadPieces();
+		this.settlementPieces = orig.getSettlementPieces();
+		this.cityPieces = orig.getCityPieces();
+		this.roadPieces = orig.getRoadPieces();
 		bankTradedRec = orig.copyResourceArray();
 		hasLongestRoad = orig.hasLongestRoad();
 	}

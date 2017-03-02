@@ -78,7 +78,7 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 					if (placement.getPieceType() == SOCPlayingPiece.SETTLEMENT) {
 						score += SETTLEMENT_SCORE;
 					} else if (placement.getPieceType() == SOCPlayingPiece.CITY) {
-						score += SETTLEMENT_SCORE;
+						score += CITY_SCORE;
 					} else {
 						score += ROAD_SCORE;
 					}

@@ -14,6 +14,7 @@ import soc.game.SOCDevCardConstants;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
+import soc.game.SOCResourceConstants;
 import sun.security.util.Length;
 
 /**
@@ -25,7 +26,7 @@ import sun.security.util.Length;
 public class ReducedGame {
 
 	private SOCGame referenceGame;
-	private final int ourPlayerNumber;
+	private int ourPlayerNumber;
 	private ReducedBoard board;
 	private int devCardsLeft;
 	private List<ReducedPlayer> players;
@@ -73,12 +74,12 @@ public class ReducedGame {
 		this.ourPlayerNumber = orig.getOurPlayerNumber();
 		this.devCardsLeft = orig.getDevCardsLeft();
 		this.board = new ReducedBoard(orig.getBoard());
-		players = new ArrayList<ReducedPlayer>();
+		this.players = new ArrayList<ReducedPlayer>();
 		for (ReducedPlayer player : orig.getPlayers()) {
 			ReducedPlayer newPlayer = new ReducedPlayer(player);
 			players.add(newPlayer);
 		}
-		this.referenceGame = referenceGame;
+		this.referenceGame = orig.referenceGame;
 
 	}
 
@@ -153,6 +154,13 @@ public class ReducedGame {
 		}
 		return winner;
 	}
+	
+	/**
+	 * 
+	 */
+	public void setOurPlayerNumber(int playerNumber){
+		this.ourPlayerNumber = playerNumber;
+	}
 
 	/**
 	 * Get the player sitting at a specific seat. 0-3
@@ -199,8 +207,8 @@ public class ReducedGame {
 			}
 		}
 
-		List<ReducedBoardPiece> settlements = board.getSettlements();
-		List<ReducedBoardPiece> cities = board.getCities();
+		List<ReducedBoardPiece> settlements = board.getSettlementsList();
+		List<ReducedBoardPiece> cities = board.getCitiesList();
 
 		List<Integer> presentNodes = new ArrayList<Integer>();
 		List<Integer> resourceType = new ArrayList<Integer>();
@@ -342,17 +350,28 @@ public class ReducedGame {
 		switch (type) {
 		case SOCPlayingPiece.ROAD:
 			board.addRoad(build.getCoordinate(), player);
+			players.get(player).decrementResource(SOCResourceConstants.WOOD-1);
+			players.get(player).decrementResource(SOCResourceConstants.CLAY-1);
 			players.get(player).decrementRoadPieces();
 			break;
 		case SOCPlayingPiece.CITY:
 			board.addCity(build.getCoordinate(), player);
 			players.get(player).decrementCityPieces();
 			players.get(player).incrementSettlementPieces();
+			players.get(player).decrementResource(SOCResourceConstants.ORE-1);
+			players.get(player).decrementResource(SOCResourceConstants.ORE-1);
+			players.get(player).decrementResource(SOCResourceConstants.ORE-1);
+			players.get(player).decrementResource(SOCResourceConstants.WHEAT-1);
+			players.get(player).decrementResource(SOCResourceConstants.WHEAT-1);
 			players.get(player).incrementVictoryPoints();
 			break;
 		case SOCPlayingPiece.SETTLEMENT:
 			board.addSettlement(build.getCoordinate(), player);
 			players.get(player).decrementSettlementPieces();
+			players.get(player).decrementResource(SOCResourceConstants.WOOD-1);
+			players.get(player).decrementResource(SOCResourceConstants.CLAY-1);
+			players.get(player).decrementResource(SOCResourceConstants.SHEEP-1);
+			players.get(player).decrementResource(SOCResourceConstants.WHEAT-1);
 			players.get(player).incrementVictoryPoints();
 			break;
 		}

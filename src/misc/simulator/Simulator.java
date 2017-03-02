@@ -96,15 +96,18 @@ public class Simulator {
 		if (currentPlayerTurn == -1) {
 			throw new SimNotInitialisedException();
 		}
-
+		
+		int turns =0;
+		
 		// Simulate until the end of the game
-		while (!reducedGame.isGameFinished()) {
-
+		while (!reducedGame.isGameFinished() && !(turns < 100)) {
 			System.out.println("Player: " + currentPlayerTurn);
+			System.out.println("Round: " + turns);
 			// Roll and give resources to people
 			int roll = DiceRoller.rollDice();
 			if (roll == 7) {
 				for (DecisionMaker dm : dmArr) {
+					dm.setReducedGame(new ReducedGame(reducedGame));
 					int[] discarded = dm.getRobberDiscard();
 					reducedGame.handlePlayerDiscard(discarded, dm.getOurPlayerNumber());
 					if(dm.getOurPlayerNumber() == currentPlayerTurn){
@@ -119,8 +122,9 @@ public class Simulator {
 			// Pass the player a copy of the reduced game.
 			DecisionMaker currentDM = dmArr[currentPlayerTurn];
 			currentDM.setReducedGame(new ReducedGame(reducedGame));	
+			
 			//Hanging here
-			List<BotMove> movesToPlay = currentDM.getMoveDecision();
+			List<BotMove> movesToPlay = currentDM.getMoveDecision();		
 			List<BotMove> devCard = new ArrayList<BotMove>();
 			List<BotMove> trades = new ArrayList<BotMove>();
 			List<PiecePlacement> builds = new ArrayList<PiecePlacement>();
@@ -182,6 +186,7 @@ public class Simulator {
 			} else {
 				currentPlayerTurn++;
 			}
+			turns++;
 		}
 
 		// Find the player that won.
@@ -191,6 +196,7 @@ public class Simulator {
 				winningPlayer = player.getPlayerNumber();
 			}
 		}
+		System.out.println("Winner = " + winningPlayer);
 		return winningPlayer;
 
 	}

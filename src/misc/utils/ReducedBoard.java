@@ -1,8 +1,11 @@
 package misc.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -23,9 +26,9 @@ import soc.game.SOCSettlement;
  */
 public class ReducedBoard {
 
-	private List<ReducedBoardPiece> roads;
-	private List<ReducedBoardPiece> settlements;
-	private List<ReducedBoardPiece> cities;
+	private Map<Integer,ReducedBoardPiece> roads;
+	private Map<Integer,ReducedBoardPiece> settlements;
+	private Map<Integer,ReducedBoardPiece> cities;
 	private int robberLocation;
 
 	private SOCBoard referenceBoard;
@@ -44,9 +47,9 @@ public class ReducedBoard {
 	 * @param board
 	 */
 	public ReducedBoard(SOCBoard board) {
-		roads = new ArrayList<>();
-		settlements = new ArrayList<>();
-		cities = new ArrayList<>();
+		roads = new HashMap<>();
+		settlements = new HashMap<>();
+		cities = new HashMap<>();
 		this.referenceBoard = board;
 		this.robberLocation = board.getRobberHex();
 
@@ -55,15 +58,15 @@ public class ReducedBoard {
 		List<SOCCity> socCities = board.getCities();
 
 		for (SOCRoad socRoad : socRoads) {
-			roads.add(new ReducedRoad(socRoad.getCoordinates(), socRoad.getPlayerNumber()));
+			roads.put(socRoad.getCoordinates(),new ReducedRoad(socRoad.getCoordinates(), socRoad.getPlayerNumber()));
 		}
 
 		for (SOCSettlement socSettlement : socSettlements) {
-			settlements.add(new ReducedSettlement(socSettlement.getCoordinates(), socSettlement.getPlayerNumber()));
+			settlements.put(socSettlement.getCoordinates(),new ReducedSettlement(socSettlement.getCoordinates(), socSettlement.getPlayerNumber()));
 		}
 
 		for (SOCCity socCity : socCities) {
-			cities.add(new ReducedCity(socCity.getCoordinates(), socCity.getPlayerNumber()));
+			cities.put(socCity.getCoordinates(),new ReducedCity(socCity.getCoordinates(), socCity.getPlayerNumber()));
 		}
 
 	}
@@ -75,25 +78,25 @@ public class ReducedBoard {
 	 * @param orig
 	 */
 	public ReducedBoard(ReducedBoard orig) {
-		roads = new ArrayList<ReducedBoardPiece>();
-		settlements = new ArrayList<ReducedBoardPiece>();
-		cities = new ArrayList<ReducedBoardPiece>();
+		roads = new Hashtable<Integer,ReducedBoardPiece>();
+		settlements = new Hashtable<Integer,ReducedBoardPiece>();
+		cities = new Hashtable<Integer,ReducedBoardPiece>();
 		referenceBoard = orig.referenceBoard;
 		robberLocation = orig.getRobberLocation();
 
-		for (ReducedBoardPiece city : orig.getCities()) {
+		for (ReducedBoardPiece city : orig.getCitiesList()) {
 			ReducedCity newCity = new ReducedCity(city);
-			cities.add(newCity);
+			cities.put(newCity.location,newCity);
 		}
 
-		for (ReducedBoardPiece road : orig.getRoads()) {
+		for (ReducedBoardPiece road : orig.getRoadsList()) {
 			ReducedRoad newRoad = new ReducedRoad(road);
-			roads.add(newRoad);
+			roads.put(newRoad.location,newRoad);
 		}
 
-		for (ReducedBoardPiece settlement : orig.getSettlements()) {
+		for (ReducedBoardPiece settlement : orig.getSettlementsList()) {
 			ReducedSettlement newSettlement = new ReducedSettlement(settlement);
-			settlements.add(newSettlement);
+			settlements.put(newSettlement.location,newSettlement);
 		}
 
 	}
@@ -131,7 +134,7 @@ public class ReducedBoard {
 		}
 
 		// Check that those nodes do not already contain settlements.
-		for (ReducedBoardPiece settlement : getSettlements()) {
+		for (ReducedBoardPiece settlement : getSettlementsList()) {
 			Integer location = settlement.getLocation();
 			if (validSettlements.contains(location)) {
 				validSettlements.remove(location);
@@ -144,7 +147,7 @@ public class ReducedBoard {
 
 	private List<ReducedBoardPiece> getPlayersRoads(int player) {
 		List<ReducedBoardPiece> playersRoads = new ArrayList<ReducedBoardPiece>();
-		for (ReducedBoardPiece reducedRoad : roads) {
+		for (ReducedBoardPiece reducedRoad : roads.values()) {
 			if (reducedRoad.getOwner() == player) {
 				playersRoads.add(reducedRoad);
 			}
@@ -154,14 +157,14 @@ public class ReducedBoard {
 
 	public List<Integer> getLegalRoadLocations(int player) {
 		List<ReducedBoardPiece> playersRoads = getPlayersRoads(player);
-		Set<Integer> possibleLocations = new HashSet<Integer>();
+		Set<Integer> possibleLocations = new TreeSet<Integer>();
 
 		// Add all connecting edges
 		for (ReducedBoardPiece road : playersRoads) {
 			possibleLocations.addAll(referenceBoard.getAdjacentEdgesToEdge(road.getLocation()));
 		}
 
-		for (ReducedBoardPiece road : getRoads()) {
+		for (ReducedBoardPiece road : getRoadsList()) {
 			int location = road.getLocation();
 			if (!isValidRoad(location, player)) {
 				possibleLocations.remove(location);
@@ -185,7 +188,7 @@ public class ReducedBoard {
 		List<Integer> locations = new ArrayList<Integer>();
 
 		// Valid city locations are where ever we have a settlement
-		for (ReducedBoardPiece settlement : settlements) {
+		for (ReducedBoardPiece settlement : settlements.values()) {
 			if (settlement.getOwner() == player) {
 				locations.add(settlement.getLocation());
 			}
@@ -216,19 +219,19 @@ public class ReducedBoard {
 
 		// Find if any settlements are joining
 		for (Integer node : joiningNodes) {
-			for (ReducedBoardPiece settlement : settlements) {
-				if (settlement.getLocation() == node.intValue()) {
-					joiningSettlements.add(settlement);
-				}
-			}
-
-			for (ReducedBoardPiece city : cities) {
-				if (city.getLocation() == node.intValue()) {
+			ReducedBoardPiece settlement = settlements.get(node);
+			if(settlement!= null){
+				joiningSettlements.add(settlement);
+			}else{
+				ReducedBoardPiece city = cities.get(node);
+				if(city!=null){
 					joiningSettlements.add(city);
 				}
 			}
 		}
 
+		System.out.println("Joining Settlements: " + joiningSettlements.toString());
+		
 		// If no joining settlements then check that a player has a road that
 		// links to it.
 		if (joiningSettlements.isEmpty()) {
@@ -285,39 +288,43 @@ public class ReducedBoard {
 	}
 
 	private boolean roadAtLocation(int location) {
-		for (ReducedBoardPiece road : roads) {
-			if (road.getLocation() == location) {
-				return true;
-			}
+		ReducedBoardPiece road  = roads.get(location);
+		if(road!=null){
+			return true;
+		}else{
+			return false;
 		}
-		return false;
 	}
 
 	private boolean roadAtLocation(int location, int player) {
-		for (ReducedBoardPiece road : roads) {
-			if (road.getLocation() == location && road.getOwner() == player) {
-				return true;
-			}
+		ReducedBoardPiece road  = roads.get(location);
+		if(road!=null && road.getOwner() == player){
+			return true;
+		}else{
+			return false;
 		}
-		return false;
+	}
+	
+	public ReducedRoad getRoadAtLocation(int location){
+		return (ReducedRoad)roads.get(location);
 	}
 
 	public boolean settlementAtLocation(int location) {
-		for (ReducedBoardPiece settlement : settlements) {
-			if (settlement.getLocation() == location) {
-				return true;
-			}
+		ReducedBoardPiece settlement  = settlements.get(location);
+		if(settlement!=null){
+			return true;
+		}else{
+			return false;
 		}
-		return false;
 	}
 
 	public boolean settlementAtLocation(int location, int player) {
-		for (ReducedBoardPiece settlement : settlements) {
-			if (settlement.getLocation() == location && settlement.getOwner() == player) {
-				return true;
-			}
+		ReducedBoardPiece settlement  = settlements.get(location);
+		if(settlement!=null && settlement.getOwner() == player){
+			return true;
+		}else{
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -326,30 +333,25 @@ public class ReducedBoard {
 	 * @return The city object if it exists at the location. Null if it doesn't
 	 */
 	public ReducedSettlement getSettlementAtLocation(int location) {
-		for (ReducedBoardPiece settlement : settlements) {
-			if (settlement.getLocation() == location) {
-				return (ReducedSettlement) settlement;
-			}
-		}
-		return null;
+		return (ReducedSettlement)settlements.get(location);
 	}
 
 	public boolean cityAtLocation(int location) {
-		for (ReducedBoardPiece city : cities) {
-			if (city.getLocation() == location) {
-				return true;
-			}
+		ReducedBoardPiece city  = cities.get(location);
+		if(city!=null){
+			return true;
+		}else{
+			return false;
 		}
-		return false;
 	}
 
 	public boolean cityAtLocation(int location, int player) {
-		for (ReducedBoardPiece city : cities) {
-			if (city.getLocation() == location && city.getOwner() == player) {
-				return true;
-			}
+		ReducedBoardPiece city  = cities.get(location);
+		if(city!=null && city.getOwner() == player){
+			return true;
+		}else{
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -358,12 +360,7 @@ public class ReducedBoard {
 	 * @return The city object if it exists at the location. Null if it doesn't
 	 */
 	public ReducedCity getCityAtLocation(int location) {
-		for (ReducedBoardPiece city : cities) {
-			if (city.getLocation() == location) {
-				return (ReducedCity) city;
-			}
-		}
-		return null;
+		return (ReducedCity)cities.get(location);
 	}
 
 	/**
@@ -376,23 +373,20 @@ public class ReducedBoard {
 	 */
 	public boolean isValidSettlement(int location, int owner) {
 		List<Integer> surroundingNodes = referenceBoard.getAdjacentNodesToNode(location);
-		List<Integer> surroundingEdges = referenceBoard.getAdjacentEdgesToNode(location);
-
-		List<ReducedBoardPiece> pieces = new ArrayList<>(settlements);
-		pieces.addAll(cities);
-
-		for (ReducedBoardPiece piece : pieces) {
-			// If there is a piece too close then not valid
-			if (surroundingNodes.contains(piece.getLocation())) {
+		List<Integer> surroundingEdges = referenceBoard.getAdjacentEdgesToNode(location);		
+		
+		for (Integer node : surroundingNodes) {
+			if(cities.get(node)!=null || settlements.get(node)!=null){
 				return false;
 			}
 		}
 
+
 		// Find the roads that are next to the tested location
 		List<ReducedBoardPiece> adjRoads = new ArrayList<ReducedBoardPiece>();
-		for (ReducedBoardPiece road : roads) {
-			if (surroundingEdges.contains(road.getLocation())) {
-				adjRoads.add(road);
+		for (Integer edge : surroundingEdges) {
+			if(roads.get(edge)!=null){
+				adjRoads.add(roads.get(edge));
 			}
 		}
 
@@ -436,7 +430,7 @@ public class ReducedBoard {
 
 	public boolean addRoad(int location, int owner) {
 		if (isValidRoad(location, owner)) {
-			roads.add(new ReducedRoad(location, owner));
+			roads.put(location,new ReducedRoad(location, owner));
 			return true;
 		}
 		return false;
@@ -444,7 +438,7 @@ public class ReducedBoard {
 
 	public boolean addCity(int location, int owner) {
 		if (isValidCity(location, owner)) {
-			cities.add(new ReducedCity(location, owner));
+			cities.put(location,new ReducedCity(location, owner));
 			return true;
 		}
 		return false;
@@ -452,7 +446,7 @@ public class ReducedBoard {
 
 	public boolean addSettlement(int location, int owner) {
 		if (isValidSettlement(location, owner)) {
-			settlements.add(new ReducedSettlement(location, owner));
+			settlements.put(location,new ReducedSettlement(location, owner));
 			return true;
 		}
 		return false;
@@ -468,36 +462,51 @@ public class ReducedBoard {
 		List<ReducedBoardPiece> setList = new ArrayList<>();
 		int[] nodeLocations = referenceBoard.getAdjacentNodesToHex(hexLocation);
 		
-		for (ReducedBoardPiece settlement : settlements) {
-			for (int i : nodeLocations) {
-				if(settlement.getLocation() == i){
-					setList.add(settlement);
-				}
+		for (int i : nodeLocations) {
+			ReducedBoardPiece set = settlements.get(i);
+			if(set!=null){
+				setList.add(set);
 			}
 		}
 		
-		for (ReducedBoardPiece city : cities) {
-			for (int i : nodeLocations) {
-				if(city.getLocation() == i){
-					setList.add(city);
-				}
+		for (int i : nodeLocations) {
+			ReducedBoardPiece set = cities.get(i);
+			if(set!=null){
+				setList.add(set);
 			}
 		}
 		
 		return setList;
 	}
 
-	public List<ReducedBoardPiece> getRoads() {
-		return roads;
+	public List<ReducedBoardPiece> getRoadsList() {
+		return new ArrayList<ReducedBoardPiece>(roads.values());
 	}
 
-	public List<ReducedBoardPiece> getCities() {
-		return cities;
+	public List<ReducedBoardPiece> getCitiesList() {
+		return new ArrayList<ReducedBoardPiece>(cities.values());
 	}
 
-	public List<ReducedBoardPiece> getSettlements() {
-		return settlements;
-
+	public List<ReducedBoardPiece> getSettlementsList() {
+		return new ArrayList<ReducedBoardPiece>(settlements.values());
+	}
+	
+	/**
+	 * return all the settlements that belong to a specific player
+	 * @param player
+	 * @return
+	 */
+	public List<ReducedBoardPiece> getSettlements(int player){
+		return null;
+	}
+	
+	/**
+	 * return all the settlements that belong to a specific player
+	 * @param player
+	 * @return
+	 */
+	public List<ReducedBoardPiece> getCities(int player){
+		return null;
 	}
 
 	public SOCBoard getReferenceBoard() {
