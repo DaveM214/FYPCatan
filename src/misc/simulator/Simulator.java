@@ -100,9 +100,7 @@ public class Simulator {
 		int turns =0;
 		
 		// Simulate until the end of the game
-		while (!reducedGame.isGameFinished() && !(turns < 100)) {
-			System.out.println("Player: " + currentPlayerTurn);
-			System.out.println("Round: " + turns);
+		while (!reducedGame.isGameFinished() && (turns < 100)) {
 			// Roll and give resources to people
 			int roll = DiceRoller.rollDice();
 			if (roll == 7) {
@@ -190,14 +188,19 @@ public class Simulator {
 		}
 
 		// Find the player that won.
-		int winningPlayer = -1;
+		ReducedPlayer winningPlayer = null;
 		for (ReducedPlayer player : reducedGame.getPlayers()) {
 			if (player.getVictoryPoints() == reducedGame.WINNING_VP) {
-				winningPlayer = player.getPlayerNumber();
+				winningPlayer = player;
 			}
 		}
-		System.out.println("Winner = " + winningPlayer);
-		return winningPlayer;
+		
+		if(winningPlayer == null){
+			return reducedGame.getPlayers().get(0).getVictoryPoints();
+		}
+		
+		System.out.println("Winner = " + winningPlayer.getPlayerNumber() + " with VP:" + winningPlayer.getVictoryPoints() + " in turns: " + turns);
+		return winningPlayer.getPlayerNumber();
 
 	}
 

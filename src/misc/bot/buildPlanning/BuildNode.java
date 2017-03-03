@@ -3,6 +3,8 @@ package misc.bot.buildPlanning;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.org.apache.xerces.internal.dom.ChildNode;
+
 import misc.bot.moves.BotMove;
 import misc.bot.moves.BuyDevCard;
 import misc.bot.moves.PiecePlacement;
@@ -46,6 +48,10 @@ public class BuildNode {
 	private final BotMove parentMove;
 	private int depth = 0;
 
+	private boolean devCardsGenerated;
+	private boolean tradesDone;
+	private boolean buildingDone;
+
 	/**
 	 * Constructor - create a node of the tree with the relevant information
 	 * passed in
@@ -84,7 +90,17 @@ public class BuildNode {
 			depth = this.parentNode.getDepth();
 			depth++;
 		}
-		generateChildNodes();
+
+		if (parentNode != null) {
+			devCardsGenerated = parentNode.isDevCardsGenerated();
+			tradesDone = parentNode.isTradesDone();
+			buildingDone = parentNode.isBuildingDone();
+		} else {
+			devCardsGenerated = false;
+			tradesDone = false;
+			buildingDone = false;
+		}
+
 	}
 
 	private int getDepth() {
@@ -97,17 +113,21 @@ public class BuildNode {
 		int[] resources = us.getResources();
 
 		// Playing Dev Cards
-		/*
-		 * handlePlayDevCard();
-		 */
 
-		// Bank trades
-		handleBankTradeChildren(ourPlayerNumber);
+		if (!devCardsGenerated) {
+			setDevCardsGenerated(true);
+			handlePlayDevCard();
+		}
 
+		if (!buildingDone) {
+			handleBankTradeChildren(ourPlayerNumber);
+		}
+		
 		// If we have enough for a road find all the road building locations
 
 		if ((resources[SOCResourceConstants.WOOD - 1] >= 1) && (resources[SOCResourceConstants.CLAY - 1] >= 1)
 				&& (game.getOurPlayer().getRoadPieces() > 0)) {
+			setBuildingDone(true);
 			handleRoadBuild();
 		}
 
@@ -116,22 +136,27 @@ public class BuildNode {
 		if (resources[SOCResourceConstants.WOOD - 1] >= 1 && resources[SOCResourceConstants.CLAY - 1] >= 1
 				&& resources[SOCResourceConstants.WHEAT - 1] >= 1 && resources[SOCResourceConstants.SHEEP - 1] >= 1
 				&& game.getOurPlayer().getSettlementPieces() > 0) {
+			setBuildingDone(true);
 			handleSettlementBuild();
 		}
 
 		if (resources[SOCResourceConstants.ORE - 1] >= 3 && resources[SOCResourceConstants.WHEAT - 1] >= 2
 				&& game.getOurPlayer().getCityPieces() > 0) {
 			// BuildCities
+			setBuildingDone(true);
 			handleCityBuild();
 		}
-		// We are only allowed one dev card so it is allowed set it to possible
-		// buy
 
 		if (resources[SOCResourceConstants.ORE - 1] >= 1 && resources[SOCResourceConstants.WHEAT - 1] >= 1
 				&& resources[SOCResourceConstants.SHEEP - 1] >= 1 && game.getDevCardsLeft() > 0) {
+			setBuildingDone(true);
 			handleBuyDevCard();
 		}
 
+		for (BuildNode child : children) {
+			child.getChildren();
+		}
+	
 	}
 
 	private void handlePlayDevCard() {
@@ -284,7 +309,7 @@ public class BuildNode {
 
 	private void handleRoadBuild() {
 		ReducedBoard board = game.getBoard();
-		List<Integer> locations = board.getLegalRoadLocations(ourPlayerNumber);	
+		List<Integer> locations = board.getLegalRoadLocations(ourPlayerNumber);
 		for (Integer location : locations) {
 			ReducedGame gameCopy = new ReducedGame(game);
 			gameCopy.getBoard().addRoad(location, ourPlayerNumber);
@@ -388,6 +413,30 @@ public class BuildNode {
 	 */
 	public BotMove getParentMove() {
 		return parentMove;
+	}
+
+	public boolean isDevCardsGenerated() {
+		return devCardsGenerated;
+	}
+
+	public void setDevCardsGenerated(boolean devCardsGenerated) {
+		this.devCardsGenerated = devCardsGenerated;
+	}
+
+	public boolean isTradesDone() {
+		return tradesDone;
+	}
+
+	public void setTradesDone(boolean tradesDone) {
+		this.tradesDone = tradesDone;
+	}
+
+	public boolean isBuildingDone() {
+		return buildingDone;
+	}
+
+	public void setBuildingDone(boolean buildingDone) {
+		this.buildingDone = buildingDone;
 	}
 
 }

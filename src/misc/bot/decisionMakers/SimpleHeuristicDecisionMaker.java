@@ -30,11 +30,12 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 
 	// MAGIC NUMBERS!
 	private static final int CITY_SCORE = 40;
-	private static final int ROAD_SCORE = 0;
+	private static final int NORMAL_ROAD_SCORE = -6;
+	private static final int PRIORITY_ROAD_SCORE = 10;
 	private static final int BANK_TRADE_SCORE = -2;
 	private static final int SETTLEMENT_SCORE = 30;
-	private static final int BUY_DEV_CARD = 12;
-	private static final int DO_NOTHING_SCORE = -10;
+	private static final int BUY_DEV_CARD = 5;
+	private static final int DO_NOTHING_SCORE = -6;
 
 	private int hexWeAreRobbing = 0;
 
@@ -44,27 +45,52 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 	}
 
 	@Override
-	public ArrayList<BotMove> getMoveDecision() {
+	public List<BotMove> getMoveDecision() {
 
 		ArrayList<ArrayList<BotMove>> possMoves = getAllPossibleMoves();
-		System.out.println("Possible Moves: " + possMoves.size());
+	//	System.out.println("Possible Moves: " + possMoves.size());
 		int bestScore = Integer.MIN_VALUE;
-		int bestIndex = -1;
-		int i = 0;
+		List<List<BotMove>> bestMoves = new ArrayList<>();
 		for (ArrayList<BotMove> moveList : possMoves) {
 			int score = scoreMoves(moveList);
 			if (score > bestScore) {
+				bestMoves.clear();
+				bestMoves.add(moveList);
 				bestScore = score;
-				bestIndex = i;
+			} else if (score == bestScore) {
+				bestMoves.add(moveList);
 			}
-			i++;
 		}
 
-		return possMoves.get(bestIndex);
+		// If there is only one move return it
+		if (bestMoves.size() == 1) {
+			return bestMoves.get(0);
+		} else {
+			return tieBreakBestMoves(bestMoves);
+		}
+	}
+
+	/**
+	 * Decide which move out of a set that ties is better. We will randomly tie
+	 * for now to introduce some variety. A better idea may be to explore which
+	 * of the moves will put us into a better position in terms of available
+	 * settlement locations that we could build
+	 * 
+	 * @param bestMoves
+	 * @return The list of moves that has been chosen.
+	 */
+	private List<BotMove> tieBreakBestMoves(List<List<BotMove>> bestMoves) {
+		return bestMoves.get(new Random().nextInt(bestMoves.size()));
 	}
 
 	private int scoreMoves(ArrayList<BotMove> moveList) {
 		int score = 0;
+
+		boolean needsRoads = false;
+		if ((reducedGame.getBoard().getLegalSettlementLocations(ourPlayer.getPlayerNumber()).size()) == 0) {
+			needsRoads = true;
+			;
+		}
 
 		if (moveList.isEmpty()) {
 			score = DO_NOTHING_SCORE;
@@ -80,7 +106,11 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 					} else if (placement.getPieceType() == SOCPlayingPiece.CITY) {
 						score += CITY_SCORE;
 					} else {
-						score += ROAD_SCORE;
+						if (!needsRoads) {
+							score += NORMAL_ROAD_SCORE;
+						} else {
+							score += PRIORITY_ROAD_SCORE;
+						}
 					}
 					break;
 

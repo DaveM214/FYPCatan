@@ -285,6 +285,7 @@ public abstract class DecisionMaker {
 	public ArrayList<ArrayList<BotMove>> getAllPossibleMoves() {
 		ArrayList<ArrayList<BotMove>> moveCombos = new ArrayList<ArrayList<BotMove>>();
 		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
+		root.generateChildNodes();
 		
 		List<BuildNode> nodes = new ArrayList<BuildNode>();
 		gatherChildren(root, nodes);
@@ -340,7 +341,7 @@ public abstract class DecisionMaker {
 	 * 
 	 * @return A list of moves that should be implemented in the coming turn.
 	 */
-	public abstract ArrayList<BotMove> getMoveDecision();
+	public abstract List<BotMove> getMoveDecision();
 	
 	
 	public abstract int getNewRobberLocation();

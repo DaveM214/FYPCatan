@@ -31,6 +31,9 @@ public class ReducedPlayer {
 	private int cityPieces;
 	private int roadPieces;
 	private boolean hasLongestRoad;
+	private boolean hasLargestArmy;
+	private int numSets;
+	private int numCities;
 
 	/**
 	 * Constructor. Create a reduced player.
@@ -72,6 +75,10 @@ public class ReducedPlayer {
 		}
 		devCardPlayed = false;
 		hasLongestRoad = player.hasLongestRoad();
+		hasLargestArmy = player.hasLargestArmy();
+		numCities = player.getCities().size();
+		numSets = player.getSettlements().size();
+		System.out.println("Settlements.size = " + numSets);
 	}
 
 	/**
@@ -97,7 +104,23 @@ public class ReducedPlayer {
 		this.roadPieces = orig.getRoadPieces();
 		bankTradedRec = orig.copyResourceArray();
 		hasLongestRoad = orig.hasLongestRoad();
+		hasLargestArmy = orig.hasLargestArmy();
+		numCities = orig.getNumCities();
+		numSets = orig.getNumSettlements();
 	}
+
+	private boolean hasLargestArmy() {
+		return hasLargestArmy;
+	}
+	
+	public int getNumCities(){
+		return numCities;
+	}
+	
+	public int getNumSettlements(){
+		return numSets;
+	}
+	
 
 	/**
 	 * Helper method for copying resource array
@@ -159,10 +182,16 @@ public class ReducedPlayer {
 	 */
 	public int getVictoryPoints() {
 		int total = 0;
-		total += victoryPoints;
-		if(hasLongestRoad){
-			victoryPoints += 2;
+		total += numSets;
+		total += (numCities*2);
+		if(hasLongestRoad){		
+			total+=2;
 		}
+		if(hasLargestArmy){
+			total+=2;
+		}
+		
+		
 		return total+=getNumVPCards();
 	}
 
@@ -222,7 +251,9 @@ public class ReducedPlayer {
 	 * representation 0-4
 	 */
 	public void decrementResource(int rNumber) {
-		this.resources[rNumber]--;
+		if(resources[rNumber] > 0){
+			this.resources[rNumber]--;
+		}
 	}
 
 	public int getSettlementPieces() {
@@ -241,12 +272,17 @@ public class ReducedPlayer {
 		roadPieces--;
 	}
 
+	/**
+	 * This method will also add 1 to the count of settlements a player owns.
+	 */
 	public void decrementSettlementPieces() {
 		settlementPieces--;
+		numSets++;
 	}
 
 	public void decrementCityPieces() {
 		cityPieces--;
+		numCities++;
 	}
 
 	public void incrementVictoryPoints() {
@@ -259,6 +295,7 @@ public class ReducedPlayer {
 	 */
 	public void incrementSettlementPieces() {
 		settlementPieces++;
+		numSets--;
 	}
 
 	/**
@@ -321,7 +358,7 @@ public class ReducedPlayer {
 		}
 		
 		if(choiceList.size() == 0){
-			return -1;
+			return 0;
 		}
 		
 		Random rand = new Random();

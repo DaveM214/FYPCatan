@@ -25,12 +25,12 @@ public class RandomDecisionMaker extends DecisionMaker{
 		
 
 		try {
-			for (int i = 0; i < 100000 ; i++) {
+			for (int i = 0; i < 10000 ; i++) {
 				System.out.println("Sim :" + i);
 				sim.setReducedGame(new ReducedGame(reducedGame));
 				sim.setCurrentTurn(getOurPlayerNumber());
 				int winner = sim.runSimulator();
-				System.out.println("Simulated Winnder: " +  winner);
+				System.out.println("Simulated Winner: " +  winner);
 			}
 		} catch (SimNotInitialisedException e) {
 			// TODO Auto-generated catch block
@@ -41,7 +41,6 @@ public class RandomDecisionMaker extends DecisionMaker{
 	 
 	 
 		ArrayList<ArrayList<BotMove>> possMoves = getAllPossibleMoves();
-		System.out.println("Possible Moves: " + possMoves.size());
 		Random rand = new Random();
 		return possMoves.get(rand.nextInt(possMoves.size()));
 	}

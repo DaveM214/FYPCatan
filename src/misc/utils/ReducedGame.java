@@ -246,14 +246,14 @@ public class ReducedGame {
 
 		for (ReducedPlayer reducedPlayer : players) {
 			if (reducedPlayer.getPlayerNumber() != player) {
-				int i = reducedPlayer.getResource(res);
+				int i = reducedPlayer.getResource(res-1);
 				stolenResource += i;
-				reducedPlayer.setResource(res, 0);
+				reducedPlayer.setResource(res-1, 0);
 			}
 		}
 
-		int currResource = players.get(player).getResource(res);
-		players.get(player).setResource(res, stolenResource + currResource);
+		int currResource = players.get(player).getResource(res-1);
+		players.get(player).setResource(res-1, stolenResource + currResource);
 		players.get(player).decrementDevelopmentCards(SOCDevCardConstants.MONO);
 	}
 

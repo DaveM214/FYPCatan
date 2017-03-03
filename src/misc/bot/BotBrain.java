@@ -79,7 +79,7 @@ public class BotBrain extends Thread {
 	private boolean expectingMove = false;
 	private boolean waitingForGameState = false;
 	private boolean expectingDiceRoll = false;
-	private ArrayList<BotMove> movesToProcess;
+	private List<BotMove> movesToProcess;
 	private boolean expectingPiecePlacement;
 	private List<PiecePlacement> buildList;
 	private boolean expectingDevCard;

@@ -133,14 +133,6 @@ public class ReducedBoard {
 			}
 		}
 
-		// Check that those nodes do not already contain settlements.
-		for (ReducedBoardPiece settlement : getSettlementsList()) {
-			Integer location = settlement.getLocation();
-			if (validSettlements.contains(location)) {
-				validSettlements.remove(location);
-			}
-		}
-
 		return validSettlements;
 
 	}
@@ -229,8 +221,6 @@ public class ReducedBoard {
 				}
 			}
 		}
-
-		System.out.println("Joining Settlements: " + joiningSettlements.toString());
 		
 		// If no joining settlements then check that a player has a road that
 		// links to it.
@@ -255,7 +245,7 @@ public class ReducedBoard {
 					for (Integer edge : joiningEdges) {
 						// If there is a road we own adjacent to the edge and it
 						// is not adjacent to the settlement we can build
-						if (roadAtLocation(edge.intValue(), owner) && !adjacentEdgesToCity.contains(edge)) {
+						if (roadAtLocation(edge.intValue(), owner) && !(adjacentEdgesToCity.contains(edge))) {
 							return true;
 						}
 					}
@@ -372,8 +362,16 @@ public class ReducedBoard {
 	 * @return
 	 */
 	public boolean isValidSettlement(int location, int owner) {
+		
+		if(settlements.get(location) != null){
+			return false;
+		}
+		if(cities.get(location) != null){
+			return false;
+		}
+		
 		List<Integer> surroundingNodes = referenceBoard.getAdjacentNodesToNode(location);
-		List<Integer> surroundingEdges = referenceBoard.getAdjacentEdgesToNode(location);		
+		List<Integer> surroundingEdges = referenceBoard.getAdjacentEdgesToNode(location);			
 		
 		for (Integer node : surroundingNodes) {
 			if(cities.get(node)!=null || settlements.get(node)!=null){
