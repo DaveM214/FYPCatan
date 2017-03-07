@@ -123,60 +123,7 @@ public class Simulator {
 			
 			//Hanging here
 			List<BotMove> movesToPlay = currentDM.getMoveDecision();		
-			List<BotMove> devCard = new ArrayList<BotMove>();
-			List<BotMove> trades = new ArrayList<BotMove>();
-			List<PiecePlacement> builds = new ArrayList<PiecePlacement>();
-			List<BotMove> buys = new ArrayList<BotMove>();
-
-			for (BotMove botMove : movesToPlay) {
-
-				if (botMove.getMoveType() == 2) {
-					trades.add(botMove);
-				}
-				if (botMove.getMoveType() == 1) {
-					builds.add((PiecePlacement) botMove);
-				}
-				if (botMove.getMoveType() == 3) {
-					buys.add(botMove);
-				}
-				if (botMove.getMoveType() == 4) {
-					devCard.add(botMove);
-				}
-			}
-
-			// Process any development cards played
-			if (!devCard.isEmpty()) {
-				PlayDevCard card = (PlayDevCard) devCard.get(0);
-				switch (card.getDevCardType()) {
-				case PlayDevCard.MONOPOLY:
-					reducedGame.handleMonopoly((PlayMonopoly) card, currentPlayerTurn);
-					break;
-
-				case PlayDevCard.YEAR_OF_PLENTY:
-					reducedGame.handleYOP((PlayYOP) card, currentPlayerTurn);
-					break;
-
-				case PlayDevCard.ROAD_BUILDING:
-					reducedGame.handleRoadBuilding((PlayRoadBuilding) card, currentPlayerTurn);
-					break;
-
-				case PlayDevCard.KNIGHT:
-					reducedGame.handleKnightCard((PlayKnight) card, currentPlayerTurn);
-					break;
-				}
-			}
-
-			for (BotMove trade : trades) {
-				reducedGame.handleTrade((Trade) trade, currentPlayerTurn);
-			}
-
-			for (BotMove buy : buys) {
-				reducedGame.handleBuyingDevCard(currentPlayerTurn);
-			}
-
-			for (BotMove build : builds) {
-				reducedGame.handlePiecePlacement((PiecePlacement) build, currentPlayerTurn);
-			}
+			reducedGame.applyMoveSet(movesToPlay, currentPlayerTurn);
 
 			// Move the turn to the next player.
 			if (currentPlayerTurn == 3) {

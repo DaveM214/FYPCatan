@@ -297,20 +297,20 @@ public abstract class DecisionMaker {
 		
 		return moveCombos;
 	}
-
-	/**
-	 * Given build a node gather all the moves that led to it.
-	 * 
-	 * @param buildNode
-	 * @return
-	 */
-	private ArrayList<BotMove> generateMovesFromNode(BuildNode buildNode) {
-		ArrayList<BotMove> moves = new ArrayList<>();
-		while (buildNode.getParentNode() != null) {
-			moves.add(0, buildNode.getParentMove());
-			buildNode = buildNode.getParentNode();
-		}
-		return moves;
+	
+	public List<BuildNode> getPossibleChildStates(ReducedGame reducedGame){
+		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
+		root.generateChildNodes();
+		List<BuildNode> nodes = new ArrayList<BuildNode>();
+		 gatherChildren(root, nodes);
+		 return nodes;
+	}
+	
+	public List<BuildNode> getPossibleChildStates(BuildNode buildNode){
+		buildNode.generateChildNodes();
+		List<BuildNode> nodes = new ArrayList<BuildNode>();
+		gatherChildren(buildNode, nodes);
+		return nodes;
 	}
 
 	/**
@@ -322,6 +322,23 @@ public abstract class DecisionMaker {
 			gatherChildren(childNode, visited);
 		}
 	}
+
+	/**
+	 * Given build a node gather all the moves that led to it.
+	 * 
+	 * @param buildNode
+	 * @return
+	 */
+	public ArrayList<BotMove> generateMovesFromNode(BuildNode buildNode) {
+		ArrayList<BotMove> moves = new ArrayList<>();
+		while (buildNode.getParentNode() != null) {
+			moves.add(0, buildNode.getParentMove());
+			buildNode = buildNode.getParentNode();
+		}
+		return moves;
+	}
+
+
 	
 	/**
 	 * Helper method returns all the resources that a player has.

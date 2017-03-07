@@ -38,7 +38,7 @@ public class BuildNode {
 	private int ourPlayerNumber;
 	private ReducedGame game;
 
-	private SOCGame referenceGame;
+	private final SOCGame referenceGame;
 	private SOCPlayer ourPlayer;
 
 	private BuildNode parentNode;
@@ -53,27 +53,12 @@ public class BuildNode {
 	private boolean buildingDone;
 
 	/**
-	 * Constructor - create a node of the tree with the relevant information
-	 * passed in
 	 * 
-	 * @param ore
-	 *            Amount of ore
-	 * @param wood
-	 *            Amount of wood
-	 * @param clay
-	 *            Amount of clay
-	 * @param wheat
-	 *            Amount of wheat
-	 * @param sheep
-	 *            Amount of sheep
-	 * @param parentMove
-	 *            The move that generated - it
-	 * @param parentNode
-	 *            The state of the game before this node
-	 * @param ourPlayer
-	 *            ourPlayer
-	 * @param game
-	 *            The SOC game this is a part of.
+	 * @param game The reduced game this build node is using.
+	 * @param parentMove The move that caused this build node
+	 * @param parentNode The node that was before this one.
+	 * @param ourPlayer SOCPlayer representing us
+	 * @param referenceGame SOCGame for reference/.
 	 */
 	public BuildNode(ReducedGame game, BotMove parentMove, BuildNode parentNode, SOCPlayer ourPlayer,
 			SOCGame referenceGame) {
@@ -122,7 +107,7 @@ public class BuildNode {
 		if (!buildingDone) {
 			handleBankTradeChildren(ourPlayerNumber);
 		}
-		
+
 		// If we have enough for a road find all the road building locations
 
 		if ((resources[SOCResourceConstants.WOOD - 1] >= 1) && (resources[SOCResourceConstants.CLAY - 1] >= 1)
@@ -156,7 +141,7 @@ public class BuildNode {
 		for (BuildNode child : children) {
 			child.getChildren();
 		}
-	
+
 	}
 
 	private void handlePlayDevCard() {

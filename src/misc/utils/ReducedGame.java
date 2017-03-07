@@ -3,7 +3,10 @@ package misc.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import misc.bot.moves.BotMove;
 import misc.bot.moves.PiecePlacement;
+import misc.bot.moves.PlayDevCard;
 import misc.bot.moves.PlayKnight;
 import misc.bot.moves.PlayMonopoly;
 import misc.bot.moves.PlayRoadBuilding;
@@ -415,6 +418,67 @@ public class ReducedGame {
 			for(int j = 0; j < amount;j++){
 				discardingPlayer.decrementResource(i);
 			}
+		}
+	}
+	
+	/**
+	 * Given a list of bot moves apply them to this game.
+	 */
+	public void applyMoveSet(List<BotMove> moveList, int currentPlayerTurn){
+		
+		List<BotMove> devCard = new ArrayList<BotMove>();
+		List<BotMove> trades = new ArrayList<BotMove>();
+		List<PiecePlacement> builds = new ArrayList<PiecePlacement>();
+		List<BotMove> buys = new ArrayList<BotMove>();
+
+		for (BotMove botMove : moveList) {
+
+			if (botMove.getMoveType() == 2) {
+				trades.add(botMove);
+			}
+			if (botMove.getMoveType() == 1) {
+				builds.add((PiecePlacement) botMove);
+			}
+			if (botMove.getMoveType() == 3) {
+				buys.add(botMove);
+			}
+			if (botMove.getMoveType() == 4) {
+				devCard.add(botMove);
+			}
+		}
+
+		// Process any development cards played
+		if (!devCard.isEmpty()) {
+			PlayDevCard card = (PlayDevCard) devCard.get(0);
+			switch (card.getDevCardType()) {
+			case PlayDevCard.MONOPOLY:
+				handleMonopoly((PlayMonopoly) card, currentPlayerTurn);
+				break;
+
+			case PlayDevCard.YEAR_OF_PLENTY:
+				handleYOP((PlayYOP) card, currentPlayerTurn);
+				break;
+
+			case PlayDevCard.ROAD_BUILDING:
+				handleRoadBuilding((PlayRoadBuilding) card, currentPlayerTurn);
+				break;
+
+			case PlayDevCard.KNIGHT:
+				handleKnightCard((PlayKnight) card, currentPlayerTurn);
+				break;
+			}
+		}
+
+		for (BotMove trade : trades) {
+			handleTrade((Trade) trade, currentPlayerTurn);
+		}
+
+		for (BotMove buy : buys) {
+			handleBuyingDevCard(currentPlayerTurn);
+		}
+
+		for (BotMove build : builds) {
+			handlePiecePlacement((PiecePlacement) build, currentPlayerTurn);
 		}
 	}
 
