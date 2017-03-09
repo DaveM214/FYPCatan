@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import misc.bot.BotClient;
 import misc.bot.decisionMakers.DecisionMaker;
+import misc.bot.decisionMakers.MonteCarloDecisionMaker;
 import misc.bot.decisionMakers.RandomDecisionMaker;
 import misc.bot.decisionMakers.SimpleHeuristicDecisionMaker;
 import misc.bot.moves.BotMove;

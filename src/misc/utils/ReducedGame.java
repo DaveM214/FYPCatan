@@ -62,9 +62,6 @@ public class ReducedGame {
 			ReducedPlayer reducedPlayer = new ReducedPlayer(socPlayer);
 			players.add(reducedPlayer);
 		}
-
-		System.out.println("Reduced Game Resources: " + players.get(ourPlayerNumber).getResources().toString());
-
 	}
 
 	/**
@@ -480,6 +477,18 @@ public class ReducedGame {
 		for (BotMove build : builds) {
 			handlePiecePlacement((PiecePlacement) build, currentPlayerTurn);
 		}
+	}
+
+	public int getHighestVP() {
+		int highVP = 0;
+		ReducedPlayer bestPlayer = null;
+		for (ReducedPlayer player : getPlayers()) {
+			if(player.getVictoryPoints() > highVP){
+				highVP = player.getVictoryPoints();
+				bestPlayer = player;
+			}
+		}
+		return bestPlayer.getPlayerNumber();
 	}
 
 }

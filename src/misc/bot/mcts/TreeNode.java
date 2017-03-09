@@ -17,7 +17,6 @@ public abstract class TreeNode {
 	protected int totalSimulations;
 	protected int[] wonSimulations = new int[4];
 	protected int playerTurn;
-	private boolean expansionsGenerated;
 
 	public static final int DECISION_NODE = 0;
 	public static final int CHANCE_NODE = 1;
@@ -26,9 +25,8 @@ public abstract class TreeNode {
 		this.nodeType = type;
 		this.parent = parent;
 		this.buildNode = buildNode;
-		this.children = new ArrayList<>();
-		this.unexploredChildren = new ArrayList<>();
-		this.expansionsGenerated = false;
+		this.children = new ArrayList<TreeNode>();
+		this.unexploredChildren = new ArrayList<TreeNode>();
 	}
 
 	public TreeNode getParent() {
@@ -58,7 +56,7 @@ public abstract class TreeNode {
 			if (type == DECISION_NODE) {
 				unexploredChildren.add(new DecisionNode(this, node));
 			} else {
-
+				unexploredChildren.add(new ChanceNode(this, node));
 			}
 		}
 	}
@@ -90,14 +88,11 @@ public abstract class TreeNode {
 	public int getPlayerTurn() {
 		return playerTurn;
 	}
-
-	public boolean expansionsGenerated() {
-		return this.expansionsGenerated;
+	
+	public void setPlayerTurn(int turn){
+		this.playerTurn = turn;
 	}
 
-	public void setExpansionsGenerated(boolean b) {
-		this.expansionsGenerated = b;
-	}
 
 	/**
 	 * Method to pick an expansion for a tree. For this we will pick a random
@@ -127,6 +122,10 @@ public abstract class TreeNode {
 	}
 	
 	public abstract TreeNode selectNextNode();
+
+	public boolean isTerminal() {
+		return buildNode.getReducedGame().isGameFinished();
+	}
 
 	
 

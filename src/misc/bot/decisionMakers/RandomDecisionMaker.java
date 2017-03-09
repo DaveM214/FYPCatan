@@ -30,7 +30,6 @@ public class RandomDecisionMaker extends DecisionMaker{
 				sim.setReducedGame(new ReducedGame(reducedGame));
 				sim.setCurrentTurn(getOurPlayerNumber());
 				int winner = sim.runSimulator();
-				System.out.println("Simulated Winner: " +  winner);
 			}
 		} catch (SimNotInitialisedException e) {
 			// TODO Auto-generated catch block

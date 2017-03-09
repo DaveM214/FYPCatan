@@ -312,6 +312,7 @@ public abstract class DecisionMaker {
 		gatherChildren(buildNode, nodes);
 		return nodes;
 	}
+	
 
 	/**
 	 * Recursive method to do traversal

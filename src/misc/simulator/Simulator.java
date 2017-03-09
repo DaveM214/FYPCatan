@@ -90,7 +90,6 @@ public class Simulator {
 	 */
 	public int runSimulator() throws SimNotInitialisedException {
 
-		System.out.println("Running sim");
 		reducedGame.createDevCardDeck();
 
 		if (currentPlayerTurn == -1) {
@@ -121,7 +120,7 @@ public class Simulator {
 			DecisionMaker currentDM = dmArr[currentPlayerTurn];
 			currentDM.setReducedGame(new ReducedGame(reducedGame));	
 			
-			//Hanging here
+			//Hanging here?
 			List<BotMove> movesToPlay = currentDM.getMoveDecision();		
 			reducedGame.applyMoveSet(movesToPlay, currentPlayerTurn);
 
@@ -143,7 +142,7 @@ public class Simulator {
 		}
 		
 		if(winningPlayer == null){
-			return reducedGame.getPlayers().get(0).getVictoryPoints();
+			return reducedGame.getHighestVP();
 		}
 		
 		System.out.println("Winner = " + winningPlayer.getPlayerNumber() + " with VP:" + winningPlayer.getVictoryPoints() + " in turns: " + turns);

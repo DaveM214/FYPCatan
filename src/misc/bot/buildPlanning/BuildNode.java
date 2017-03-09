@@ -51,14 +51,20 @@ public class BuildNode {
 	private boolean devCardsGenerated;
 	private boolean tradesDone;
 	private boolean buildingDone;
+	private boolean roadsDone;
 
 	/**
 	 * 
-	 * @param game The reduced game this build node is using.
-	 * @param parentMove The move that caused this build node
-	 * @param parentNode The node that was before this one.
-	 * @param ourPlayer SOCPlayer representing us
-	 * @param referenceGame SOCGame for reference/.
+	 * @param game
+	 *            The reduced game this build node is using.
+	 * @param parentMove
+	 *            The move that caused this build node
+	 * @param parentNode
+	 *            The node that was before this one.
+	 * @param ourPlayer
+	 *            SOCPlayer representing us
+	 * @param referenceGame
+	 *            SOCGame for reference/.
 	 */
 	public BuildNode(ReducedGame game, BotMove parentMove, BuildNode parentNode, SOCPlayer ourPlayer,
 			SOCGame referenceGame) {
@@ -79,10 +85,12 @@ public class BuildNode {
 		if (parentNode != null) {
 			devCardsGenerated = parentNode.isDevCardsGenerated();
 			tradesDone = parentNode.isTradesDone();
+			roadsDone = parentNode.isRoadsDone();
 			buildingDone = parentNode.isBuildingDone();
 		} else {
 			devCardsGenerated = false;
 			tradesDone = false;
+			roadsDone = false;
 			buildingDone = false;
 		}
 
@@ -90,6 +98,16 @@ public class BuildNode {
 
 	private int getDepth() {
 		return depth;
+	}
+
+	/**
+	 * Recursive method to do traversal
+	 */
+	public void gatherChildren(BuildNode node, List<BuildNode> visited) {
+		visited.add(node);
+		for (BuildNode childNode : node.getChildren()) {
+			gatherChildren(childNode, visited);
+		}
 	}
 
 	public void generateChildNodes() {
@@ -104,16 +122,18 @@ public class BuildNode {
 			handlePlayDevCard();
 		}
 
-		if (!buildingDone) {
+		if (!buildingDone && !roadsDone) {
 			handleBankTradeChildren(ourPlayerNumber);
 		}
 
 		// If we have enough for a road find all the road building locations
 
-		if ((resources[SOCResourceConstants.WOOD - 1] >= 1) && (resources[SOCResourceConstants.CLAY - 1] >= 1)
-				&& (game.getOurPlayer().getRoadPieces() > 0)) {
-			setBuildingDone(true);
-			handleRoadBuild();
+		if (!buildingDone) {
+			if ((resources[SOCResourceConstants.WOOD - 1] >= 1) && (resources[SOCResourceConstants.CLAY - 1] >= 1)
+					&& (game.getOurPlayer().getRoadPieces() > 0)) {
+				setIsRoadsDone(true);
+				handleRoadBuild();
+			}
 		}
 
 		// If we have enough for a settlement find all the locations that we can
@@ -139,7 +159,7 @@ public class BuildNode {
 		}
 
 		for (BuildNode child : children) {
-			child.getChildren();
+			child.generateChildNodes();
 		}
 
 	}
@@ -152,6 +172,7 @@ public class BuildNode {
 			// If we have already played a dev card then add no child states
 			return;
 		} else {
+
 			// We have road building
 			if (devCards[SOCDevCardConstants.ROADS] > 0 && us.getRoadPieces() >= 2) {
 				// Get all the valid 2 road permutations.
@@ -389,6 +410,14 @@ public class BuildNode {
 
 	public List<BuildNode> getChildren() {
 		return children;
+	}
+
+	public boolean isRoadsDone() {
+		return roadsDone;
+	}
+
+	public void setIsRoadsDone(boolean roadsDone) {
+		this.roadsDone = roadsDone;
 	}
 
 	/**

@@ -30,6 +30,7 @@ public class ReducedPlayer {
 	private int settlementPieces;
 	private int cityPieces;
 	private int roadPieces;
+	
 	private boolean hasLongestRoad;
 	private boolean hasLargestArmy;
 	private int numSets;
@@ -78,7 +79,6 @@ public class ReducedPlayer {
 		hasLargestArmy = player.hasLargestArmy();
 		numCities = player.getCities().size();
 		numSets = player.getSettlements().size();
-		System.out.println("Settlements.size = " + numSets);
 	}
 
 	/**
