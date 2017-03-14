@@ -15,9 +15,10 @@ import soc.game.SOCGame;
 public class MonteCarloDecisionMaker extends DecisionMaker {
 
 	private int simulationCount = 0;
-	public static final int MAXIMUM_SIMULATIONS = 100;
+	public static final int MAXIMUM_SIMULATIONS = 5000;
 
 	// This is the theortical best value of C - will need to be changed.
+	// Directs how much exploring we do - 
 	public static final double EXPLORATION_PARAM = Math.sqrt(2);
 
 	public MonteCarloDecisionMaker(SOCGame game) {
@@ -38,7 +39,7 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 		TreeNode root = new DecisionNode(null, rootBuildNode);
 		root.setPlayerTurn(reducedGame.getOurPlayerNumber());
 		root.addUnexploredChildren(TreeNode.CHANCE_NODE, getPossibleChildStates(rootBuildNode));
-		Simulator sim = new Simulator(game, getOurPlayerNumber());
+		
 
 		// START THE TREE SEARCH
 		while (simulationCount < MAXIMUM_SIMULATIONS) {
@@ -59,6 +60,7 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 				TreeNode expansion = nextNode.pickExpansion();
 
 				// 3 - Do a simulation
+				Simulator sim = new Simulator(game, getOurPlayerNumber());
 				sim.setReducedGame(new ReducedGame(expansion.getBuildNode().getReducedGame()));
 				sim.setCurrentTurn(expansion.getPlayerTurn());
 				int winner = -1;
@@ -68,6 +70,9 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 
 				}
 				simulationCount++;
+				if(simulationCount%100 == 0){
+					System.gc();
+				}
 				System.out.println("Simulations run: " + simulationCount );
 
 				// 4 - Back the results up the tree.

@@ -48,7 +48,6 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 	public List<BotMove> getMoveDecision() {
 
 		ArrayList<ArrayList<BotMove>> possMoves = getAllPossibleMoves();
-	//	System.out.println("Possible Moves: " + possMoves.size());
 		int bestScore = Integer.MIN_VALUE;
 		List<List<BotMove>> bestMoves = new ArrayList<>();
 		for (ArrayList<BotMove> moveList : possMoves) {
@@ -89,7 +88,6 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 		boolean needsRoads = false;
 		if ((reducedGame.getBoard().getLegalSettlementLocations(ourPlayer.getPlayerNumber()).size()) == 0) {
 			needsRoads = true;
-			;
 		}
 
 		if (moveList.isEmpty()) {

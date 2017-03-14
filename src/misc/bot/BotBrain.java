@@ -91,7 +91,7 @@ public class BotBrain extends Thread {
 		this.game = game;
 		alive = true;
 		expectingDevCard = false;
-		dm = new RandomDecisionMaker(game);
+		dm = new MonteCarloDecisionMaker(game);
 		movesToProcess = new ArrayList<BotMove>();
 		buildList = new ArrayList<PiecePlacement>();
 	}

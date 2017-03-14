@@ -18,6 +18,7 @@ import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 import soc.game.SOCPlayingPiece;
 import soc.game.SOCResourceConstants;
+import soc.message.SOCGamesWithOptions;
 import sun.security.util.Length;
 
 /**
@@ -79,7 +80,7 @@ public class ReducedGame {
 			ReducedPlayer newPlayer = new ReducedPlayer(player);
 			players.add(newPlayer);
 		}
-		this.referenceGame = orig.referenceGame;
+		this.referenceGame = orig.getReferenceGame();
 
 	}
 
@@ -489,6 +490,10 @@ public class ReducedGame {
 			}
 		}
 		return bestPlayer.getPlayerNumber();
+	}
+	
+	public SOCGame getReferenceGame(){
+		return this.referenceGame;
 	}
 
 }

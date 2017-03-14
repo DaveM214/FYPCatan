@@ -1,10 +1,14 @@
 package misc.bot.buildPlanning;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import com.sun.org.apache.xerces.internal.dom.ChildNode;
 
+import misc.bot.decisionMakers.DecisionMaker;
 import misc.bot.moves.BotMove;
 import misc.bot.moves.BuyDevCard;
 import misc.bot.moves.PiecePlacement;
@@ -16,6 +20,7 @@ import misc.utils.GameUtils;
 import misc.utils.ReducedBoard;
 import misc.utils.ReducedGame;
 import misc.utils.ReducedPlayer;
+import misc.utils.SettlementResourceInfo;
 import soc.game.SOCBoard;
 import soc.game.SOCDevCardConstants;
 import soc.game.SOCGame;
@@ -44,6 +49,8 @@ public class BuildNode {
 	private BuildNode parentNode;
 	private List<BuildNode> children;
 	private boolean[] bankRecResources;
+	private int[] tradeRates;
+
 	// The Move that got us to this state. Null if it is the root of the tree;
 	private final BotMove parentMove;
 	private int depth = 0;
@@ -52,6 +59,8 @@ public class BuildNode {
 	private boolean tradesDone;
 	private boolean buildingDone;
 	private boolean roadsDone;
+
+	private final static int MAX_ROADS = 3;
 
 	/**
 	 * 
@@ -77,23 +86,36 @@ public class BuildNode {
 		// populateResouceFields();
 		this.parentMove = parentMove;
 		this.parentNode = parentNode;
+		tradeRates = new int[5];
 		if (parentNode != null) {
 			depth = this.parentNode.getDepth();
 			depth++;
-		}
-
-		if (parentNode != null) {
 			devCardsGenerated = parentNode.isDevCardsGenerated();
 			tradesDone = parentNode.isTradesDone();
 			roadsDone = parentNode.isRoadsDone();
 			buildingDone = parentNode.isBuildingDone();
-		} else {
+		}
+
+		else {
 			devCardsGenerated = false;
 			tradesDone = false;
 			roadsDone = false;
 			buildingDone = false;
+			depth = 0;
+
 		}
 
+		/*
+		 * System.out.println("NODE DEPTH: " + depth); System.out.println(
+		 * "NODE RESOURCES" + GameUtils.resourcesToString(resources));
+		 * System.out.println("MOVES : " +
+		 * DecisionMaker.genMoves(this).toString());
+		 */
+
+	}
+
+	private int[] getTradeRates() {
+		return this.tradeRates;
 	}
 
 	private int getDepth() {
@@ -117,10 +139,9 @@ public class BuildNode {
 
 		// Playing Dev Cards
 
-		if (!devCardsGenerated) {
-			setDevCardsGenerated(true);
-			handlePlayDevCard();
-		}
+		/*
+		 * if (depth == 0) { setDevCardsGenerated(true); handlePlayDevCard(); }
+		 */
 
 		if (!buildingDone && !roadsDone) {
 			handleBankTradeChildren(ourPlayerNumber);
@@ -158,10 +179,11 @@ public class BuildNode {
 			handleBuyDevCard();
 		}
 
+		// if (depth < 5) {
 		for (BuildNode child : children) {
 			child.generateChildNodes();
 		}
-
+		// }
 	}
 
 	private void handlePlayDevCard() {
@@ -313,7 +335,7 @@ public class BuildNode {
 		}
 	}
 
-	private void handleRoadBuild() {
+	private void handleRoadBuild(boolean b) {
 		ReducedBoard board = game.getBoard();
 		List<Integer> locations = board.getLegalRoadLocations(ourPlayerNumber);
 		for (Integer location : locations) {
@@ -330,6 +352,85 @@ public class BuildNode {
 	}
 
 	/**
+	 * Heuristic Road build method - limits the amount of roads that can be
+	 * built
+	 */
+	private void handleRoadBuild() {
+		ReducedBoard board = game.getBoard();
+		List<Integer> locations = board.getLegalRoadLocations(ourPlayerNumber);
+		Map<Integer, Integer> locationScores = new HashMap<>();
+
+		for (Integer location : locations) {
+			int score = scoreRoadLocation(location);
+			if (locationScores.size() < MAX_ROADS) {
+				locationScores.put(location, score);
+			} else {
+				int minLocation = 0;
+				int minScore = Integer.MAX_VALUE;
+				for (Integer i : locationScores.keySet()) {
+					int check = locationScores.get(i);
+					if (check < minScore) {
+						minLocation = i;
+						minScore = check;
+					} else if (check == minScore) {
+						Random rand = new Random();
+						boolean b = rand.nextBoolean();
+						if (b) {
+							minLocation = i;
+							minScore = check;
+						}
+					}
+				}
+
+				// If we have a better score
+				if (score > minScore) {
+					locationScores.remove(minLocation);
+					locationScores.put(location, score);
+				}
+			}
+		}
+
+		for (Integer location : locationScores.keySet()) {
+			ReducedGame gameCopy = new ReducedGame(game);
+			gameCopy.getBoard().addRoad(location, ourPlayerNumber);
+			ReducedPlayer usInCopy = gameCopy.getOurPlayer();
+			usInCopy.decrementResource(SOCResourceConstants.CLAY - 1);
+			usInCopy.decrementResource(SOCResourceConstants.WOOD - 1);
+			usInCopy.decrementRoadPieces();
+			BotMove move = new PiecePlacement(location, SOCPlayingPiece.ROAD);
+			BuildNode child = new BuildNode(gameCopy, move, this, ourPlayer, referenceGame);
+			children.add(child);
+		}
+
+	}
+
+	/**
+	 * Apply heuristics to guide road expansion. Focus on roads being built that
+	 * will allow us to build settlements. Probably needs to be made more
+	 * complicated.
+	 * 
+	 * @param roadLocation
+	 * @return
+	 */
+	private int scoreRoadLocation(int roadLocation) {
+		int currSettlementLocation = game.getBoard().getLegalSettlementLocations(ourPlayerNumber).size();
+		ReducedGame copy = new ReducedGame(game);
+		ReducedBoard boardCopy = copy.getBoard();
+		boardCopy.addRoad(roadLocation, ourPlayerNumber);
+		int score = 0;
+
+		if (copy.getPlayer(ourPlayerNumber).hasLongestRoad()) {
+			score += 70;
+		}
+
+		// If it lets us build more settlement add to the total.
+		List<Integer> copyLocations = boardCopy.getLegalSettlementLocations(ourPlayerNumber);
+		score = score + (copyLocations.size() - currSettlementLocation) * 50;
+
+		return score;
+	}
+
+	/**
 	 * Handle populating all possible bank trades deals. We need to take into
 	 * account the regular bank trade rate as well as possible reduced trade
 	 * rate if we have a port and also specific resource ports.
@@ -337,7 +438,7 @@ public class BuildNode {
 	 * TODO modify this method so that we can not try and receive a resource
 	 * that we have used in the past.
 	 */
-	private void handleBankTradeChildren(int player) {
+	private void handleBankTradeChildren(int player, boolean b) {
 		int baseTradeRate = 4;
 
 		// Check if we have 3:1 port
@@ -390,6 +491,366 @@ public class BuildNode {
 			}
 		}
 
+	}
+
+	private void updateTradeRates(int playerNumber) {
+		int baseTradeRate = 4;
+
+		// Check if we have 3:1 port
+		if (game.getPlayer(playerNumber).hasGeneralPort()) {
+			baseTradeRate--;
+		}
+
+		int[] tradeRates = new int[5];
+
+		// Initialise an array of the trade rates.
+		for (int i = 0; i < tradeRates.length; i++) {
+			tradeRates[i] = baseTradeRate;
+		}
+
+		// See if there are any speciality ports
+		boolean[] specPorts = game.getPlayer(playerNumber).hasSpecPorts();
+		for (int i = 0; i < specPorts.length; i++) {
+			if (specPorts[i]) {
+				tradeRates[i] = 2;
+			}
+		}
+
+		this.tradeRates = tradeRates;
+	}
+
+	/**
+	 * Method to handle bank trade children. Different approach now. We will
+	 * only do bank trades if this will allow. The methods will check what
+	 * trades can be made to change the resource. The array will return negative
+	 * values for the resource being trade and positive for the one being
+	 * received.
+	 */
+	private void handleBankTradeChildren(int playerNumber) {
+
+		updateTradeRates(playerNumber);
+
+		if (!isSettlementPossible(playerNumber)) {
+			int[] resources = getSettlementTradeResources(playerNumber);
+			generateBankTradeMoves(playerNumber, resources);
+		}
+
+		if (!isRoadPossible(playerNumber)) {
+			int[] resources = getRoadTradeResources(playerNumber);
+			generateBankTradeMoves(playerNumber, resources);
+		}
+
+		if (!isCityPossible(playerNumber)) {
+			int[] resources = getCityTradeResources(playerNumber);
+			generateBankTradeMoves(playerNumber, resources);
+		}
+
+		if (!isDevCardPossible(playerNumber)) {
+			int[] resources = getDevCardTradeResources(playerNumber);
+			generateBankTradeMoves(playerNumber, resources);
+		}
+
+	}
+
+	private void generateBankTradeMoves(int playerNumber, int[] resources) {
+		if (resources != null) {
+			BuildNode child = this;
+			while (sumArray(resources) != 0) {
+				ReducedGame gameCopy = new ReducedGame(game);
+				ReducedPlayer copyPlayer = gameCopy.getPlayer(playerNumber);
+				int negIndex = getGivingResource(resources);
+				int posIndex = getReceivingResource(resources);
+				copyPlayer.setTradedResourceArray(posIndex, true);
+				copyPlayer.incrementResource(posIndex);
+
+				for (int k = 0; k < tradeRates[negIndex]; k++) {
+					copyPlayer.decrementResource(negIndex);
+				}
+
+				BotMove move = new Trade(negIndex + 1, tradeRates[negIndex], posIndex + 1, 1, -1);
+				BuildNode node = new BuildNode(gameCopy, move, child, ourPlayer, referenceGame);
+				child = node;
+
+				resources[posIndex]--;
+				resources[negIndex] += tradeRates[negIndex];
+			}
+			children.add(child);
+		}
+	}
+
+	private int getReceivingResource(int[] resources) {
+		int index = 0;
+		for (int i : resources) {
+			if (i > 0) {
+				return index;
+			}
+			index++;
+		}
+		return -1;
+	}
+
+	private int getGivingResource(int[] resources) {
+		int index = 0;
+		for (int i : resources) {
+			if (i < 0) {
+				return index;
+			}
+			index++;
+		}
+		return -1;
+	}
+
+	private boolean allZeroes(int[] array) {
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private int[] calculateNumberOfTradesPossible(int[] resources, boolean[] allowed) {
+		int[] tradesPerResource = new int[5];
+		for (int i = 0; i < resources.length; i++) {
+			if (allowed[i] == true) {
+				tradesPerResource[i] = resources[i] / tradeRates[i];
+			} else {
+				tradesPerResource[i] = 0;
+			}
+		}
+		return tradesPerResource;
+	}
+
+	private int[] getDevCardTradeResources(int playerNumber) {
+		ReducedPlayer us = game.getPlayer(playerNumber);
+		int[] resources = us.getResources();
+		int[] trades = new int[5];
+		int missingSheep = 1 - resources[SOCResourceConstants.SHEEP - 1];
+		int missingOre = 1 - resources[SOCResourceConstants.ORE - 1];
+		int missingWheat = 1 - resources[SOCResourceConstants.WHEAT - 1];
+		int resourcesNeeded = 0;
+
+		boolean[] tradeableResources = new boolean[] { true, true, true, true, true };
+
+		if (missingSheep > 0) {
+			resourcesNeeded++;
+			trades[SOCResourceConstants.SHEEP - 1] = 1;
+			tradeableResources[SOCResourceConstants.SHEEP - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.SHEEP - 1] == tradeRates[SOCResourceConstants.SHEEP - 1]) {
+				tradeableResources[SOCResourceConstants.SHEEP - 1] = false;
+			}
+		}
+
+		if (missingOre > 0) {
+			resourcesNeeded++;
+			trades[SOCResourceConstants.ORE - 1] = 1;
+			tradeableResources[SOCResourceConstants.ORE - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.ORE - 1] == tradeRates[SOCResourceConstants.ORE - 1]) {
+				tradeableResources[SOCResourceConstants.ORE - 1] = false;
+			}
+		}
+
+		if (missingWheat > 0) {
+			resourcesNeeded++;
+			trades[SOCResourceConstants.WHEAT - 1] = 1;
+			tradeableResources[SOCResourceConstants.WHEAT - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.WHEAT - 1] == tradeRates[SOCResourceConstants.WHEAT - 1]) {
+				tradeableResources[SOCResourceConstants.WHEAT - 1] = false;
+			}
+		}
+
+		int[] tradesPossible = calculateNumberOfTradesPossible(resources, tradeableResources);
+		return calculateTrades(trades, resourcesNeeded, tradesPossible);
+	}
+
+	private int[] calculateTrades(int[] trades, int resourcesNeeded, int[] tradesPossible) {
+		int numberOfTradesPossible = sumArray(tradesPossible);
+		if (numberOfTradesPossible < resourcesNeeded) {
+			return null;
+		} else {
+			for (int i = 0; i < resourcesNeeded; i++) {
+				int resource = selectResource(tradesPossible);
+				trades[resource] = trades[resource] - tradeRates[resource];
+				tradesPossible[resource]--;
+			}
+			return trades;
+		}
+	}
+
+	private int selectResource(int[] tradesPossible) {
+		int highest = 0;
+		int highestIndex = 0;
+		;
+		int index = 0;
+		for (int i : tradesPossible) {
+			if (i > highest) {
+				highestIndex = index;
+			}
+			index++;
+		}
+		return highestIndex;
+	}
+
+	private int sumArray(int[] arr) {
+		int sum = 0;
+		for (int i : arr) {
+			sum += i;
+		}
+		return sum;
+	}
+
+	private int[] getCityTradeResources(int playerNumber) {
+		ReducedPlayer us = game.getPlayer(playerNumber);
+		int[] resources = us.getResources();
+		int[] trades = new int[5];
+		int missingOre = 3 - resources[SOCResourceConstants.ORE - 1];
+		int missingWheat = 2 - resources[SOCResourceConstants.WHEAT - 1];
+		int resourcesNeeded = 0;
+
+		boolean[] tradeableResources = new boolean[] { true, true, true, true, true };
+
+		if (missingOre > 0) {
+			resourcesNeeded += missingOre;
+			trades[SOCResourceConstants.ORE - 1] = missingOre;
+			tradeableResources[SOCResourceConstants.ORE - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.ORE] - 2 * tradeRates[SOCResourceConstants.ORE] < 3) {
+				tradeableResources[SOCResourceConstants.ORE - 1] = false;
+			}
+		}
+
+		if (missingWheat > 0) {
+			resourcesNeeded += missingWheat;
+			trades[SOCResourceConstants.WHEAT - 1] = missingWheat;
+			tradeableResources[SOCResourceConstants.WHEAT - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.WHEAT] - 3 * tradeRates[SOCResourceConstants.WHEAT] < 3) {
+				tradeableResources[SOCResourceConstants.WHEAT - 1] = false;
+			}
+		}
+
+		int[] tradesPossible = calculateNumberOfTradesPossible(resources, tradeableResources);
+		return calculateTrades(trades, resourcesNeeded, tradesPossible);
+
+	}
+
+	private int[] getRoadTradeResources(int playerNumber) {
+		ReducedPlayer us = game.getPlayer(playerNumber);
+		int[] resources = us.getResources();
+		int[] trades = new int[5];
+		int missingClay = 1 - resources[SOCResourceConstants.CLAY - 1];
+		int missingWood = 1 - resources[SOCResourceConstants.WOOD - 1];
+		int resourcesNeeded = 0;
+
+		boolean[] tradeableResources = new boolean[] { true, true, true, true, true };
+
+		if (missingClay > 0) {
+			resourcesNeeded++;
+			trades[SOCResourceConstants.CLAY - 1] = 1;
+			tradeableResources[SOCResourceConstants.CLAY - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.CLAY - 1] == tradeRates[SOCResourceConstants.CLAY - 1]) {
+				tradeableResources[SOCResourceConstants.CLAY - 1] = false;
+			}
+		}
+
+		if (missingWood > 0) {
+			resourcesNeeded++;
+			trades[SOCResourceConstants.WOOD - 1] = 1;
+			tradeableResources[SOCResourceConstants.WOOD - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.WOOD - 1] == tradeRates[SOCResourceConstants.WOOD - 1]) {
+				tradeableResources[SOCResourceConstants.WOOD - 1] = false;
+			}
+		}
+
+		int[] tradesPossible = calculateNumberOfTradesPossible(resources, tradeableResources);
+		return calculateTrades(trades, resourcesNeeded, tradesPossible);
+	}
+
+	private int[] getSettlementTradeResources(int playerNumber) {
+		ReducedPlayer us = game.getPlayer(playerNumber);
+		int[] resources = us.getResources();
+		int[] trades = new int[5];
+		int missingSheep = 1 - resources[SOCResourceConstants.SHEEP - 1];
+		int missingClay = 1 - resources[SOCResourceConstants.CLAY - 1];
+		int missingWheat = 1 - resources[SOCResourceConstants.WHEAT - 1];
+		int missingWood = 1 - resources[SOCResourceConstants.WOOD - 1];
+		int resourcesNeeded = 0;
+
+		boolean[] tradeableResources = new boolean[] { true, true, true, true, true };
+
+		if (missingSheep > 0) {
+			resourcesNeeded++;
+			trades[SOCResourceConstants.SHEEP - 1] = 1;
+			tradeableResources[SOCResourceConstants.SHEEP - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.SHEEP - 1] == tradeRates[SOCResourceConstants.SHEEP - 1]) {
+				tradeableResources[SOCResourceConstants.SHEEP - 1] = false;
+			}
+		}
+
+		if (missingClay > 0) {
+			resourcesNeeded++;
+			trades[SOCResourceConstants.CLAY - 1] = 1;
+			tradeableResources[SOCResourceConstants.CLAY - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.CLAY - 1] == tradeRates[SOCResourceConstants.CLAY - 1]) {
+				tradeableResources[SOCResourceConstants.CLAY - 1] = false;
+			}
+		}
+
+		if (missingWheat > 0) {
+			resourcesNeeded++;
+			trades[SOCResourceConstants.WHEAT - 1] = 1;
+			tradeableResources[SOCResourceConstants.WHEAT - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.WHEAT - 1] == tradeRates[SOCResourceConstants.WHEAT - 1]) {
+				tradeableResources[SOCResourceConstants.WHEAT - 1] = false;
+			}
+		}
+
+		if (missingWood > 0) {
+			resourcesNeeded++;
+			trades[SOCResourceConstants.WOOD - 1] = 1;
+			tradeableResources[SOCResourceConstants.WOOD - 1] = false;
+		} else {
+			if (resources[SOCResourceConstants.WOOD - 1] == tradeRates[SOCResourceConstants.WOOD - 1]) {
+				tradeableResources[SOCResourceConstants.WOOD - 1] = false;
+			}
+		}
+
+		int[] tradesPossible = calculateNumberOfTradesPossible(resources, tradeableResources);
+		return calculateTrades(trades, resourcesNeeded, tradesPossible);
+	}
+
+	public boolean isSettlementPossible(int playerNumber) {
+		ReducedPlayer us = game.getPlayer(playerNumber);
+		int[] resources = us.getResources();
+		return resources[SOCResourceConstants.CLAY - 1] >= 1 && resources[SOCResourceConstants.WOOD - 1] >= 1
+				&& resources[SOCResourceConstants.WHEAT - 1] >= 1 && resources[SOCResourceConstants.SHEEP - 1] >= 1;
+	}
+
+	public boolean isRoadPossible(int playerNumber) {
+		ReducedPlayer us = game.getPlayer(playerNumber);
+		int[] resources = us.getResources();
+		return resources[SOCResourceConstants.CLAY - 1] >= 1 && resources[SOCResourceConstants.WOOD - 1] >= 1;
+	}
+
+	public boolean isCityPossible(int playerNumber) {
+		ReducedPlayer us = game.getPlayer(playerNumber);
+		int[] resources = us.getResources();
+		return resources[SOCResourceConstants.ORE - 1] >= 3 && resources[SOCResourceConstants.WHEAT - 1] >= 2;
+	}
+
+	public boolean isDevCardPossible(int playerNumber) {
+		ReducedPlayer us = game.getPlayer(playerNumber);
+		int[] resources = us.getResources();
+		return resources[SOCResourceConstants.ORE - 1] >= 1 && resources[SOCResourceConstants.WHEAT - 1] >= 1
+				&& resources[SOCResourceConstants.SHEEP - 1] >= 1;
 	}
 
 	public SOCGame getGame() {

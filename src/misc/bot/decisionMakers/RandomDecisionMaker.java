@@ -10,7 +10,7 @@ import misc.utils.exceptions.SimNotInitialisedException;
 import soc.game.SOCGame;
 import soc.game.SOCPlayer;
 
-public class RandomDecisionMaker extends DecisionMaker{
+public class RandomDecisionMaker extends DecisionMaker {
 
 	public RandomDecisionMaker(SOCGame game) {
 		super(game);
@@ -18,27 +18,25 @@ public class RandomDecisionMaker extends DecisionMaker{
 
 	@Override
 	public ArrayList<BotMove> getMoveDecision() {
-		
-	/////////////////SIM//////	
-		
-	Simulator sim = new Simulator(game, getOurPlayerNumber());
-		
 
+		///////////////// SIM//////
+		
 		try {
-			for (int i = 0; i < 10000 ; i++) {
+			for (int i = 0; i < 10000; i++) {
+				Simulator sim = new Simulator(game, getOurPlayerNumber());
 				System.out.println("Sim :" + i);
 				sim.setReducedGame(new ReducedGame(reducedGame));
 				sim.setCurrentTurn(getOurPlayerNumber());
 				int winner = sim.runSimulator();
+				System.gc();
 			}
 		} catch (SimNotInitialisedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	///////////////////////////////END SIM////////////
-	 
-	 
+
+		/////////////////////////////// END SIM////////////
+
 		ArrayList<ArrayList<BotMove>> possMoves = getAllPossibleMoves();
 		Random rand = new Random();
 		return possMoves.get(rand.nextInt(possMoves.size()));

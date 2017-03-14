@@ -131,6 +131,7 @@ public class Simulator {
 				currentPlayerTurn++;
 			}
 			turns++;
+			//System.gc();
 		}
 
 		// Find the player that won.

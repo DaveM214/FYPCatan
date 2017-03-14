@@ -338,6 +338,16 @@ public abstract class DecisionMaker {
 		}
 		return moves;
 	}
+	
+	@Deprecated
+	public static ArrayList<BotMove> genMoves(BuildNode buildNode){
+		ArrayList<BotMove> moves = new ArrayList<>();
+		while (buildNode.getParentNode() != null) {
+			moves.add(0, buildNode.getParentMove());
+			buildNode = buildNode.getParentNode();
+		}
+		return moves;
+	}
 
 
 	
