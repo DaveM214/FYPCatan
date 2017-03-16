@@ -20,7 +20,7 @@ public class RandomDecisionMaker extends DecisionMaker {
 	public ArrayList<BotMove> getMoveDecision() {
 
 		///////////////// SIM//////
-		
+		/*
 		try {
 			for (int i = 0; i < 10000; i++) {
 				Simulator sim = new Simulator(game, getOurPlayerNumber());
@@ -36,7 +36,7 @@ public class RandomDecisionMaker extends DecisionMaker {
 		}
 
 		/////////////////////////////// END SIM////////////
-
+	*/
 		ArrayList<ArrayList<BotMove>> possMoves = getAllPossibleMoves();
 		Random rand = new Random();
 		return possMoves.get(rand.nextInt(possMoves.size()));

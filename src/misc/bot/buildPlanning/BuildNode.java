@@ -170,7 +170,7 @@ public class BuildNode {
 				&& game.getOurPlayer().getCityPieces() > 0) {
 			// BuildCities
 			setBuildingDone(true);
-			handleCityBuild();
+			//handleCityBuild();
 		}
 
 		if (resources[SOCResourceConstants.ORE - 1] >= 1 && resources[SOCResourceConstants.WHEAT - 1] >= 1

@@ -2,6 +2,8 @@ package misc.bot;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.Hashtable;
 import java.util.Map;
@@ -67,7 +69,11 @@ public class BotClient extends SOCRobotClient {
 	private static final String SERVER_VERSION_STRING = "2.0.00";
 	private static final String SERVER_BUILD = "JM20161228";
 	private Thread readerRobot;
-
+	
+	private static final String STATS_PATH = "statistics.txt";
+	private static final boolean APPEND_TO_FILE = true;
+	private FileWriter writer;
+	
 	// Hash table containing the brains of games
 	private Hashtable<String, BotBrain> myRobotBrains = new Hashtable<String, BotBrain>();
 
@@ -98,6 +104,16 @@ public class BotClient extends SOCRobotClient {
 	 */
 	public BotClient(String host, int port, String nick, String pass, String cookie) {
 		super(host, port, nick, pass, cookie);
+		initFileWriter();
+	}
+
+	private void initFileWriter() {
+		try {
+			writer = new FileWriter(STATS_PATH,APPEND_TO_FILE);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -141,7 +157,7 @@ public class BotClient extends SOCRobotClient {
 			// resetThread = new SOCRobotResetThread(this);
 			// resetThread.start();
 			put(SOCVersion.toCmd(SERVER_VERSION_NUMBER, SERVER_VERSION_STRING, SERVER_BUILD, null));
-			put(SOCImARobot.toCmd(nickname, COOKIE, SOCImARobot.RBCLASS_BUILTIN));
+			put(SOCImARobot.toCmd(nickname, COOKIE, "CATANBOT"));
 		} catch (Exception e) {
 			ex = e;
 			System.err.println("Could not connect to the server: " + ex);
@@ -453,6 +469,26 @@ public class BotClient extends SOCRobotClient {
 				brainQueues.remove(mes.getGame());
 				games.remove(mes.getGame());
 			}
+		}
+	}
+
+	/**
+	 * Method that will be called by the BotBrain when we reach and end of game
+	 * scenario.
+	 */
+	public void updateStatistics(int position, int score) {
+		String positionString = Integer.toString(position);
+		String scoreString = Integer.toString(score);
+		try {
+			
+			writer.flush();
+			writer.write("\n" + positionString + " " + scoreString);
+			writer.flush();
+			
+			System.out.println("GAME RECORDED! " + positionString + " " +  scoreString );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

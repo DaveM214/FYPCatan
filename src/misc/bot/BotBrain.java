@@ -91,7 +91,7 @@ public class BotBrain extends Thread {
 		this.game = game;
 		alive = true;
 		expectingDevCard = false;
-		dm = new MonteCarloDecisionMaker(game);
+		dm = new RandomDecisionMaker(game);
 		movesToProcess = new ArrayList<BotMove>();
 		buildList = new ArrayList<PiecePlacement>();
 	}
@@ -652,6 +652,19 @@ public class BotBrain extends Thread {
 	private void updateGameState(int state) {
 		game.setGameState(state);
 		waitingForGameState = false;
+	
+		//If the server says the game is over
+		if(state == SOCGame.OVER){
+			//TODO - This is reporting incorrectly.
+			int settlements = ourPlayer.getSettlements().size();
+			int cities = ourPlayer.getCities().size();
+			int vpCards = ourPlayer.getSpecialVP();
+			
+			int vp = game.getPlayer(ourPlayer.getPlayerNumber()).getPublicVP();
+			System.out.println("SETS: " + settlements + " Cities: " + cities + "CARDS "  + vpCards);
+			client.updateStatistics(ourPlayer.getPlayerNumber(),vp);
+		}
+		
 	}
 
 	/**
