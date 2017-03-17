@@ -1,0 +1,6 @@
+Explain the game slightly more fully. Based on resources.
+MCTS tree picture. Chance/Decision Nodes -> where we do simulations.
+Bots rather than robots.
+Rule limitations based on Poker.
+Determinsation of dice
+Explain UCT slightly better
