@@ -67,9 +67,9 @@ public class DecisionNode extends TreeNode {
 	 * @return The UCT value.
 	 */
 	private double scoreChild(TreeNode child, int simulationsRun) {
-		return (child.getWonSimulations(playerTurn) / child.getTotalSimulations())
+		return (child.getAdjustedWonSimulations(playerTurn) / child.getAdjustedTotalSimulations())
 				+ MonteCarloDecisionMaker.EXPLORATION_PARAM
-						* Math.sqrt(Math.log(simulationsRun) / child.getTotalSimulations());
+						* Math.sqrt(Math.log(simulationsRun) / child.getAdjustedTotalSimulations());
 	}
 
 }

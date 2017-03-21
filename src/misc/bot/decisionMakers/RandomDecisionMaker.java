@@ -49,7 +49,7 @@ public class RandomDecisionMaker extends DecisionMaker {
 	}
 
 	@Override
-	public int[] getRobberDiscard() {
+	public int[] getRobberDiscard(int it) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -139,9 +139,10 @@ public class BuildNode {
 
 		// Playing Dev Cards
 
-		/*
-		 * if (depth == 0) { setDevCardsGenerated(true); handlePlayDevCard(); }
-		 */
+		if (depth == 0) {
+			setDevCardsGenerated(true);
+			handlePlayDevCard();
+		}
 
 		if (!buildingDone && !roadsDone) {
 			handleBankTradeChildren(ourPlayerNumber);
@@ -170,7 +171,7 @@ public class BuildNode {
 				&& game.getOurPlayer().getCityPieces() > 0) {
 			// BuildCities
 			setBuildingDone(true);
-			//handleCityBuild();
+			handleCityBuild();
 		}
 
 		if (resources[SOCResourceConstants.ORE - 1] >= 1 && resources[SOCResourceConstants.WHEAT - 1] >= 1

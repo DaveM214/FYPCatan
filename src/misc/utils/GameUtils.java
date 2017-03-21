@@ -14,4 +14,8 @@ public class GameUtils {
 		return string;
 	}
 	
+	public static String intLocToHexString(int location){
+		return String.format("%02X", location);
+	}
+	
 }

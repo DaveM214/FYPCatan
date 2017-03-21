@@ -1,6 +1,8 @@
 package misc.bot;
 
 import misc.utils.BotMessageQueue;
+import misc.utils.GameUtils;
+import misc.utils.ReducedGame;
 import misc.utils.exceptions.SimNotInitialisedException;
 
 import java.util.ArrayList;
@@ -32,9 +34,11 @@ import soc.game.SOCResourceSet;
 import soc.game.SOCRoad;
 import soc.game.SOCSettlement;
 import soc.message.SOCDevCardAction;
+import soc.message.SOCDiscardRequest;
 import soc.message.SOCFirstPlayer;
 import soc.message.SOCGameState;
 import soc.message.SOCMessage;
+import soc.message.SOCMoveRobber;
 import soc.message.SOCPlayerElement;
 import soc.message.SOCPutPiece;
 import soc.message.SOCResourceCount;
@@ -84,6 +88,13 @@ public class BotBrain extends Thread {
 	private boolean expectingPiecePlacement;
 	private List<PiecePlacement> buildList;
 	private boolean expectingDevCard;
+	private boolean doneInitialPlacements;
+	private int robberTarget = -1;
+	private int monoResource;
+	private int[] yopPicks;
+	private boolean roadBuildingActive;
+	private int road1Coords;
+	private int road2Coords;
 
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue<SOCMessage> msgQueue) {
 		msgQ = msgQueue;
@@ -91,7 +102,7 @@ public class BotBrain extends Thread {
 		this.game = game;
 		alive = true;
 		expectingDevCard = false;
-		dm = new RandomDecisionMaker(game);
+		dm = new SimpleHeuristicDecisionMaker(game);
 		movesToProcess = new ArrayList<BotMove>();
 		buildList = new ArrayList<PiecePlacement>();
 	}
@@ -156,6 +167,10 @@ public class BotBrain extends Thread {
 					handlePutPiece((SOCPutPiece) msg);
 					break;
 
+				case SOCMessage.DISCARDREQUEST:
+					handleRobberDiscard((SOCDiscardRequest) msg);
+					break;
+
 				case SOCMessage.BUILDREQUEST:
 					if (ourTurn) {
 						handleBuildRequest();
@@ -165,6 +180,11 @@ public class BotBrain extends Thread {
 				case SOCMessage.DEVCARDACTION:
 					handleDEVCARDACTION((SOCDevCardAction) msg);
 					break;
+					
+				case SOCMessage.MOVEROBBER:
+					handleRobberMoved((SOCMoveRobber) msg);
+					break;	
+					
 
 				default:
 					break;
@@ -184,6 +204,11 @@ public class BotBrain extends Thread {
 		}
 	}
 
+	private void handleRobberMoved(SOCMoveRobber msg) {
+		 final int newHex = msg.getCoordinates();
+         game.getBoard().setRobberHex(newHex, true);
+	}
+
 	private void handleBuildRequest() {
 		// TODO Auto-generated method stub
 
@@ -195,7 +220,7 @@ public class BotBrain extends Thread {
 	 * @since 1.1.08
 	 */
 	private void handleDEVCARDACTION(SOCDevCardAction mes) {
-		if (mes.getPlayerNumber()!= -1) {
+		if (mes.getPlayerNumber() != -1) {
 			SOCInventory cardsInv = game.getPlayer(mes.getPlayerNumber()).getInventory();
 			final int cardType = mes.getCardType();
 
@@ -240,9 +265,46 @@ public class BotBrain extends Thread {
 		}
 
 		if (piece != null) {
-			player.putPiece(piece, false);
+			// 0player.putPiece(piece, false);
 			game.putPiece(piece);
 		}
+
+	}
+
+	/**
+	 * Method to handle handing over resources if they are requested.
+	 * @param msg 
+	 */
+	private void handleRobberDiscard(SOCDiscardRequest msg) {
+		System.out.println("DISCARDING " + msg.getNumberOfDiscards() + " cards");
+		int[] resourceArr = dm.getRobberDiscard(msg.getNumberOfDiscards());
+		SOCResourceSet resources = resourceSetFromArray(resourceArr);
+		System.out.println("Discarding: " + resources.toFriendlyString());
+		client.discard(game, resources);
+	}
+
+	private SOCResourceSet resourceSetFromArray(int[] arr) {
+		SOCResourceSet set = new SOCResourceSet();
+		for (int i = 0; i < arr.length; i++) {
+			set.add(arr[i], i + 1);
+		}
+		return set;
+	}
+	
+
+
+	private void handleRobberChoosePlayer() {
+		client.choosePlayer(game, robberTarget);
+	}
+
+	/**
+	 * Method for picking where we move the robber to.
+	 */
+	private void handleRobberMove() {
+		int location = dm.getNewRobberLocation();
+		robberTarget = dm.getRobberTarget();
+		System.out.println("LOCATION = " + GameUtils.intLocToHexString(location));
+		client.moveRobber(game, ourPlayer, location);
 	}
 
 	/**
@@ -258,15 +320,45 @@ public class BotBrain extends Thread {
 		if (currentState >= 5 && currentState <= 11) {
 			// We will do initial placement manually through probabilities and
 			// stats
-			doInitialPlacement(currentState);
-			expectingDiceRoll = true;
-
+			if (!waitingForGameState) {
+				doInitialPlacement(currentState);
+				expectingDiceRoll = true;
+				System.out.println("Num Sets: " + game.getPlayer(ourPlayer.getPlayerNumber()).getSettlements().size());
+				System.out.println(
+						"Settlments = " + game.getPlayer(ourPlayer.getPlayerNumber()).getSettlements().toString());
+			}
 		}
+
+		if (currentState == SOCGame.PLACING_ROBBER) {
+			System.out.println("MOVING ROBBER");
+			handleRobberMove();
+		}
+
+		if (currentState == SOCGame.WAITING_FOR_ROB_CHOOSE_PLAYER) {
+			System.out.println("CHOOSING PLAYER");
+			handleRobberChoosePlayer();
+		}
+
 		// Otherwise we are in the main game.
 		if (currentState == SOCGame.PLAY && expectingDiceRoll) {
 			System.out.println("ROLLING DICE!");
 			requestDiceRoll();
 			expectingDiceRoll = false;
+		}
+		
+		if(currentState == SOCGame.WAITING_FOR_MONOPOLY){
+			handleMonopoly();
+		}
+		
+		if(currentState == SOCGame.PLACING_FREE_ROAD1 &&  roadBuildingActive){
+			SOCPlayingPiece piece = new SOCRoad(ourPlayer, road1Coords, board);
+			client.putPiece(game, piece);
+		}
+		
+		if(currentState == SOCGame.PLACING_FREE_ROAD2 && roadBuildingActive){
+			SOCPlayingPiece piece = new SOCRoad(ourPlayer, road2Coords, board);
+			client.putPiece(game, piece);
+			roadBuildingActive = false;
 		}
 
 		if (currentState == SOCGame.PLACING_CITY || currentState == SOCGame.PLACING_ROAD
@@ -294,6 +386,15 @@ public class BotBrain extends Thread {
 		}
 
 	}
+
+	private void handleMonopoly() {
+		client.monopolyPick(game, monoResource);
+	}
+	
+	private void handleYOP(){
+		client.discoveryPick(game, resourceSetFromArray(yopPicks));
+	}
+
 
 	/**
 	 * Method to handle the playing of the regular turns in the game. This
@@ -339,15 +440,25 @@ public class BotBrain extends Thread {
 			switch (move.getDevCardType()) {
 			case PlayDevCard.MONOPOLY:
 				client.playDevCard(game, SOCDevCardConstants.MONO);
-
+				PlayMonopoly monop = (PlayMonopoly) move;
+				monoResource = monop.getTargetResource();
 				break;
 
 			case PlayDevCard.YEAR_OF_PLENTY:
 				client.playDevCard(game, SOCDevCardConstants.DISC);
+				PlayYOP yop = (PlayYOP) move;
+				int resource1 = yop.getResource1();
+				int resource2 = yop.getResource2();
+				yopPicks[resource1-1]++;
+				yopPicks[resource2-1]++;
 				break;
 
 			case PlayDevCard.ROAD_BUILDING:
 				client.playDevCard(game, SOCDevCardConstants.ROADS);
+				PlayRoadBuilding rdBuilding = (PlayRoadBuilding) move;
+				road1Coords = rdBuilding.getLoc1();
+				road2Coords = rdBuilding.getLoc2();
+				roadBuildingActive = true;
 				break;
 			}
 		} else {
@@ -502,11 +613,14 @@ public class BotBrain extends Thread {
 		if (currentState == SOCGame.START1B || currentState == SOCGame.START2B) {
 			requestRoadPlacement(location);
 			waitingForGameState = true;
-
+			System.out.println("PLACING INITIAL ROAD AT: " + GameUtils.intLocToHexString(location));
+			client.endTurn(game);
 			// If we are placing a settlement
 		} else {
 			requestSettlementPlacement(location);
+			System.out.println("PLACING INITIAL SETTLEMENT AT: " + GameUtils.intLocToHexString(location));
 			waitingForGameState = true;
+
 		}
 	}
 
@@ -652,19 +766,23 @@ public class BotBrain extends Thread {
 	private void updateGameState(int state) {
 		game.setGameState(state);
 		waitingForGameState = false;
-	
-		//If the server says the game is over
-		if(state == SOCGame.OVER){
-			//TODO - This is reporting incorrectly.
+
+		/*
+		 * if (state == SOCGame.WAITING_FOR_DISCARDS) { handleRobberDiscard(); }
+		 */
+
+		// If the server says the game is over
+		if (state == SOCGame.OVER) {
+			// TODO - This is reporting incorrectly.
 			int settlements = ourPlayer.getSettlements().size();
 			int cities = ourPlayer.getCities().size();
 			int vpCards = ourPlayer.getSpecialVP();
-			
+
 			int vp = game.getPlayer(ourPlayer.getPlayerNumber()).getPublicVP();
-			System.out.println("SETS: " + settlements + " Cities: " + cities + "CARDS "  + vpCards);
-			client.updateStatistics(ourPlayer.getPlayerNumber(),vp);
+			System.out.println("SETS: " + settlements + " Cities: " + cities + "CARDS " + vpCards);
+			client.updateStatistics(ourPlayer.getPlayerNumber(), vp);
 		}
-		
+
 	}
 
 	/**
@@ -686,6 +804,7 @@ public class BotBrain extends Thread {
 	public void setPlayerData() {
 		ourPlayer = game.getPlayer(client.getNickname());
 		dm.setOurPlayerInformation(ourPlayer);
+		dm.setReducedGame(new ReducedGame(ourPlayer.getPlayerNumber(), game));
 		initialDecider = new InitialMoveDecider(ourPlayer);
 	}
 

@@ -1,13 +1,16 @@
 package misc.bot.decisionMakers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import misc.bot.moves.BotMove;
 import misc.bot.moves.PiecePlacement;
 import misc.bot.moves.Trade;
 import misc.simulator.Simulator;
+import misc.utils.GameUtils;
 import misc.utils.ReducedBoardPiece;
 import misc.utils.ReducedGame;
 import misc.utils.exceptions.SimNotInitialisedException;
@@ -135,10 +138,21 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 	@Override
 	public int getNewRobberLocation() {
 		List<Integer> robberLocations = getPossibleRobberLocations();
-		List<Integer> robberLocationScores = scoreRobberLocations(robberLocations);
-		int ourRobberLocation = robberLocations.get((getBestIndex(robberLocationScores)));
-		hexWeAreRobbing = ourRobberLocation;
-		return ourRobberLocation;
+		Map<Integer,Integer> robberLocationScores = scoreRobberLocations(robberLocations);
+		
+		int bestScore = -1;
+		int bestLocation = -1;
+		
+		for (Integer location : robberLocationScores.keySet()) {
+			int score = robberLocationScores.get(location);
+			if(score > bestScore){
+				bestScore = score;
+				bestLocation = location;
+			}
+		}
+		
+		hexWeAreRobbing = bestLocation;
+		return bestLocation;
 	}
 
 	private int getBestIndex(List<Integer> robberLocationScores) {
@@ -160,40 +174,28 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 	 * @param robberLocations
 	 * @return
 	 */
-	private List<Integer> scoreRobberLocations(List<Integer> robberLocations) {
-		List<Integer> robberLocationScores = new ArrayList<Integer>();
+	private Map<Integer,Integer> scoreRobberLocations(List<Integer> robberLocations) {
+		Map<Integer,Integer> scoreMap = new HashMap<Integer,Integer>();
 		for (Integer location : robberLocations) {
-			int hexScore = 0;
-			int numberOnHex = game.getBoard().getNumberOnHexFromCoord(location);
-			int baseScore = Math.abs(7 - numberOnHex);
-			List<ReducedBoardPiece> surroundingSettlements = reducedGame.getBoard().getSettlementsAroundHex(location);
-			for (ReducedBoardPiece reducedBoardPiece : surroundingSettlements) {
-				if (reducedBoardPiece.getType() == SOCPlayingPiece.SETTLEMENT) {
-					hexScore += baseScore;
-				} else {
-					hexScore += baseScore * 2;
+			int score = 0;
+			List<ReducedBoardPiece> surrounding = reducedGame.getBoard().getSettlementsAroundHex(location);
+			for (ReducedBoardPiece reducedBoardPiece : surrounding) {
+				if(reducedBoardPiece.getType() == SOCPlayingPiece.CITY){
+					score+=2;
+				}else{
+					score++;
 				}
 			}
-			robberLocationScores.add(hexScore);
+			scoreMap.put(location, score);
 		}
-		return robberLocationScores;
+		return scoreMap;
 	}
-
+	
+	
+	
 	@Override
-	public int[] getRobberDiscard() {
-		int[] resources = getOurResources();
-		int[] discardArray = new int[] { 0, 0, 0, 0, 0 };
-		int totalResources = 0;
-		for (int i : resources) {
-			totalResources += i;
-		}
-
-		if (totalResources > 7) {
-			int resourcesToDiscard = totalResources / 2;
-			discardArray = getDiscardResources(resourcesToDiscard);
-		}
-
-		return discardArray;
+	public int[] getRobberDiscard(int discard) {
+		return getDiscardResources(discard);
 	}
 
 	private int[] getDiscardResources(int resourcesToDiscard) {
@@ -203,23 +205,25 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 		int resourcesDiscarded = 0;
 		int index = 0;
 
-		while (resourcesDiscarded < resourcesDiscarded) {
-			if (ourResources[index] > 1) {
+		while (resourcesDiscarded < resourcesToDiscard) {
+			if (ourResources[index] > 0) {
 				discardSet[index]++;
 				ourResources[index]--;
 				resourcesDiscarded++;
 			}
+			
 			if (index == 4) {
 				index = 0;
 			} else {
 				index++;
 			}
+			
 		}
-
-		return ourResources;
+		return discardSet;
 	}
 
 	@Override
+	
 	/**
 	 * The player we are going to take the resource from.
 	 */

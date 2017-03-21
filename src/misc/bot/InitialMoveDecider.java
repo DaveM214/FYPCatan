@@ -92,7 +92,6 @@ public class InitialMoveDecider {
 			// Otherwise we are building a road
 		} else {
 			result = handleRoadBuild();
-			System.out.println("BUILDING AT: " + String.format("%02X", result));
 		}
 
 		return result;
@@ -154,8 +153,6 @@ public class InitialMoveDecider {
 		} else {
 			strategy = BotBrain.MIXED_STRATEGY;
 		}
-		
-		System.out.println("Strat = " + strategy);
 
 		return strategy;
 	}

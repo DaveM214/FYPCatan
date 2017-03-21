@@ -105,7 +105,7 @@ public class Simulator {
 			if (roll == 7) {
 				for (DecisionMaker dm : dmArr) {
 					dm.setReducedGame(new ReducedGame(reducedGame));
-					int[] discarded = dm.getRobberDiscard();
+					int[] discarded = dm.getRobberDiscard(0);
 					reducedGame.handlePlayerDiscard(discarded, dm.getOurPlayerNumber());
 					if(dm.getOurPlayerNumber() == currentPlayerTurn){
 						int robberLocation = dm.getNewRobberLocation();

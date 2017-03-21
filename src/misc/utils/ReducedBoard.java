@@ -203,6 +203,10 @@ public class ReducedBoard {
 		if (roadAtLocation(location)) {
 			return false;
 		}
+		
+		if(roadOnWater(location)){
+			return false;
+		}
 
 		List<Integer> joiningNodes = referenceBoard.getAdjacentNodesToEdge(location);
 		List<Integer> joiningEdges = referenceBoard.getAdjacentEdgesToEdge(location);
@@ -255,6 +259,16 @@ public class ReducedBoard {
 			}
 		}
 
+	}
+
+	private boolean roadOnWater(int location) {
+		List<Integer> adjNodes = referenceBoard.getAdjacentNodesToEdge(location);
+		for (Integer node : adjNodes) {
+			if (!referenceBoard.isNodeOnLand(node)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -436,6 +450,7 @@ public class ReducedBoard {
 
 	public boolean addCity(int location, int owner) {
 		if (isValidCity(location, owner)) {
+			settlements.remove(location);
 			cities.put(location,new ReducedCity(location, owner));
 			return true;
 		}

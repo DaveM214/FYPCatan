@@ -10,6 +10,7 @@ import misc.bot.moves.PlayKnight;
 import misc.bot.moves.PlayMonopoly;
 import misc.bot.moves.PlayRoadBuilding;
 import misc.bot.moves.PlayYOP;
+import misc.utils.GameUtils;
 import misc.utils.ReducedGame;
 import soc.game.SOCBoard;
 import soc.game.SOCCity;
@@ -51,17 +52,18 @@ public abstract class DecisionMaker {
 	public DecisionMaker(SOCGame game) {
 		this.game = game;
 	}
-	
-	public void setReducedGame(ReducedGame game){
+
+	public void setReducedGame(ReducedGame game) {
 		this.reducedGame = new ReducedGame(game);
 		reducedGame.setOurPlayerNumber(ourPlayer.getPlayerNumber());
 	}
-	
-	public void setReducedGame(SOCGame game){
-		this.reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(),game);
+
+	public void setReducedGame(SOCGame game) {
+		this.reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(), game);
+		reducedGame.setOurPlayerNumber(ourPlayer.getPlayerNumber());
 	}
-	
-	public void setOurPlayer(SOCPlayer player){
+
+	public void setOurPlayer(SOCPlayer player) {
 		this.ourPlayer = player;
 	}
 
@@ -70,7 +72,7 @@ public abstract class DecisionMaker {
 	 */
 	public void updateGame(SOCGame updatedGame) {
 		this.game = updatedGame;
-		this.reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(),updatedGame);
+		this.reducedGame = new ReducedGame(ourPlayer.getPlayerNumber(), updatedGame);
 	}
 
 	/**
@@ -83,8 +85,6 @@ public abstract class DecisionMaker {
 	public void setOurPlayerInformation(SOCPlayer ourPlayer) {
 		this.ourPlayer = ourPlayer;
 	}
-
-
 
 	/**
 	 * Get all the possible moves that involve playing development cards.
@@ -102,10 +102,11 @@ public abstract class DecisionMaker {
 
 			// Knight Card
 			case SOCDevCardConstants.KNIGHT:
-				ArrayList<Integer> knightLocations = getPossibleRobberLocations();
+				List<Integer> knightLocations = getPossibleRobberLocations();
 				for (Integer location : knightLocations) {
-					//TODO code to figure out who has settlments at which location
-					BotMove knightMove = new PlayKnight(location,0);
+					// TODO code to figure out who has settlments at which
+					// location
+					BotMove knightMove = new PlayKnight(location, 0);
 					devCardMoves.add(knightMove);
 				}
 				break;
@@ -221,7 +222,7 @@ public abstract class DecisionMaker {
 	 * 
 	 * @return
 	 */
-	protected ArrayList<Integer> getPossibleRobberLocations() {
+	protected ArrayList<Integer> getPossibleRobberLocations(boolean b) {
 		// Find all hexes our settlements touch
 		// Get all touching hexes. Remove ours from list.
 		// All the remaining hexes are possible places to place it.
@@ -258,7 +259,10 @@ public abstract class DecisionMaker {
 		for (SOCSettlement settlement : allSettlements) {
 			List<Integer> adjHexes = settlement.getAdjacentHexes();
 			for (Integer hexLoc : adjHexes) {
-				if (!ourCoveredHexes.contains(hexLoc)) {
+				if (!ourCoveredHexes.contains(hexLoc) && game.getBoard().isHexOnLand(hexLoc)
+						&& (!(game.getBoard().getHexTypeFromCoord(hexLoc) == SOCBoard.DESERT_HEX)
+								&& game.getBoard().getRobberHex() != hexLoc)
+						&& game.getBoard().getPreviousRobberHex() != hexLoc) {
 					possibleLocations.add(hexLoc);
 				}
 			}
@@ -267,7 +271,10 @@ public abstract class DecisionMaker {
 		for (SOCCity city : allCities) {
 			List<Integer> adjHexes = city.getAdjacentHexes();
 			for (Integer hexLoc : adjHexes) {
-				if (!ourCoveredHexes.contains(hexLoc)) {
+				if (!ourCoveredHexes.contains(hexLoc) && game.getBoard().isHexOnLand(hexLoc)
+						&& (!(game.getBoard().getHexTypeFromCoord(hexLoc) == SOCBoard.DESERT_HEX)
+								&& game.getBoard().getRobberHex() != hexLoc.intValue())
+						&& game.getBoard().getPreviousRobberHex() != hexLoc.intValue()) {
 					possibleLocations.add(hexLoc);
 				}
 			}
@@ -278,6 +285,33 @@ public abstract class DecisionMaker {
 		return results;
 	}
 
+	protected List<Integer> getPossibleRobberLocations() {
+		int currRobber = game.getBoard().getRobberHex();
+		int prevRobber = game.getBoard().getPreviousRobberHex();	
+		int[] allHexes = game.getBoard().getLandHexCoords();
+		List<Integer> possibleHexes = new ArrayList<Integer>();
+		Set<Integer> ourConnections = new HashSet<>();
+		
+		for (SOCCity city : ourPlayer.getCities()) {
+			List<Integer> connections = game.getBoard().getAdjacentHexesToNode(city.getCoordinates());
+			ourConnections.addAll(connections);
+		}
+		
+		for (SOCSettlement settlement: ourPlayer.getSettlements()) {
+			List<Integer> connections = game.getBoard().getAdjacentHexesToNode(settlement.getCoordinates());
+			ourConnections.addAll(connections);
+		}
+		
+		
+		for (int i = 0; i < allHexes.length; i++) {
+			if(!ourConnections.contains(allHexes[i]) && allHexes[i] != currRobber && game.getBoard().getHexTypeFromCoord(allHexes[i])!= SOCBoard.DESERT_HEX){
+				possibleHexes.add(allHexes[i]);
+			}
+		}
+		
+		return possibleHexes;
+	}
+
 	/**
 	 * 
 	 * @return
@@ -286,7 +320,7 @@ public abstract class DecisionMaker {
 		ArrayList<ArrayList<BotMove>> moveCombos = new ArrayList<ArrayList<BotMove>>();
 		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
 		root.generateChildNodes();
-		
+
 		List<BuildNode> nodes = new ArrayList<BuildNode>();
 		gatherChildren(root, nodes);
 
@@ -294,25 +328,24 @@ public abstract class DecisionMaker {
 		for (BuildNode buildNode : nodes) {
 			moveCombos.add(generateMovesFromNode(buildNode));
 		}
-		
+
 		return moveCombos;
 	}
-	
-	public List<BuildNode> getPossibleChildStates(ReducedGame reducedGame){
+
+	public List<BuildNode> getPossibleChildStates(ReducedGame reducedGame) {
 		BuildNode root = new BuildNode(reducedGame, null, null, ourPlayer, game);
 		root.generateChildNodes();
 		List<BuildNode> nodes = new ArrayList<BuildNode>();
-		 gatherChildren(root, nodes);
-		 return nodes;
+		gatherChildren(root, nodes);
+		return nodes;
 	}
-	
-	public List<BuildNode> getPossibleChildStates(BuildNode buildNode){
+
+	public List<BuildNode> getPossibleChildStates(BuildNode buildNode) {
 		buildNode.generateChildNodes();
 		List<BuildNode> nodes = new ArrayList<BuildNode>();
 		gatherChildren(buildNode, nodes);
 		return nodes;
 	}
-	
 
 	/**
 	 * Recursive method to do traversal
@@ -339,8 +372,17 @@ public abstract class DecisionMaker {
 		return moves;
 	}
 	
+	public static  ArrayList<BotMove> generateMovesFromNode(BuildNode buildNode,boolean b) {
+		ArrayList<BotMove> moves = new ArrayList<>();
+		while (buildNode.getParentNode() != null) {
+			moves.add(0, buildNode.getParentMove());
+			buildNode = buildNode.getParentNode();
+		}
+		return moves;
+	}
+	
 	@Deprecated
-	public static ArrayList<BotMove> genMoves(BuildNode buildNode){
+	public static ArrayList<BotMove> genMoves(BuildNode buildNode) {
 		ArrayList<BotMove> moves = new ArrayList<>();
 		while (buildNode.getParentNode() != null) {
 			moves.add(0, buildNode.getParentMove());
@@ -349,17 +391,16 @@ public abstract class DecisionMaker {
 		return moves;
 	}
 
-
-	
 	/**
 	 * Helper method returns all the resources that a player has.
+	 * 
 	 * @return
 	 */
-	protected int[] getOurResources(){
-		return new int[5];
+	protected int[] getOurResources() {
+		return reducedGame.getOurPlayer().getResources();
 	}
-	
-	public int getOurPlayerNumber(){
+
+	public int getOurPlayerNumber() {
 		return ourPlayer.getPlayerNumber();
 	}
 
@@ -370,13 +411,11 @@ public abstract class DecisionMaker {
 	 * @return A list of moves that should be implemented in the coming turn.
 	 */
 	public abstract List<BotMove> getMoveDecision();
-	
-	
+
 	public abstract int getNewRobberLocation();
 
-	public abstract int[] getRobberDiscard();
+	public abstract int[] getRobberDiscard(int discards);
 
 	public abstract int getRobberTarget();
-	
 
 }
