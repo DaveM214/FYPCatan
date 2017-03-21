@@ -1,4 +1,4 @@
-Explain the game slightly more fully. Based on resources.
+Explain the game slightly more fully. Based on resources. - DONE`
 MCTS tree picture. Chance/Decision Nodes -> where we do simulations.
 Bots rather than robots.
 Rule limitations based on Poker.
