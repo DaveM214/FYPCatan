@@ -1,10 +1,10 @@
-results= [2   3   3   3   4   2   2   3   4   4   2   3   2   4   3   3   2   3   4   3   4   2   3   4 2 3 3 3 2 3 2 3 3 5 2 3 2 3 3 3 4 4 5];
+results= [];
 bins = [2 3 4 5 6 7 8 9 10];
-hist(results);
+hist(results , bins);
 xlabel("Victory Points");
 ylabel("Frequency");
 numResults = length(results);
 axis([2 10 0 numResults/2]);
-title("Results of random play");
+title("Results of 100 Simulation play");
 avg = mean(results);
 dev = std(results);

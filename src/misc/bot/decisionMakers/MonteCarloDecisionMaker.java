@@ -1,7 +1,9 @@
 package misc.bot.decisionMakers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import misc.bot.buildPlanning.BuildNode;
@@ -18,7 +20,7 @@ import soc.game.SOCPlayingPiece;
 public class MonteCarloDecisionMaker extends DecisionMaker {
 
 	private int simulationCount = 0;
-	public static final int MAXIMUM_SIMULATIONS = 5000;
+	public static final int MAXIMUM_SIMULATIONS = 10000;
 	private int hexWeAreRobbing = 0;
 	
 	private final static int SETTLEMENT_WINS = 28;
@@ -27,7 +29,7 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 
 	// This is the theortical best value of C - will need to be changed.
 	// Directs how much exploring we do -
-	public static final double EXPLORATION_PARAM = Math.sqrt(2);
+	public static final double EXPLORATION_PARAM = 1.1;
 
 	public MonteCarloDecisionMaker(SOCGame game) {
 		super(game);
@@ -77,7 +79,7 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 
 				}
 				simulationCount++;
-				if (simulationCount % 100 == 0) {
+				if (simulationCount % 50 == 0) {
 					System.gc();
 				}
 				System.out.println("Simulations run: " + simulationCount);
@@ -112,34 +114,27 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 	
 	//////GENERIC METHODS
 
+
 	@Override
 	public int getNewRobberLocation() {
 		List<Integer> robberLocations = getPossibleRobberLocations();
-		List<Integer> robberLocationScores = scoreRobberLocations(robberLocations);
-		int ourRobberLocation = robberLocations.get((getBestIndex(robberLocationScores)));
-		hexWeAreRobbing = ourRobberLocation;
-		return ourRobberLocation;
-	}
-	
-	private List<Integer> scoreRobberLocations(List<Integer> robberLocations) {
-		List<Integer> robberLocationScores = new ArrayList<Integer>();
-		for (Integer location : robberLocations) {
-			int hexScore = 0;
-			int numberOnHex = game.getBoard().getNumberOnHexFromCoord(location);
-			int baseScore = Math.abs(7 - numberOnHex);
-			List<ReducedBoardPiece> surroundingSettlements = reducedGame.getBoard().getSettlementsAroundHex(location);
-			for (ReducedBoardPiece reducedBoardPiece : surroundingSettlements) {
-				if (reducedBoardPiece.getType() == SOCPlayingPiece.SETTLEMENT) {
-					hexScore += baseScore;
-				} else {
-					hexScore += baseScore * 2;
-				}
+		Map<Integer,Integer> robberLocationScores = scoreRobberLocations(robberLocations);
+		
+		int bestScore = -1;
+		int bestLocation = -1;
+		
+		for (Integer location : robberLocationScores.keySet()) {
+			int score = robberLocationScores.get(location);
+			if(score > bestScore){
+				bestScore = score;
+				bestLocation = location;
 			}
-			robberLocationScores.add(hexScore);
 		}
-		return robberLocationScores;
+		
+		hexWeAreRobbing = bestLocation;
+		return bestLocation;
 	}
-	
+
 	private int getBestIndex(List<Integer> robberLocationScores) {
 		int bestIndex = -1;
 		int bestScore = Integer.MIN_VALUE;
@@ -152,27 +147,37 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 		return bestIndex;
 	}
 
-	
-	
-	
-
-	@Override
-	public int[] getRobberDiscard(int ist) {
-		int[] resources = getOurResources();
-		int[] discardArray = new int[] { 0, 0, 0, 0, 0 };
-		int totalResources = 0;
-		for (int i : resources) {
-			totalResources += i;
+	/**
+	 * We will score the robber locations based on how much resource they will
+	 * deprive our opponents of for this simple decision maker.
+	 * 
+	 * @param robberLocations
+	 * @return
+	 */
+	private Map<Integer,Integer> scoreRobberLocations(List<Integer> robberLocations) {
+		Map<Integer,Integer> scoreMap = new HashMap<Integer,Integer>();
+		for (Integer location : robberLocations) {
+			int score = 0;
+			List<ReducedBoardPiece> surrounding = reducedGame.getBoard().getSettlementsAroundHex(location);
+			for (ReducedBoardPiece reducedBoardPiece : surrounding) {
+				if(reducedBoardPiece.getType() == SOCPlayingPiece.CITY){
+					score+=2;
+				}else{
+					score++;
+				}
+			}
+			scoreMap.put(location, score);
 		}
-
-		if (totalResources > 7) {
-			int resourcesToDiscard = totalResources / 2;
-			discardArray = getDiscardResources(resourcesToDiscard);
-		}
-
-		return discardArray;
+		return scoreMap;
 	}
 	
+	
+	
+	@Override
+	public int[] getRobberDiscard(int discard) {
+		return getDiscardResources(discard);
+	}
+
 	private int[] getDiscardResources(int resourcesToDiscard) {
 		int[] ourResources = new int[5];
 		System.arraycopy(getOurResources(), 0, ourResources, 0, ourResources.length);
@@ -180,23 +185,28 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 		int resourcesDiscarded = 0;
 		int index = 0;
 
-		while (resourcesDiscarded < resourcesDiscarded) {
-			if (ourResources[index] > 1) {
+		while (resourcesDiscarded < resourcesToDiscard) {
+			if (ourResources[index] > 0) {
 				discardSet[index]++;
 				ourResources[index]--;
 				resourcesDiscarded++;
 			}
+			
 			if (index == 4) {
 				index = 0;
 			} else {
 				index++;
 			}
+			
 		}
-
-		return ourResources;
+		return discardSet;
 	}
 
 	@Override
+	
+	/**
+	 * The player we are going to take the resource from.
+	 */
 	public int getRobberTarget() {
 		List<ReducedBoardPiece> possTargets = reducedGame.getBoard().getSettlementsAroundHex(hexWeAreRobbing);
 

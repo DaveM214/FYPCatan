@@ -99,13 +99,13 @@ public class Simulator {
 		int turns =0;
 		
 		// Simulate until the end of the game
-		while (!reducedGame.isGameFinished() && (turns < 100)) {
+		while (!reducedGame.isGameFinished() && (turns < 200)) {
 			// Roll and give resources to people
 			int roll = DiceRoller.rollDice();
 			if (roll == 7) {
 				for (DecisionMaker dm : dmArr) {
 					dm.setReducedGame(new ReducedGame(reducedGame));
-					int[] discarded = dm.getRobberDiscard(0);
+					int[] discarded = dm.getRobberDiscard(dm.getReducedGame().getOurPlayer().getNumResources()/2);
 					reducedGame.handlePlayerDiscard(discarded, dm.getOurPlayerNumber());
 					if(dm.getOurPlayerNumber() == currentPlayerTurn){
 						int robberLocation = dm.getNewRobberLocation();

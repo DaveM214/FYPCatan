@@ -149,7 +149,7 @@ public class ReducedBoard {
 
 	public List<Integer> getLegalRoadLocations(int player) {
 		List<ReducedBoardPiece> playersRoads = getPlayersRoads(player);
-		Set<Integer> possibleLocations = new TreeSet<Integer>();
+		Set<Integer> possibleLocations = new HashSet<Integer>();
 
 		// Add all connecting edges
 		for (ReducedBoardPiece road : playersRoads) {
@@ -261,14 +261,14 @@ public class ReducedBoard {
 
 	}
 
-	private boolean roadOnWater(int location) {
-		List<Integer> adjNodes = referenceBoard.getAdjacentNodesToEdge(location);
+	private boolean roadOnWater(int edge) {
+		List<Integer> adjNodes = referenceBoard.getAdjacentNodesToEdge(edge);
 		for (Integer node : adjNodes) {
 			if (!referenceBoard.isNodeOnLand(node)) {
-				return false;
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	/**

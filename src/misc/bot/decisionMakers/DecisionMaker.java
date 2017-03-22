@@ -403,6 +403,10 @@ public abstract class DecisionMaker {
 	public int getOurPlayerNumber() {
 		return ourPlayer.getPlayerNumber();
 	}
+	
+	public ReducedGame getReducedGame(){
+		return new ReducedGame(reducedGame);
+	}
 
 	/**
 	 * Abstract method that must be implemented. Return a list of

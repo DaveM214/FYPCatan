@@ -60,7 +60,7 @@ public class BuildNode {
 	private boolean buildingDone;
 	private boolean roadsDone;
 
-	private final static int MAX_ROADS = 3;
+	private final static int MAX_ROADS = 4;
 
 	/**
 	 * 
@@ -139,10 +139,9 @@ public class BuildNode {
 
 		// Playing Dev Cards
 
-		if (depth == 0) {
-			setDevCardsGenerated(true);
-			handlePlayDevCard();
-		}
+		/*
+		 * if (depth == 0) { setDevCardsGenerated(true); handlePlayDevCard(); }
+		 */
 
 		if (!buildingDone && !roadsDone) {
 			handleBankTradeChildren(ourPlayerNumber);
@@ -180,11 +179,11 @@ public class BuildNode {
 			handleBuyDevCard();
 		}
 
-		// if (depth < 5) {
-		for (BuildNode child : children) {
-			child.generateChildNodes();
+		if (depth < 5) {
+			for (BuildNode child : children) {
+				child.generateChildNodes();
+			}
 		}
-		// }
 	}
 
 	private void handlePlayDevCard() {
@@ -421,7 +420,7 @@ public class BuildNode {
 		int score = 0;
 
 		if (copy.getPlayer(ourPlayerNumber).hasLongestRoad()) {
-			score += 70;
+			//score += 70;
 		}
 
 		// If it lets us build more settlement add to the total.

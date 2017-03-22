@@ -367,4 +367,12 @@ public class ReducedPlayer {
 		return choice;
 	}
 
+	public int getNumResources() {
+		int total = 0;
+		for (int rec : resources) {
+			total+=rec;
+		}
+		return total;
+	}
+
 }

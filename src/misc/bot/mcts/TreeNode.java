@@ -25,7 +25,7 @@ public abstract class TreeNode {
 	public static final int DECISION_NODE = 0;
 	public static final int CHANCE_NODE = 1;
 
-	public final static int SETTLEMENT_WINS = 28;
+	public final static int SETTLEMENT_WINS = 70;
 	public final static int DEV_CARD_WINS = 5;
 	public final static int CITY_WINS = 40;
 

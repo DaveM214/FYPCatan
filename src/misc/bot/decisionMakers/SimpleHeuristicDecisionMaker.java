@@ -33,7 +33,7 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 
 	// MAGIC NUMBERS!
 	private static final int CITY_SCORE = 40;
-	private static final int NORMAL_ROAD_SCORE = -6;
+	private static final int NORMAL_ROAD_SCORE = -7;
 	private static final int PRIORITY_ROAD_SCORE = 10;
 	private static final int BANK_TRADE_SCORE = -2;
 	private static final int SETTLEMENT_SCORE = 30;

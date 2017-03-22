@@ -34,6 +34,7 @@ import soc.game.SOCResourceSet;
 import soc.game.SOCRoad;
 import soc.game.SOCSettlement;
 import soc.message.SOCDevCardAction;
+import soc.message.SOCDiceResult;
 import soc.message.SOCDiscardRequest;
 import soc.message.SOCFirstPlayer;
 import soc.message.SOCGameState;
@@ -95,6 +96,12 @@ public class BotBrain extends Thread {
 	private boolean roadBuildingActive;
 	private int road1Coords;
 	private int road2Coords;
+	private List<BotMove> tradesToMake;
+	private List<BotMove> buysToMake;
+	private boolean movesLeft;
+	private boolean expectingMonopoly;
+	private boolean expectingYop;
+	private boolean expectingMoveRobber;
 
 	public BotBrain(BotClient client, SOCGame game, BotMessageQueue<SOCMessage> msgQueue) {
 		msgQ = msgQueue;
@@ -102,9 +109,16 @@ public class BotBrain extends Thread {
 		this.game = game;
 		alive = true;
 		expectingDevCard = false;
-		dm = new SimpleHeuristicDecisionMaker(game);
+		expectingMonopoly = false;
+		expectingMoveRobber = false;
+		expectingYop = false;
+		dm = new MonteCarloDecisionMaker(game);
 		movesToProcess = new ArrayList<BotMove>();
 		buildList = new ArrayList<PiecePlacement>();
+		tradesToMake = new ArrayList<BotMove>();
+		buysToMake = new ArrayList<BotMove>();
+		movesLeft = false;
+		int[] yopPicks = new int[5];
 	}
 
 	/**
@@ -126,7 +140,7 @@ public class BotBrain extends Thread {
 				// This method sleeps until there is an element in the queue
 				SOCMessage msg = msgQ.get();
 				int msgType = msg.getType();
-				System.out.println(msg.toString());
+				//System.out.println(msg.toString());
 
 				switch (msgType) {
 
@@ -180,11 +194,14 @@ public class BotBrain extends Thread {
 				case SOCMessage.DEVCARDACTION:
 					handleDEVCARDACTION((SOCDevCardAction) msg);
 					break;
-					
+
 				case SOCMessage.MOVEROBBER:
 					handleRobberMoved((SOCMoveRobber) msg);
-					break;	
+					break;
 					
+				case SOCMessage.DICERESULT:
+					handleDiceRolled((SOCDiceResult) msg);
+					break;	
 
 				default:
 					break;
@@ -204,9 +221,16 @@ public class BotBrain extends Thread {
 		}
 	}
 
+	private void handleDiceRolled(SOCDiceResult msg) {
+		if(msg.getResult() == 7 && ourTurn){
+			expectingMoveRobber = true;
+		}
+		
+	}
+
 	private void handleRobberMoved(SOCMoveRobber msg) {
-		 final int newHex = msg.getCoordinates();
-         game.getBoard().setRobberHex(newHex, true);
+		final int newHex = msg.getCoordinates();
+		game.getBoard().setRobberHex(newHex, true);
 	}
 
 	private void handleBuildRequest() {
@@ -252,7 +276,7 @@ public class BotBrain extends Thread {
 	 *            The message describing who placed what piece and where.
 	 */
 	private void handlePutPiece(SOCPutPiece msg) {
-		System.out.println("Placing piece");
+		//System.out.println("Placing piece");
 		SOCPlayer player = game.getPlayer(msg.getPlayerNumber());
 
 		SOCPlayingPiece piece = null;
@@ -273,13 +297,18 @@ public class BotBrain extends Thread {
 
 	/**
 	 * Method to handle handing over resources if they are requested.
-	 * @param msg 
+	 * 
+	 * @param msg
 	 */
 	private void handleRobberDiscard(SOCDiscardRequest msg) {
-		System.out.println("DISCARDING " + msg.getNumberOfDiscards() + " cards");
+		//System.out.println("DISCARDING " + msg.getNumberOfDiscards() + " cards");
+		dm.updateGame(game);
 		int[] resourceArr = dm.getRobberDiscard(msg.getNumberOfDiscards());
+		//System.out.println(GameUtils.resourcesToString(resourceArr));
 		SOCResourceSet resources = resourceSetFromArray(resourceArr);
-		System.out.println("Discarding: " + resources.toFriendlyString());
+		//System.out.println(ourPlayer.getResources().toFriendlyString());
+		//System.out.println(GameUtils.resourcesToString(dm.getReducedGame().getOurPlayer().getResources()));
+		//System.out.println("Discarding: " + resources.toFriendlyString());
 		client.discard(game, resources);
 	}
 
@@ -290,8 +319,6 @@ public class BotBrain extends Thread {
 		}
 		return set;
 	}
-	
-
 
 	private void handleRobberChoosePlayer() {
 		client.choosePlayer(game, robberTarget);
@@ -303,7 +330,7 @@ public class BotBrain extends Thread {
 	private void handleRobberMove() {
 		int location = dm.getNewRobberLocation();
 		robberTarget = dm.getRobberTarget();
-		System.out.println("LOCATION = " + GameUtils.intLocToHexString(location));
+		//System.out.println("LOCATION = " + GameUtils.intLocToHexString(location));
 		client.moveRobber(game, ourPlayer, location);
 	}
 
@@ -314,7 +341,7 @@ public class BotBrain extends Thread {
 	 */
 	private void handleOurTurn() {
 		int currentState = game.getGameState();
-		System.out.println("Current State on our turn: " + currentState);
+		//System.out.println("Current State on our turn: " + currentState);
 
 		// IF Initial state
 		if (currentState >= 5 && currentState <= 11) {
@@ -323,39 +350,46 @@ public class BotBrain extends Thread {
 			if (!waitingForGameState) {
 				doInitialPlacement(currentState);
 				expectingDiceRoll = true;
-				System.out.println("Num Sets: " + game.getPlayer(ourPlayer.getPlayerNumber()).getSettlements().size());
-				System.out.println(
-						"Settlments = " + game.getPlayer(ourPlayer.getPlayerNumber()).getSettlements().toString());
+				//System.out.println("Num Sets: " + game.getPlayer(ourPlayer.getPlayerNumber()).getSettlements().size());
+				//System.out.println(
+						//"Settlments = " + game.getPlayer(ourPlayer.getPlayerNumber()).getSettlements().toString());
 			}
 		}
 
-		if (currentState == SOCGame.PLACING_ROBBER) {
-			System.out.println("MOVING ROBBER");
+		if (currentState == SOCGame.PLACING_ROBBER && expectingMoveRobber) {
+		//	System.out.println("MOVING ROBBER");
 			handleRobberMove();
+			expectingMoveRobber = false;
 		}
 
 		if (currentState == SOCGame.WAITING_FOR_ROB_CHOOSE_PLAYER) {
-			System.out.println("CHOOSING PLAYER");
+			//System.out.println("CHOOSING PLAYER");
 			handleRobberChoosePlayer();
 		}
 
 		// Otherwise we are in the main game.
 		if (currentState == SOCGame.PLAY && expectingDiceRoll) {
-			System.out.println("ROLLING DICE!");
+			//System.out.println("ROLLING DICE!");
 			requestDiceRoll();
 			expectingDiceRoll = false;
 		}
-		
-		if(currentState == SOCGame.WAITING_FOR_MONOPOLY){
+
+		if (currentState == SOCGame.WAITING_FOR_MONOPOLY && expectingMonopoly) {
 			handleMonopoly();
+			expectingMonopoly = false;
 		}
 		
-		if(currentState == SOCGame.PLACING_FREE_ROAD1 &&  roadBuildingActive){
+		if(currentState == SOCGame.WAITING_FOR_DISCOVERY && expectingYop){
+			handleYOP();
+			expectingYop = false;
+		}
+
+		if (currentState == SOCGame.PLACING_FREE_ROAD1 && roadBuildingActive) {
 			SOCPlayingPiece piece = new SOCRoad(ourPlayer, road1Coords, board);
 			client.putPiece(game, piece);
 		}
-		
-		if(currentState == SOCGame.PLACING_FREE_ROAD2 && roadBuildingActive){
+
+		if (currentState == SOCGame.PLACING_FREE_ROAD2 && roadBuildingActive) {
 			SOCPlayingPiece piece = new SOCRoad(ourPlayer, road2Coords, board);
 			client.putPiece(game, piece);
 			roadBuildingActive = false;
@@ -379,7 +413,6 @@ public class BotBrain extends Thread {
 		}
 
 		if (currentState == SOCGame.PLAY1 && !expectingPiecePlacement) {
-
 			System.out.println("\nHandling our turn");
 			handleMainTurn();
 			expectingDiceRoll = true;
@@ -390,11 +423,10 @@ public class BotBrain extends Thread {
 	private void handleMonopoly() {
 		client.monopolyPick(game, monoResource);
 	}
-	
-	private void handleYOP(){
+
+	private void handleYOP() {
 		client.discoveryPick(game, resourceSetFromArray(yopPicks));
 	}
-
 
 	/**
 	 * Method to handle the playing of the regular turns in the game. This
@@ -403,89 +435,113 @@ public class BotBrain extends Thread {
 	 * 
 	 */
 	private void handleMainTurn() {
-		dm.updateGame(game);
-		dm.setOurPlayerInformation(ourPlayer);
+		if (!movesLeft) {
+			dm.updateGame(game);
+			dm.setOurPlayerInformation(ourPlayer);
 
-		movesToProcess = dm.getMoveDecision();
+			System.out.println(ourPlayer.getResources().toFriendlyString());
+			System.out.println(GameUtils.resourcesToString(dm.getReducedGame().getOurPlayer().getResources()));
+			
+			movesToProcess = dm.getMoveDecision();
 
-		System.out.println(ourPlayer.getResources().toFriendlyString());
-		System.out.println(game.getPlayer(ourPlayer.getPlayerNumber()).getResources().toFriendlyString());
-		System.out.println("Playing Following Moves:" + movesToProcess.toString());
+			System.out.println(ourPlayer.getResources().toFriendlyString());
+			System.out.println(game.getPlayer(ourPlayer.getPlayerNumber()).getResources().toFriendlyString());
+			System.out.println("Playing Following Moves:" + movesToProcess.toString());
 
-		List<BotMove> devCard = new ArrayList<>();
-		List<BotMove> trades = new ArrayList<>();
-		List<PiecePlacement> builds = new ArrayList<>();
-		List<BotMove> buys = new ArrayList<>();
+			List<BotMove> devCard = new ArrayList<>();
+			List<BotMove> trades = new ArrayList<>();
+			List<PiecePlacement> builds = new ArrayList<>();
+			List<BotMove> buys = new ArrayList<>();
 
-		for (BotMove botMove : movesToProcess) {
+			for (BotMove botMove : movesToProcess) {
 
-			if (botMove.getMoveType() == 2) {
-				trades.add(botMove);
-			}
-			if (botMove.getMoveType() == 1) {
-				builds.add((PiecePlacement) botMove);
-			}
-			if (botMove.getMoveType() == 3) {
-				buys.add(botMove);
-			}
-			if (botMove.getMoveType() == 4) {
-				devCard.add(botMove);
-			}
-		}
-
-		// Handle dev card playing first if necessary
-		if (!devCard.isEmpty()) {
-			PlayDevCard move = (PlayDevCard) devCard.get(0);
-			expectingDevCard = true;
-			switch (move.getDevCardType()) {
-			case PlayDevCard.MONOPOLY:
-				client.playDevCard(game, SOCDevCardConstants.MONO);
-				PlayMonopoly monop = (PlayMonopoly) move;
-				monoResource = monop.getTargetResource();
-				break;
-
-			case PlayDevCard.YEAR_OF_PLENTY:
-				client.playDevCard(game, SOCDevCardConstants.DISC);
-				PlayYOP yop = (PlayYOP) move;
-				int resource1 = yop.getResource1();
-				int resource2 = yop.getResource2();
-				yopPicks[resource1-1]++;
-				yopPicks[resource2-1]++;
-				break;
-
-			case PlayDevCard.ROAD_BUILDING:
-				client.playDevCard(game, SOCDevCardConstants.ROADS);
-				PlayRoadBuilding rdBuilding = (PlayRoadBuilding) move;
-				road1Coords = rdBuilding.getLoc1();
-				road2Coords = rdBuilding.getLoc2();
-				roadBuildingActive = true;
-				break;
-			}
-		} else {
-
-			// Handle the trades first
-			for (BotMove trade : trades) {
-				processMove(trade);
+				if (botMove.getMoveType() == 2) {
+					trades.add(botMove);
+				}
+				if (botMove.getMoveType() == 1) {
+					builds.add((PiecePlacement) botMove);
+				}
+				if (botMove.getMoveType() == 3) {
+					buys.add(botMove);
+				}
+				if (botMove.getMoveType() == 4) {
+					devCard.add(botMove);
+				}
 			}
 
-			// Then the dev card buying
-			for (BotMove buy : buys) {
-				processMove(buy);
-			}
+			// Handle dev card playing first if necessary
+			if (!devCard.isEmpty()) {
+				PlayDevCard move = (PlayDevCard) devCard.get(0);
+				expectingDevCard = true;
+				switch (move.getDevCardType()) {
+				case PlayDevCard.MONOPOLY:
+					PlayMonopoly monop = (PlayMonopoly) move;
+					monoResource = monop.getTargetResource();
+					expectingMonopoly = true;
+					client.playDevCard(game, SOCDevCardConstants.MONO);
+					break;
 
-			if (!builds.isEmpty()) {
-				expectingPiecePlacement = true;
+				case PlayDevCard.YEAR_OF_PLENTY:
+					PlayYOP yop = (PlayYOP) move;
+					int resource1 = yop.getResource1();
+					int resource2 = yop.getResource2();
+					yopPicks = new int[5];
+					yopPicks[resource1 - 1]++;
+					yopPicks[resource2 - 1]++;
+					expectingYop = true;
+					client.playDevCard(game, SOCDevCardConstants.DISC);
+					break;
+
+				case PlayDevCard.ROAD_BUILDING:
+					PlayRoadBuilding rdBuilding = (PlayRoadBuilding) move;
+					road1Coords = rdBuilding.getLoc1();
+					road2Coords = rdBuilding.getLoc2();
+					roadBuildingActive = true;
+					client.playDevCard(game, SOCDevCardConstants.ROADS);
+					break;
+				}
+
+				tradesToMake = trades;
+				buysToMake = buys;
 				buildList = builds;
-				requestPiecePlacement(buildList.get(0));
+				movesLeft = true;
+
 			} else {
 
-				expectingDiceRoll = true;
-				waitingForGameState = true;
-				expectingMove = false;
-				client.endTurn(game);
-
-				System.out.println("");
+				handleNonDevCard(trades, builds, buys);
 			}
+		} else {
+		//	System.out.println("MOVING AFTER DEV CARD");
+			movesLeft = false;
+			handleNonDevCard(tradesToMake, buildList, buysToMake);
+			tradesToMake.clear();
+			buysToMake.clear();
+		}
+	}
+
+	private void handleNonDevCard(List<BotMove> trades, List<PiecePlacement> builds, List<BotMove> buys) {
+		// Handle the trades first
+		for (BotMove trade : trades) {
+			processMove(trade);
+		}
+
+		// Then the dev card buying
+		for (BotMove buy : buys) {
+			processMove(buy);
+		}
+
+		if (!builds.isEmpty()) {
+			expectingPiecePlacement = true;
+			buildList = builds;
+			requestPiecePlacement(buildList.get(0));
+		} else {
+
+			expectingDiceRoll = true;
+			waitingForGameState = true;
+			expectingMove = false;
+			client.endTurn(game);
+
+			System.out.println("");
 		}
 	}
 
