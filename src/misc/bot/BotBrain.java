@@ -834,7 +834,7 @@ public class BotBrain extends Thread {
 			int cities = ourPlayer.getCities().size();
 			int vpCards = ourPlayer.getSpecialVP();
 
-			int vp = game.getPlayer(ourPlayer.getPlayerNumber()).getPublicVP();
+			int vp = game.getPlayer(ourPlayer.getPlayerNumber()).getTotalVP();
 			System.out.println("SETS: " + settlements + " Cities: " + cities + "CARDS " + vpCards);
 			client.updateStatistics(ourPlayer.getPlayerNumber(), vp);
 		}

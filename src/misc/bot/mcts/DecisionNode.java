@@ -36,8 +36,9 @@ public class DecisionNode extends TreeNode {
 			while (root.parent != null) {
 				root = root.parent;
 			}
+			
 			int allSimulations = root.getTotalSimulations();
-
+			
 			int bestIndex = 0;
 			double bestScore = Double.MIN_VALUE;
 			for (int i = 0; i < children.size(); i++) {

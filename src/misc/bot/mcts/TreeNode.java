@@ -18,16 +18,16 @@ public abstract class TreeNode {
 	protected int nodeType;
 	protected BuildNode buildNode;
 	protected int totalSimulations;
-	protected int[] wonSimulations = new int[4];
+	protected int[] wonSimulations;
 	protected int playerTurn;
 	private int fakeSimulations;
 
 	public static final int DECISION_NODE = 0;
 	public static final int CHANCE_NODE = 1;
 
-	public final static int SETTLEMENT_WINS = 70;
+	public final static int SETTLEMENT_WINS = 100;
 	public final static int DEV_CARD_WINS = 5;
-	public final static int CITY_WINS = 40;
+	public final static int CITY_WINS = 50;
 
 	public TreeNode(int type, TreeNode parent, BuildNode buildNode) {
 		this.nodeType = type;
@@ -36,6 +36,8 @@ public abstract class TreeNode {
 		this.children = new ArrayList<TreeNode>();
 		this.unexploredChildren = new ArrayList<TreeNode>();
 		this.fakeSimulations = 0;
+		this.totalSimulations  = 0;
+		this.wonSimulations = new int[]{0,0,0,0};
 	}
 
 	public TreeNode getParent() {
@@ -55,7 +57,7 @@ public abstract class TreeNode {
 			if (type == DECISION_NODE) {
 				children.add(new DecisionNode(this, node));
 			} else {
-
+				children.add(new ChanceNode(this, node));
 			}
 		}
 	}
@@ -64,16 +66,17 @@ public abstract class TreeNode {
 		for (BuildNode node : unexploredChild) {
 			if (type == DECISION_NODE) {
 				DecisionNode dNode = new DecisionNode(this, node);
-				applyFakeWins(dNode);
 				unexploredChildren.add(dNode);
 			} else {
-				unexploredChildren.add(new ChanceNode(this, node));
+				ChanceNode cNode = new ChanceNode(this, node);
+				applyFakeWins(cNode);
+				unexploredChildren.add(cNode);			
 			}
 		}
 	}
 
-	private void applyFakeWins(DecisionNode dNode) {
-		BuildNode bNode = dNode.getBuildNode();
+	private void applyFakeWins(ChanceNode cNode) {
+		BuildNode bNode = cNode.getBuildNode();
 		List<BotMove> moves = DecisionMaker.generateMovesFromNode(bNode, true);
 
 		int fakeWinsTotal = 0;
@@ -99,7 +102,7 @@ public abstract class TreeNode {
 				break;
 			}
 		}
-		setFakeSimulations(fakeWinsTotal);
+		cNode.setFakeSimulations(fakeWinsTotal);
 	}
 
 	public BuildNode getBuildNode() {
@@ -135,7 +138,7 @@ public abstract class TreeNode {
 	}
 
 	public void incrementTotalSimulations() {
-		this.totalSimulations++;
+		totalSimulations = totalSimulations + 1;
 	}
 
 	public boolean isLeaf() {
@@ -171,8 +174,8 @@ public abstract class TreeNode {
 	public void propagateResult(int winner) {
 		TreeNode node = this;
 		while (node != null) {
-			incrementTotalSimulations();
-			incrementWonSimulations(winner);
+			node.incrementTotalSimulations();
+			node.incrementWonSimulations(winner);
 			node = node.getParent();
 		}
 	}

@@ -20,7 +20,7 @@ import soc.game.SOCPlayingPiece;
 public class MonteCarloDecisionMaker extends DecisionMaker {
 
 	private int simulationCount = 0;
-	public static final int MAXIMUM_SIMULATIONS = 10000;
+	public static final int MAXIMUM_SIMULATIONS = 1000;
 	private int hexWeAreRobbing = 0;
 	
 	private final static int SETTLEMENT_WINS = 28;
@@ -29,7 +29,7 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 
 	// This is the theortical best value of C - will need to be changed.
 	// Directs how much exploring we do -
-	public static final double EXPLORATION_PARAM = 1.1;
+	public static final double EXPLORATION_PARAM = 1.3;
 
 	public MonteCarloDecisionMaker(SOCGame game) {
 		super(game);
@@ -78,14 +78,18 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 				} catch (SimNotInitialisedException e) {
 
 				}
+				
 				simulationCount++;
 				if (simulationCount % 50 == 0) {
 					System.gc();
 				}
+				
+				System.out.println("Winner is " + winner);
 				System.out.println("Simulations run: " + simulationCount);
 
 				// 4 - Back the results up the tree.
 				expansion.propagateResult(winner);
+			
 			}
 		}
 
@@ -96,11 +100,13 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 		TreeNode bestMove = null;
 
 		for (TreeNode possibleMove : root.getChildren()) {
-			if (possibleMove.getTotalSimulations() > mostSims) {
+			if (possibleMove.getAdjustedTotalSimulations() > mostSims) {
 				bestMove = possibleMove;
-				mostSims = possibleMove.getTotalSimulations();
+				mostSims = possibleMove.getAdjustedTotalSimulations();
 			}
 		}
+		
+		System.out.println(MAXIMUM_SIMULATIONS + " Simulations  ---"  +  root.getWonSimulations(ourPlayer.getPlayerNumber()) + " wins");
 
 		return generateMovesFromNode(bestMove.getBuildNode());
 	}

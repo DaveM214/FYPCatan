@@ -146,7 +146,7 @@ public class Simulator {
 			return reducedGame.getHighestVP();
 		}
 		
-		System.out.println("Winner = " + winningPlayer.getPlayerNumber() + " with VP:" + winningPlayer.getVictoryPoints() + " in turns: " + turns);
+		//System.out.println("Winner = " + winningPlayer.getPlayerNumber() + " with VP:" + winningPlayer.getVictoryPoints() + " in turns: " + turns);
 		return winningPlayer.getPlayerNumber();
 
 	}
