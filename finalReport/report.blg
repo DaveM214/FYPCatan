@@ -1,0 +1,67 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: report.aux
+The style file: biblatex.bst
+This database file appears more than once: report.bib
+---line 20 of file report.aux
+ : \bibdata{report-blx,report,report
+ :                                  }
+I'm skipping whatever remains of this command
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: report-blx.bib
+Database file #2: report.bib
+Biblatex version: 2.8
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+You've used 11 entries,
+            6047 wiz_defined-function locations,
+            1181 strings with 9737 characters,
+and the built_in function-call counts, 34799 in all, are:
+= -- 1226
+> -- 1574
+< -- 332
++ -- 801
+- -- 846
+* -- 2410
+:= -- 2599
+add.period$ -- 0
+call.type$ -- 11
+change.case$ -- 147
+chr.to.int$ -- 82
+cite$ -- 20
+duplicate$ -- 3770
+empty$ -- 3534
+format.name$ -- 658
+if$ -- 7445
+int.to.chr$ -- 0
+int.to.str$ -- 24
+missing$ -- 0
+newline$ -- 281
+num.names$ -- 465
+pop$ -- 3319
+preamble$ -- 1
+purify$ -- 172
+quote$ -- 0
+skip$ -- 1897
+stack$ -- 0
+substring$ -- 716
+swap$ -- 1217
+text.length$ -- 308
+text.prefix$ -- 11
+top$ -- 1
+type$ -- 406
+warning$ -- 0
+while$ -- 257
+width$ -- 0
+write$ -- 269
+(There was 1 error message)

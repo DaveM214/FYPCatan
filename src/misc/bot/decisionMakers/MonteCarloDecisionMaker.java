@@ -20,7 +20,7 @@ import soc.game.SOCPlayingPiece;
 public class MonteCarloDecisionMaker extends DecisionMaker {
 
 	private int simulationCount = 0;
-	public static final int MAXIMUM_SIMULATIONS = 1000;
+	public static final int MAXIMUM_SIMULATIONS = 10000;
 	private int hexWeAreRobbing = 0;
 	
 	private final static int SETTLEMENT_WINS = 28;
@@ -29,7 +29,7 @@ public class MonteCarloDecisionMaker extends DecisionMaker {
 
 	// This is the theortical best value of C - will need to be changed.
 	// Directs how much exploring we do -
-	public static final double EXPLORATION_PARAM = 1.3;
+	public static final double EXPLORATION_PARAM = 2.5;
 
 	public MonteCarloDecisionMaker(SOCGame game) {
 		super(game);

@@ -155,18 +155,6 @@ public class SimpleHeuristicDecisionMaker extends DecisionMaker {
 		return bestLocation;
 	}
 
-	private int getBestIndex(List<Integer> robberLocationScores) {
-		int bestIndex = -1;
-		int bestScore = Integer.MIN_VALUE;
-		for (int i = 0; i < robberLocationScores.size(); i++) {
-			if (robberLocationScores.get(i) > bestScore) {
-				bestIndex = i;
-				bestScore = robberLocationScores.get(i);
-			}
-		}
-		return bestIndex;
-	}
-
 	/**
 	 * We will score the robber locations based on how much resource they will
 	 * deprive our opponents of for this simple decision maker.

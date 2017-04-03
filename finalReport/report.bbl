@@ -1,0 +1,287 @@
+% $ biblatex auxiliary file $
+% $ biblatex version 2.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\entry{afantenos2012developing}{inproceedings}{}
+  \true{moreauthor}
+  \name{author}{10}{}{%
+    {{}%
+     {Afantenos}{A.}%
+     {Stergos}{S.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Asher}{A.}%
+     {Nicholas}{N.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Benamara}{B.}%
+     {Farah}{F.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Cadilhac}{C.}%
+     {Ana{\"\i}s}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {D{\'e}gremont}{D.}%
+     {C{\'e}dric}{C.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Denis}{D.}%
+     {Pascal}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Guhe}{G.}%
+     {Markus}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Keizer}{K.}%
+     {Simon}{S.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Lascarides}{L.}%
+     {Alex}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Lemon}{L.}%
+     {Oliver}{O.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{AS+1}
+  \strng{fullhash}{ASANBFCADCDPGMKSLALO+1}
+  \field{labelyear}{2012}
+  \field{sortinit}{A}
+  \field{booktitle}{SeineDial 2012-The 16th Workshop On The Semantics and
+  Pragmatics Of Dialogue}
+  \field{title}{Developing a corpus of strategic conversation in the settlers
+  of catan}
+  \field{year}{2012}
+\endentry
+
+\entry{branca2007using}{article}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Branca}{B.}%
+     {Luca}{L.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Johansson}{J.}%
+     {Stefan~J}{S.~J.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Citeseer}%
+  }
+  \strng{namehash}{BLJSJ1}
+  \strng{fullhash}{BLJSJ1}
+  \field{labelyear}{2007}
+  \field{sortinit}{B}
+  \field{pages}{3}
+  \field{title}{Using multi-agent system technologies in settlers of catan
+  bots}
+  \field{volume}{2}
+  \field{journaltitle}{City}
+  \field{year}{2007}
+\endentry
+
+\entry{guhe2014game}{inproceedings}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Guhe}{G.}%
+     {Markus}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Lascarides}{L.}%
+     {Alex}{A.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{GMLA1}
+  \strng{fullhash}{GMLA1}
+  \field{labelyear}{2014}
+  \field{sortinit}{G}
+  \field{booktitle}{Computational Intelligence and Games (CIG), 2014 IEEE
+  Conference on}
+  \field{pages}{1\bibrangedash 8}
+  \field{title}{Game strategies for the Settlers of Catan}
+  \field{year}{2014}
+\endentry
+
+\entry{keep2010}{thesis}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Keep}{K.}%
+     {Peter}{P.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{KP1}
+  \strng{fullhash}{KP1}
+  \field{labelyear}{2010}
+  \field{sortinit}{K}
+  \field{title}{Settlers of Catan Analysis}
+  \field{year}{2010}
+\endentry
+
+\entry{variety2015}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {McNary}{M.}%
+     {Dave}{D.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{MD1}
+  \strng{fullhash}{MD1}
+  \field{labelyear}{2015}
+  \field{sortinit}{M}
+  \field{title}{‘Settlers of Catan’ Movie, TV Project in the Works}
+  \verb{url}
+  \verb http://variety.com/2015/film/news/settlers-of-catan-movie-tv-project-ga
+  \verb il-katz-1201437121/
+  \endverb
+  \field{year}{2015}
+  \field{urlday}{31}
+  \field{urlmonth}{03}
+  \field{urlyear}{2017}
+\endentry
+
+\entry{pfeiffer2004reinforcement}{inproceedings}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Pfeiffer}{P.}%
+     {Michael}{M.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{PM1}
+  \strng{fullhash}{PM1}
+  \field{labelyear}{2004}
+  \field{sortinit}{P}
+  \field{booktitle}{Proceedings of the International Conference on Computer
+  Games: Artificial Intelligence, Design and Education}
+  \field{title}{Reinforcement learning of strategies for Settlers of Catan}
+  \field{year}{2004}
+\endentry
+
+\entry{roelofs2012monte}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Roelofs}{R.}%
+     {G}{G}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{RG1}
+  \strng{fullhash}{RG1}
+  \field{labelyear}{2012}
+  \field{sortinit}{R}
+  \field{title}{Monte carlo tree search in a modern board game framework}
+  \field{journaltitle}{Research paper available at umimaas. nl}
+  \field{year}{2012}
+\endentry
+
+\entry{spielDesJahr}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {{Speil des Jahres}}{S.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{S1}
+  \strng{fullhash}{S1}
+  \field{sortinit}{S}
+  \field{title}{"Die Siedler von Catan"}
+  \verb{url}
+  \verb http://spieldesjahres.com/en/die-siedler-von-catan
+  \endverb
+  \field{urlday}{31}
+  \field{urlmonth}{03}
+  \field{urlyear}{2017}
+\endentry
+
+\entry{szita2009monte}{inproceedings}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Szita}{S.}%
+     {Istv{\'a}n}{I.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Chaslot}{C.}%
+     {Guillaume}{G.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Spronck}{S.}%
+     {Pieter}{P.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {Springer}%
+  }
+  \strng{namehash}{SI+1}
+  \strng{fullhash}{SICGSP1}
+  \field{labelyear}{2009}
+  \field{sortinit}{S}
+  \field{booktitle}{Advances in Computer Games}
+  \field{pages}{21\bibrangedash 32}
+  \field{title}{Monte-carlo tree search in settlers of catan}
+  \field{year}{2009}
+\endentry
+
+\entry{thomas2003real}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Thomas}{T.}%
+     {Robert~Shaun}{R.~S.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Northwestern University}%
+  }
+  \strng{namehash}{TRS1}
+  \strng{fullhash}{TRS1}
+  \field{labelyear}{2003}
+  \field{sortinit}{T}
+  \field{title}{Real-time decision making for adversarial environments using a
+  plan-based heuristic}
+  \field{year}{2003}
+\endentry
+
+\lossort
+\endlossort
+
+\endinput

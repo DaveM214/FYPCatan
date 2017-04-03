@@ -70,7 +70,7 @@ public class BotClient extends SOCRobotClient {
 	private static final String SERVER_BUILD = "JM20161228";
 	private Thread readerRobot;
 	
-	private static final String STATS_PATH = "MCTS1000.txt";
+	private static final String STATS_PATH = "MCTS10000-3.txt";
 	private static final boolean APPEND_TO_FILE = true;
 	private FileWriter writer;
 	

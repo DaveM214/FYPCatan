@@ -1,0 +1,33 @@
+Plan for final report:
+
+Abstract - 
+Background
+
+Introduction
+-Possible approaches
+-Past work on this area
+-Past game playing in general
+
+Overview of techniques
+-Move generation
+-Heuristics
+-MCTS
+
+
+Details of implementation and algorithmms used
+-3rd Party Server and Communications
+-MCTS algorithm
+-Simulator
+-Heuristics Move selection
+
+Results -
+Baseline results of AI playing random, heuristically, inbuilt AI
+How this compares to other approaches
+Qualitative evaluation on playing style of the AI
+
+
+Conclusions and Future work - 
+-How viable is MCTS for this type of game
+-How can it be improved
+-Limitations and alternative MCTS methods
+

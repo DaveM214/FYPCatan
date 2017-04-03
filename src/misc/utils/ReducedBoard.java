@@ -249,10 +249,11 @@ public class ReducedBoard {
 					for (Integer edge : joiningEdges) {
 						// If there is a road we own adjacent to the edge and it
 						// is not adjacent to the settlement we can build
-						if (roadAtLocation(edge.intValue(), owner) && !(adjacentEdgesToCity.contains(edge))) {
-							return true;
+						if (!roadAtLocation(edge.intValue(), owner) || (adjacentEdgesToCity.contains(edge))) {
+							return false;
 						}
 					}
+					return true;
 
 				}
 				return false;

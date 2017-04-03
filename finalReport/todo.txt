@@ -1,0 +1,12 @@
+Sort out referencing (Friday)
+Add references to almost finished  (Friday)
+Complete background section (Saturday)
+Gather necessary results before leaving (Friday)
+Implementation Section (Sunday)
+Other bits (Monday - Wednesday)
+
+
+Data Needed:
+-Built in baseline - Add code to built in bots to write to file / manually record 10 games or so.
+-Effect of Heuristic Start (vs random, mcts start) - add code so only random start moves are made. Measure improvment
+-
