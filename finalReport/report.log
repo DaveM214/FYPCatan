@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.10.28)  1 APR 2017 02:15
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.12.12)  11 APR 2017 04:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -398,32 +398,60 @@ Package: afterpage 1995/10/27 v1.08 After-Page Package (DPC)
 \AP@partial=\box26
 \AP@footins=\box27
 )
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2013/05/02 v3.3-89 Customizing captions (AR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2013/05/02 v1.6-88 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 57.
+\captionmargin=\dimen117
+\captionmargin@=\dimen118
+\captionwidth=\dimen119
+\caption@tempdima=\dimen120
+\caption@indent=\dimen121
+\caption@parindent=\dimen122
+\caption@hangindent=\dimen123
+)
+\c@ContinuedFloat=\count217
+Package caption Info: hyperref package is loaded.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count218
+\float@exts=\toks18
+\float@box=\box28
+\@float@everytoks=\toks19
+\@floatcapt=\box29
+)
+(/usr/share/texlive/texmf-dist/tex/latex/chngcntr/chngcntr.sty
+Package: chngcntr 2009/09/02 v1.0a change counter resetting
+)
 Package biblatex Info: Trying to load language 'english'...
 Package biblatex Info: ... file 'english.lbx' found.
 
 (/usr/share/texlive/texmf-dist/tex/latex/biblatex/lbx/english.lbx
 File: english.lbx 2013/11/25 v2.8a biblatex localization (PK/JW/AB)
 )
-\@quotelevel=\count217
-\@quotereset=\count218
+\@quotelevel=\count219
+\@quotereset=\count220
 
 (./report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 38.
-LaTeX Font Info:    ... okay on input line 38.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 38.
-LaTeX Font Info:    ... okay on input line 38.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 38.
-LaTeX Font Info:    ... okay on input line 38.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 38.
-LaTeX Font Info:    ... okay on input line 38.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 38.
-LaTeX Font Info:    ... okay on input line 38.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 38.
-LaTeX Font Info:    ... okay on input line 38.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 38.
-LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -433,15 +461,15 @@ LaTeX Font Info:    ... okay on input line 38.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
-* h-part:(L,W,R)=(57.81621pt, 498.66258pt, 57.81621pt)
-* v-part:(T,H,B)=(57.81621pt, 679.33757pt, 57.81621pt)
+* h-part:(L,W,R)=(71.13188pt, 472.03123pt, 71.13188pt)
+* v-part:(T,H,B)=(71.13188pt, 652.70622pt, 71.13188pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=498.66258pt
-* \textheight=679.33757pt
-* \oddsidemargin=-14.45378pt
-* \evensidemargin=-14.45378pt
-* \topmargin=-51.45378pt
+* \textwidth=472.03123pt
+* \textheight=652.70622pt
+* \oddsidemargin=-1.1381pt
+* \evensidemargin=-1.1381pt
+* \topmargin=-38.1381pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -459,19 +487,19 @@ LaTeX Font Info:    ... okay on input line 38.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\AtBeginShipoutBox=\box28
-Package hyperref Info: Link coloring OFF on input line 38.
+\AtBeginShipoutBox=\box30
+Package hyperref Info: Link coloring OFF on input line 43.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count219
+\c@section@level=\count221
 )
-LaTeX Info: Redefining \ref on input line 38.
-LaTeX Info: Redefining \pageref on input line 38.
-LaTeX Info: Redefining \nameref on input line 38.
+LaTeX Info: Redefining \ref on input line 43.
+LaTeX Info: Redefining \pageref on input line 43.
+LaTeX Info: Redefining \nameref on input line 43.
 
 (./report.out) (./report.out)
 \@outlinefile=\write4
@@ -486,22 +514,22 @@ Package biblatex Info: Automatic encoding selection.
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'report.bbl' found.
  (./report.bbl)
-Package biblatex Info: Reference section=0 on input line 38.
-Package biblatex Info: Reference segment=0 on input line 38.
+Package biblatex Info: Reference section=0 on input line 43.
+Package biblatex Info: Reference segment=0 on input line 43.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count220
-\scratchdimen=\dimen117
-\scratchbox=\box29
-\nofMPsegments=\count221
-\nofMParguments=\count222
-\everyMPshowfont=\toks18
-\MPscratchCnt=\count223
-\MPscratchDim=\dimen118
-\MPnumerator=\count224
-\makeMPintoPDFobject=\count225
-\everyMPtoPDFconversion=\toks19
+\scratchcounter=\count222
+\scratchdimen=\dimen124
+\scratchbox=\box31
+\nofMPsegments=\count223
+\nofMParguments=\count224
+\everyMPshowfont=\toks20
+\MPscratchCnt=\count225
+\MPscratchDim=\dimen125
+\MPnumerator=\count226
+\makeMPintoPDFobject=\count227
+\everyMPtoPDFconversion=\toks21
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
 
@@ -517,17 +545,21 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-<images/logo.png, id=225, 341.275pt x 341.275pt>
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: End \AtBeginDocument code.
+
+<images/logo.png, id=277, 341.275pt x 341.275pt>
 File: images/logo.png Graphic file (type png)
  <use images/logo.png>
-Package pdftex.def Info: images/logo.png used on input line 57.
-(pdftex.def)             Requested size: 249.33128pt x 249.33696pt.
-LaTeX Font Info:    Try loading font information for U+msa on input line 64.
+Package pdftex.def Info: images/logo.png used on input line 62.
+(pdftex.def)             Requested size: 236.01561pt x 236.01636pt.
+LaTeX Font Info:    Try loading font information for U+msa on input line 69.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 64.
+LaTeX Font Info:    Try loading font information for U+msb on input line 69.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -545,72 +577,150 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.164 
-       [1
+l.168 \par \textcite
+                    {roelofs2012monte} also uses a Monte Carlo tree search t...
+[1
 
 ] [2]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 205.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 212.
 
  (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 205.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 212.
+ [3
 
-[3
+] [4]
+[5] [6] [7] [8] [9] [10] [11] [12
 
-] [4] [5] [6] [7] [8] [9] [10
+] [13] [14] [15]
 
-] [11
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 509.
+See the caption package documentation for explanation.
 
-] [12
+[16] [17] [18] [19] <figures/inbuilt.png, id=532, 482.80376pt x 401.5pt>
+File: figures/inbuilt.png Graphic file (type png)
 
-] [13
+<use figures/inbuilt.png>
+Package pdftex.def Info: figures/inbuilt.png used on input line 599.
+(pdftex.def)             Requested size: 354.02342pt x 294.41585pt.
+ [20
 
 ]
+<figures/random.png, id=537, 506.89375pt x 403.5075pt>
+File: figures/random.png Graphic file (type png)
+
+<use figures/random.png>
+Package pdftex.def Info: figures/random.png used on input line 611.
+(pdftex.def)             Requested size: 354.02342pt x 281.8253pt.
+ <figures/heuristic.png, id=538, 497.86pt x 405.515pt>
+File: figures/heuristic.png Graphic file (type png)
+
+<use figures/heuristic.png>
+Package pdftex.def Info: figures/heuristic.png used on input line 617.
+(pdftex.def)             Requested size: 354.02342pt x 288.36316pt.
+ [21 <./figures/inbuilt.png>] [22 <./figures/random.png> <./figures/heuristic.p
+ng>]
+<figures/exploration1-3.png, id=555, 483.8075pt x 402.50375pt>
+File: figures/exploration1-3.png Graphic file (type png)
+
+<use figures/exploration1-3.png>
+Package pdftex.def Info: figures/exploration1-3.png used on input line 643.
+(pdftex.def)             Requested size: 212.4126pt x 176.71526pt.
+
+<figures/exploration10.png, id=556, 498.86375pt x 401.5pt>
+File: figures/exploration10.png Graphic file (type png)
+
+<use figures/exploration10.png>
+Package pdftex.def Info: figures/exploration10.png used on input line 649.
+(pdftex.def)             Requested size: 212.4126pt x 170.95686pt.
+
+<figures/exploration3.png, id=557, 498.86375pt x 401.5pt>
+File: figures/exploration3.png Graphic file (type png)
+
+<use figures/exploration3.png>
+Package pdftex.def Info: figures/exploration3.png used on input line 656.
+(pdftex.def)             Requested size: 354.02342pt x 284.93832pt.
+ [23 <./figures/exploration1-3.png> <./figures/exploration10.png>] <figures/mct
+s100.png, id=568, 485.815pt x 403.5075pt>
+File: figures/mcts100.png Graphic file (type png)
+
+<use figures/mcts100.png>
+Package pdftex.def Info: figures/mcts100.png used on input line 677.
+(pdftex.def)             Requested size: 212.4126pt x 176.42326pt.
+
+<figures/mcts1000.png, id=569, 504.88625pt x 406.51875pt>
+File: figures/mcts1000.png Graphic file (type png)
+
+<use figures/mcts1000.png>
+Package pdftex.def Info: figures/mcts1000.png used on input line 683.
+(pdftex.def)             Requested size: 212.4126pt x 171.02824pt.
+
+<figures/mcts10000.png, id=570, 486.81876pt x 410.53375pt>
+File: figures/mcts10000.png Graphic file (type png)
+
+<use figures/mcts10000.png>
+Package pdftex.def Info: figures/mcts10000.png used on input line 690.
+(pdftex.def)             Requested size: 354.02342pt x 298.54706pt.
+ [24 <./figures/exploration3.png>] [25 <./figures/mcts100.png> <./figures/mcts1
+000.png> <./figures/mcts10000.png>] [26] [27]
+[28
+
+] [29] [30
+
+]
+Missing character: There is no â in font cmr10!
+Missing character: There is no € in font cmr10!
+Missing character: There is no ™ in font cmr10!
 Missing character: There is no â in font cmti10!
 Missing character: There is no € in font cmti10!
 Missing character: There is no ˜ in font cmti10!
 Missing character: There is no â in font cmti10!
 Missing character: There is no € in font cmti10!
 Missing character: There is no ™ in font cmti10!
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 442.
- [14
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 853.
+ [31
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 442.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 853.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 442.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 442.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 853.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 853.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: AAA3FC7BFC4350E3EBFCBBB5AF2AE677;3905.
+(rerunfilecheck)             Checksum: ACFCA63F95F2B5ED87719895FFBB787D;4897.
 Package logreq Info: Writing requests to 'report.run.xml'.
 \openout1 = `report.run.xml'.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 442.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 853.
  ) 
 Here is how much of TeX's memory you used:
- 10954 strings out of 493304
- 173179 string characters out of 6139870
- 370239 words of memory out of 5000000
- 14221 multiletter control sequences out of 15000+600000
- 8278 words of font info for 32 fonts, out of 8000000 for 9000
+ 12246 strings out of 493304
+ 196321 string characters out of 6139870
+ 391339 words of memory out of 5000000
+ 15426 multiletter control sequences out of 15000+600000
+ 12625 words of font info for 49 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,5n,52p,1288b,1143s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,7n,64p,1313b,1181s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/tex
-live/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmtt10.pfb>
-Output written on report.pdf (20 pages, 225945 bytes).
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.p
+fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on report.pdf (37 pages, 403300 bytes).
 PDF statistics:
- 460 PDF objects out of 1000 (max. 8388607)
- 421 compressed objects within 5 object streams
- 88 named destinations out of 1000 (max. 500000)
- 446 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 705 PDF objects out of 1000 (max. 8388607)
+ 624 compressed objects within 7 object streams
+ 143 named destinations out of 1000 (max. 500000)
+ 595 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -4,11 +4,11 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.1}Game Playing}{1}{subsection.1.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{}{1}{section*.2}
-\defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.2}Related Work}{1}{subsection.1.2}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.3}Aims}{2}{subsection.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.4}Report Structure}{2}{subsection.1.4}
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {2}Background}{3}{section.2}
 \defcounter {refsection}{0}\relax 
@@ -28,7 +28,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {2.2.6}Development Cards}{5}{subsubsection.2.2.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {2.2.7}Trading}{5}{subsubsection.2.2.7}
+\contentsline {subsubsection}{\numberline {2.2.7}Trading}{6}{subsubsection.2.2.7}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {2.2.8}Winning the Game}{6}{subsubsection.2.2.8}
 \defcounter {refsection}{0}\relax 
@@ -38,76 +38,100 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {2.3.2}Common Human Strategies}{7}{subsubsection.2.3.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {2.3.3}Opening Turn}{7}{subsubsection.2.3.3}
+\contentsline {subsubsection}{\numberline {2.3.3}Opening Turn}{8}{subsubsection.2.3.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {2.3.4}Robber Strategy}{7}{subsubsection.2.3.4}
+\contentsline {subsubsection}{\numberline {2.3.4}Robber Strategy}{8}{subsubsection.2.3.4}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {2.3.5}Trading}{8}{subsubsection.2.3.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.4}Common AI Techniques for Game Playing}{8}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.4}Common AI Techniques for Game Playing}{9}{subsection.2.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {2.4.1}Minimax Search}{8}{subsubsection.2.4.1}
+\contentsline {subsubsection}{\numberline {2.4.1}Minimax Search}{9}{subsubsection.2.4.1}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {2.4.2}Monte Carlo Tree Search}{9}{subsubsection.2.4.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {2.4.3}Expert Systems}{9}{subsubsection.2.4.3}
+\contentsline {subsubsection}{\numberline {2.4.3}Expert \& Rule Based Systems}{10}{subsubsection.2.4.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {2.4.4}Reinforcement Learning}{9}{subsubsection.2.4.4}
+\contentsline {subsubsection}{\numberline {2.4.4}Reinforcement Learning}{10}{subsubsection.2.4.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {2.4.5}Evolutionary Algorithms}{9}{subsubsection.2.4.5}
+\contentsline {subsubsection}{\numberline {2.4.5}Evolutionary Algorithms}{10}{subsubsection.2.4.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.5}JSettlers2}{9}{subsection.2.5}
+\contentsline {subsubsection}{\numberline {2.4.6}Artificial Neural Networks}{10}{subsubsection.2.4.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {2.5.1}JSettlers2 Structure}{9}{subsubsection.2.5.1}
+\contentsline {subsection}{\numberline {2.5}JSettlers2}{10}{subsection.2.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {3}Implementation and Development}{10}{section.3}
+\contentsline {subsubsection}{\numberline {2.5.1}JSettlers2 Structure}{11}{subsubsection.2.5.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.1}Overview and Plan}{10}{subsection.3.1}
+\contentsline {section}{\numberline {3}Implementation and Development}{12}{section.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.2}Interaction with API}{10}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.1}Overview and Plan}{12}{subsection.3.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.3}Opening move generator}{10}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {3.1.1}Rules Changes}{12}{subsubsection.3.1.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.4}Move generator}{10}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.2}Interaction with API}{12}{subsection.3.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.5}Monte Carlo Tree Search}{10}{subsection.3.5}
+\contentsline {subsection}{\numberline {3.3}Opening move generator}{13}{subsection.3.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {3.5.1}Handling Non-Determinism}{10}{subsubsection.3.5.1}
+\contentsline {subsection}{\numberline {3.4}Move Generation}{14}{subsection.3.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {3.5.2}UCT Formula}{10}{subsubsection.3.5.2}
+\contentsline {subsubsection}{\numberline {3.4.1}Move Reduction and Efficiency}{14}{subsubsection.3.4.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {3.5.3}Application of expert knowledge}{10}{subsubsection.3.5.3}
+\contentsline {subsection}{\numberline {3.5}Monte Carlo Tree Search}{15}{subsection.3.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.6}Simulator}{10}{subsection.3.6}
+\contentsline {subsubsection}{\numberline {3.5.1}Handling Non-Determinism}{15}{subsubsection.3.5.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {3.6.1}Simulator Heuristics}{10}{subsubsection.3.6.1}
+\contentsline {subsubsection}{\numberline {3.5.2}UCT Formula}{16}{subsubsection.3.5.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {3.6.2}Simulator Fidelity}{10}{subsubsection.3.6.2}
+\contentsline {subsubsection}{\numberline {3.5.3}Backpropagation}{16}{subsubsection.3.5.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {3.6.3}Simulator Performance}{10}{subsubsection.3.6.3}
+\contentsline {subsubsection}{\numberline {3.5.4}Application of expert knowledge}{16}{subsubsection.3.5.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.7}Optimisation}{10}{subsection.3.7}
+\contentsline {subsection}{\numberline {3.6}Simulator}{17}{subsection.3.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4}Results}{11}{section.4}
+\contentsline {subsubsection}{\numberline {3.6.1}Simulator Playout Policy}{17}{subsubsection.3.6.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.1}Effects of Heuristic Opening Strategy}{11}{subsection.4.1}
+\contentsline {subsubsection}{\numberline {3.6.2}Simulator Fidelity}{18}{subsubsection.3.6.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.2}Effects of Adjustment of Simulation Count}{11}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {3.6.3}Simulator Performance}{18}{subsubsection.3.6.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.3}Effects of Adjustment of UTC Exploration Parameter}{11}{subsection.4.3}
+\contentsline {subsection}{\numberline {3.7}Other Game Decisions}{18}{subsection.3.7}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.4}Play against Humans}{11}{subsection.4.4}
+\contentsline {section}{\numberline {4}Results}{20}{section.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.5}Qualitative analysis of Play}{11}{subsection.4.5}
+\contentsline {subsection}{\numberline {4.1}Testing Methodology}{20}{subsection.4.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5}Evaluation}{12}{section.5}
+\contentsline {subsection}{\numberline {4.2}Baseline Tests}{20}{subsection.4.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.1}Peformance}{12}{subsection.5.1}
+\contentsline {subsection}{\numberline {4.3}Effects of Heuristic Opening Strategy}{23}{subsection.4.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.2}Comparison with Other Systems}{12}{subsection.5.2}
+\contentsline {subsection}{\numberline {4.4}Effects of Adjustment of UCT Exploration Parameter}{23}{subsection.4.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.3}Limitations and Issues}{12}{subsection.5.3}
+\contentsline {subsection}{\numberline {4.5}Effects of Adjustment of Simulation Count}{24}{subsection.4.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {6}Conclusion}{13}{section.6}
+\contentsline {subsection}{\numberline {4.6}Play against Humans}{26}{subsection.4.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.1}Possible Future Work}{13}{subsection.6.1}
+\contentsline {subsubsection}{\numberline {4.6.1}Novice}{26}{subsubsection.4.6.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {4.6.2}Expert}{27}{subsubsection.4.6.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.7}Qualitative analysis of Play}{27}{subsection.4.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5}Evaluation}{28}{section.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.1}Peformance}{28}{subsection.5.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.2}Comparison with Other Systems}{28}{subsection.5.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.3}Limitations and Issues}{28}{subsection.5.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.4}Possible Improvements}{29}{subsection.5.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6}Conclusion}{30}{section.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.1}Possible Future Work}{30}{subsection.6.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {6.1.1}Trading}{30}{subsubsection.6.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {6.1.2}MCTS Optimisation}{30}{subsubsection.6.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {6.1.3}Simulator Performance Optimisation}{30}{subsubsection.6.1.3}
