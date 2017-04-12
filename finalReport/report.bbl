@@ -114,6 +114,26 @@
   \field{year}{2002}
 \endentry
 
+\entry{axelrod1987evolution}{article}{}
+  \true{moreauthor}
+  \name{author}{1}{}{%
+    {{}%
+     {Axelrod}{A.}%
+     {Robert}{R.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{AR+1}
+  \strng{fullhash}{AR+1}
+  \field{labelyear}{1987}
+  \field{sortinit}{A}
+  \field{pages}{1\bibrangedash 16}
+  \field{title}{The evolution of strategies in the iterated prisoner’s
+  dilemma}
+  \field{journaltitle}{The dynamics of norms}
+  \field{year}{1987}
+\endentry
+
 \entry{bjarnason2009lower}{inproceedings}{}
   \name{author}{3}{}{%
     {{}%
@@ -270,6 +290,67 @@
   \field{year}{2012}
 \endentry
 
+\entry{burmeister1995challenge}{inproceedings}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Burmeister}{B.}%
+     {Jay}{J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Wiles}{W.}%
+     {Janet}{J.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{BJWJ1}
+  \strng{fullhash}{BJWJ1}
+  \field{labelyear}{1995}
+  \field{sortinit}{B}
+  \field{booktitle}{Intelligent Information Systems, 1995. ANZIIS-95.
+  Proceedings of the Third Australian and New Zealand Conference on}
+  \field{pages}{181\bibrangedash 186}
+  \field{title}{The challenge of Go as a domain for AI research: a comparison
+  between Go and chess}
+  \field{year}{1995}
+\endentry
+
+\entry{campbell2002deep}{article}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Campbell}{C.}%
+     {Murray}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Hoane}{H.}%
+     {A~Joseph}{A.~J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Hsu}{H.}%
+     {Feng-hsiung}{F.-h.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Elsevier}%
+  }
+  \strng{namehash}{CM+1}
+  \strng{fullhash}{CMHAJHFh1}
+  \field{labelyear}{2002}
+  \field{sortinit}{C}
+  \field{number}{1-2}
+  \field{pages}{57\bibrangedash 83}
+  \field{title}{Deep blue}
+  \field{volume}{134}
+  \field{journaltitle}{Artificial intelligence}
+  \field{year}{2002}
+\endentry
+
 \entry{champandard2014monte}{article}{}
   \name{author}{1}{}{%
     {{}%
@@ -379,6 +460,44 @@
   \field{year}{2016}
 \endentry
 
+\entry{fogel2004self}{article}{}
+  \name{author}{4}{}{%
+    {{}%
+     {Fogel}{F.}%
+     {David~B}{D.~B.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Hays}{H.}%
+     {Timothy~J}{T.~J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Hahn}{H.}%
+     {Sarah~L}{S.~L.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Quon}{Q.}%
+     {James}{J.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{FDB+1}
+  \strng{fullhash}{FDBHTJHSLQJ1}
+  \field{labelyear}{2004}
+  \field{sortinit}{F}
+  \field{number}{12}
+  \field{pages}{1947\bibrangedash 1954}
+  \field{title}{A self-learning evolutionary chess program}
+  \field{volume}{92}
+  \field{journaltitle}{Proceedings of the IEEE}
+  \field{year}{2004}
+\endentry
+
 \entry{gelly2006modification}{article}{}
   \name{author}{5}{}{%
     {{}%
@@ -461,6 +580,36 @@
   \field{year}{2010}
 \endentry
 
+\entry{kendall2007iterated}{book}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Kendall}{K.}%
+     {Graham}{G.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Yao}{Y.}%
+     {Xin}{X.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Chong}{C.}%
+     {Siang~Yew}{S.~Y.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {World Scientific}%
+  }
+  \strng{namehash}{KG+1}
+  \strng{fullhash}{KGYXCSY1}
+  \field{labelyear}{2007}
+  \field{sortinit}{K}
+  \field{title}{The iterated prisoners' dilemma: 20 years on}
+  \field{volume}{4}
+  \field{year}{2007}
+\endentry
+
 \entry{kocsis2006bandit}{inproceedings}{}
   \name{author}{2}{}{%
     {{}%
@@ -487,6 +636,35 @@
   \field{year}{2006}
 \endentry
 
+\entry{kojima1997evolutionary}{inproceedings}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Kojima}{K.}%
+     {Takuya}{T.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Ueda}{U.}%
+     {Kazuhiro}{K.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Nagano}{N.}%
+     {Saburo}{S.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{KT+1}
+  \strng{fullhash}{KTUKNS1}
+  \field{labelyear}{1997}
+  \field{sortinit}{K}
+  \field{booktitle}{IJCAI (1)}
+  \field{pages}{684\bibrangedash 691}
+  \field{title}{An evolutionary algorithm extended by ecological analogy and
+  its application to the game of Go}
+  \field{year}{1997}
+\endentry
+
 \entry{kozelek2009methods}{article}{}
   \name{author}{1}{}{%
     {{}%
@@ -503,6 +681,20 @@
   \field{journaltitle}{Charles University, Prague, Faculty of Mathematics and
   Physics}
   \field{year}{2009}
+\endentry
+
+\entry{kunzintroduction}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Kunz}{K.}%
+     {Florian}{F.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{KF1}
+  \strng{fullhash}{KF1}
+  \field{sortinit}{K}
+  \field{title}{An Introduction to Temporal Difference Learning}
 \endentry
 
 \entry{variety2015}{online}{}
@@ -526,6 +718,28 @@
   \field{urlday}{31}
   \field{urlmonth}{03}
   \field{urlyear}{2017}
+\endentry
+
+\entry{moninJsettlers}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Monin}{M.}%
+     {Jeremy}{J.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{MJ1}
+  \strng{fullhash}{MJ1}
+  \field{labelyear}{2016}
+  \field{sortinit}{M}
+  \field{title}{JSettlers2}
+  \verb{url}
+  \verb http://nand.net/jsettlers/
+  \endverb
+  \field{year}{2016}
+  \field{urlday}{09}
+  \field{urlmonth}{11}
+  \field{urlyear}{2016}
 \endentry
 
 \entry{pearl1984heuristics}{book}{}
@@ -564,6 +778,39 @@
   Games: Artificial Intelligence, Design and Education}
   \field{title}{Reinforcement learning of strategies for Settlers of Catan}
   \field{year}{2004}
+\endentry
+
+\entry{richards1998evolving}{article}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Richards}{R.}%
+     {Norman}{N.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Moriarty}{M.}%
+     {David~E}{D.~E.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Miikkulainen}{M.}%
+     {Risto}{R.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Springer}%
+  }
+  \strng{namehash}{RN+1}
+  \strng{fullhash}{RNMDEMR1}
+  \field{labelyear}{1998}
+  \field{sortinit}{R}
+  \field{number}{1}
+  \field{pages}{85\bibrangedash 96}
+  \field{title}{Evolving neural networks to play Go}
+  \field{volume}{8}
+  \field{journaltitle}{Applied Intelligence}
+  \field{year}{1998}
 \endentry
 
 \entry{roelofs2012monte}{article}{}

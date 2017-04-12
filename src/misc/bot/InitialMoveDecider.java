@@ -32,8 +32,8 @@ public class InitialMoveDecider {
 	private SOCGame game;
 	private int strategy;
 	private SOCPlayer ourPlayer;
-	private SOCBoard board;
-	private int lastSettlementLocation;
+	protected SOCBoard board;
+	protected int lastSettlementLocation;
 
 	// MAGIC NUMBERS - Weights for various types of decision.
 	private static final double BRICK_MUTLIPLIER = 0.90;
@@ -325,7 +325,7 @@ public class InitialMoveDecider {
 	 * 
 	 * @return List of all possible settlement locations
 	 */
-	private ArrayList<Integer> generatePossibleSetLocs() {
+	protected ArrayList<Integer> generatePossibleSetLocs() {
 		int[] locations = ourPlayer.getPotentialSettlements_arr();
 		ArrayList<Integer> locList = new ArrayList<Integer>();
 
@@ -409,7 +409,7 @@ public class InitialMoveDecider {
 	 * 
 	 * @return List of all the possible locations of the roads
 	 */
-	private List<Integer> generatePossibleRoadLocs() {
+	protected List<Integer> generatePossibleRoadLocs() {
 		// Hex values representing the board
 		// TODO extract these to a proper constant
 		int minEdge = 0x22;

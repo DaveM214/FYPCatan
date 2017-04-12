@@ -112,7 +112,9 @@ public class BotBrain extends Thread {
 		expectingMonopoly = false;
 		expectingMoveRobber = false;
 		expectingYop = false;
+		//DECISION MAKER TYPE HERE
 		dm = new MonteCarloDecisionMaker(game);
+		//////////////////////////
 		movesToProcess = new ArrayList<BotMove>();
 		buildList = new ArrayList<PiecePlacement>();
 		tradesToMake = new ArrayList<BotMove>();
@@ -861,7 +863,9 @@ public class BotBrain extends Thread {
 		ourPlayer = game.getPlayer(client.getNickname());
 		dm.setOurPlayerInformation(ourPlayer);
 		dm.setReducedGame(new ReducedGame(ourPlayer.getPlayerNumber(), game));
-		initialDecider = new InitialMoveDecider(ourPlayer);
+		///START MOVE TYPE HERE
+		initialDecider = new RandomInitial(ourPlayer);
+		////////////////////
 	}
 
 	/**

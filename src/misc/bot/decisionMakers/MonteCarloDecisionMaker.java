@@ -20,7 +20,7 @@ import soc.game.SOCPlayingPiece;
 public class MonteCarloDecisionMaker extends DecisionMaker {
 
 	private int simulationCount = 0;
-	public static final int MAXIMUM_SIMULATIONS = 10000;
+	public static final int MAXIMUM_SIMULATIONS = 1000;
 	private int hexWeAreRobbing = 0;
 	
 	private final static int SETTLEMENT_WINS = 28;

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.12.12)  11 APR 2017 04:12
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.12.12)  12 APR 2017 14:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -426,32 +426,62 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 (/usr/share/texlive/texmf-dist/tex/latex/chngcntr/chngcntr.sty
 Package: chngcntr 2009/09/02 v1.0a change counter resetting
 )
+(/usr/share/texlive/texmf-dist/tex/latex/algorithms/algorithm.sty
+Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
+nment
+\@float@every@algorithm=\toks20
+\c@algorithm=\count219
+)
+(/usr/share/texlive/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
+Package: algpseudocode 
+
+(/usr/share/texlive/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
+Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
+
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+\c@ALG@line=\count220
+\c@ALG@rem=\count221
+\c@ALG@nested=\count222
+\ALG@tlm=\skip53
+\ALG@thistlm=\skip54
+\c@ALG@Lnr=\count223
+\c@ALG@blocknr=\count224
+\c@ALG@storecount=\count225
+\c@ALG@tmpcounter=\count226
+\ALG@tmplength=\skip55
+)
+Document Style - pseudocode environments for use with the `algorithmicx' style
+) (/usr/share/texlive/texmf-dist/tex/latex/listing/listing.sty
+Package: listing 1999/05/25
+
+Package `listing', V1.2, <1999/05/25>
+\c@listing=\count227
+)
 Package biblatex Info: Trying to load language 'english'...
 Package biblatex Info: ... file 'english.lbx' found.
-
-(/usr/share/texlive/texmf-dist/tex/latex/biblatex/lbx/english.lbx
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/lbx/english.lbx
 File: english.lbx 2013/11/25 v2.8a biblatex localization (PK/JW/AB)
 )
-\@quotelevel=\count219
-\@quotereset=\count220
+\@quotelevel=\count228
+\@quotereset=\count229
 
 (./report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 43.
-LaTeX Font Info:    ... okay on input line 43.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 43.
-LaTeX Font Info:    ... okay on input line 43.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 43.
-LaTeX Font Info:    ... okay on input line 43.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 43.
-LaTeX Font Info:    ... okay on input line 43.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 43.
-LaTeX Font Info:    ... okay on input line 43.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 43.
-LaTeX Font Info:    ... okay on input line 43.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 43.
-LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 47.
+LaTeX Font Info:    ... okay on input line 47.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 47.
+LaTeX Font Info:    ... okay on input line 47.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 47.
+LaTeX Font Info:    ... okay on input line 47.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 47.
+LaTeX Font Info:    ... okay on input line 47.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 47.
+LaTeX Font Info:    ... okay on input line 47.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 47.
+LaTeX Font Info:    ... okay on input line 47.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 47.
+LaTeX Font Info:    ... okay on input line 47.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -461,15 +491,15 @@ LaTeX Font Info:    ... okay on input line 43.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
-* h-part:(L,W,R)=(71.13188pt, 472.03123pt, 71.13188pt)
-* v-part:(T,H,B)=(71.13188pt, 652.70622pt, 71.13188pt)
+* h-part:(L,W,R)=(79.6678pt, 454.9594pt, 79.6678pt)
+* v-part:(T,H,B)=(79.6678pt, 635.63438pt, 79.6678pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=472.03123pt
-* \textheight=652.70622pt
-* \oddsidemargin=-1.1381pt
-* \evensidemargin=-1.1381pt
-* \topmargin=-38.1381pt
+* \textwidth=454.9594pt
+* \textheight=635.63438pt
+* \oddsidemargin=7.39781pt
+* \evensidemargin=7.39781pt
+* \topmargin=-29.60219pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -488,18 +518,18 @@ LaTeX Font Info:    ... okay on input line 43.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 \AtBeginShipoutBox=\box30
-Package hyperref Info: Link coloring OFF on input line 43.
+Package hyperref Info: Link coloring OFF on input line 47.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count221
+\c@section@level=\count230
 )
-LaTeX Info: Redefining \ref on input line 43.
-LaTeX Info: Redefining \pageref on input line 43.
-LaTeX Info: Redefining \nameref on input line 43.
+LaTeX Info: Redefining \ref on input line 47.
+LaTeX Info: Redefining \pageref on input line 47.
+LaTeX Info: Redefining \nameref on input line 47.
 
 (./report.out) (./report.out)
 \@outlinefile=\write4
@@ -514,22 +544,23 @@ Package biblatex Info: Automatic encoding selection.
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'report.bbl' found.
  (./report.bbl)
-Package biblatex Info: Reference section=0 on input line 43.
-Package biblatex Info: Reference segment=0 on input line 43.
+Package biblatex Info: Reference section=0 on input line 47.
+Package biblatex Info: Reference segment=0 on input line 47.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count222
+\scratchcounter=\count231
 \scratchdimen=\dimen124
 \scratchbox=\box31
-\nofMPsegments=\count223
-\nofMParguments=\count224
-\everyMPshowfont=\toks20
-\MPscratchCnt=\count225
+\nofMPsegments=\count232
+\nofMParguments=\count233
+\everyMPshowfont=\toks21
+Normal \count register pool exhausted, switching to extended pool.
+\MPscratchCnt=\count277
 \MPscratchDim=\dimen125
-\MPnumerator=\count226
-\makeMPintoPDFobject=\count227
-\everyMPtoPDFconversion=\toks21
+\MPnumerator=\count278
+\makeMPintoPDFobject=\count279
+\everyMPtoPDFconversion=\toks22
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
 
@@ -552,125 +583,203 @@ Package caption Info: End \AtBeginDocument code.
 <images/logo.png, id=277, 341.275pt x 341.275pt>
 File: images/logo.png Graphic file (type png)
  <use images/logo.png>
-Package pdftex.def Info: images/logo.png used on input line 62.
-(pdftex.def)             Requested size: 236.01561pt x 236.01636pt.
-LaTeX Font Info:    Try loading font information for U+msa on input line 69.
+Package pdftex.def Info: images/logo.png used on input line 66.
+(pdftex.def)             Requested size: 227.47969pt x 227.48138pt.
+LaTeX Font Info:    Try loading font information for U+msa on input line 73.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 69.
+LaTeX Font Info:    Try loading font information for U+msb on input line 73.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./images/logo.png>] [0] [1
-] [2]
-(./report.toc [3
+] [2] [3]
+(./report.toc [4
 
 ])
 \tf@toc=\write5
 \openout5 = `report.toc'.
 
- [4]pdfTeX warning (ext4): destination with the same identifier (name{page.1}) 
+ [5]pdfTeX warning (ext4): destination with the same identifier (name{page.1}) 
 has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.168 \par \textcite
-                    {roelofs2012monte} also uses a Monte Carlo tree search t...
-[1
+l.180 
+       [1
 
-] [2]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 212.
+] [2] [3]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 252.
 
  (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 212.
- [3
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 252.
 
-] [4]
-[5] [6] [7] [8] [9] [10] [11] [12
+[4
 
-] [13] [14] [15]
+] [5] [6] [7]
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 509.
+(caption)                particular \caption on input line 385.
 See the caption package documentation for explanation.
 
-[16] [17] [18] [19] <figures/inbuilt.png, id=532, 482.80376pt x 401.5pt>
+[8] [9] [10] [11] [12] [13] [14
+
+] [15] [16] [17]
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
+put line 580.
+ [18]
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 656.
+See the caption package documentation for explanation.
+
+[19] [20] [21] [22] [23] <figures/inbuilt.png, id=582, 482.80376pt x 401.5pt>
 File: figures/inbuilt.png Graphic file (type png)
 
 <use figures/inbuilt.png>
-Package pdftex.def Info: figures/inbuilt.png used on input line 599.
-(pdftex.def)             Requested size: 354.02342pt x 294.41585pt.
- [20
+Package pdftex.def Info: figures/inbuilt.png used on input line 746.
+(pdftex.def)             Requested size: 341.21954pt x 283.76819pt.
+ [24
 
 ]
-<figures/random.png, id=537, 506.89375pt x 403.5075pt>
+<figures/random.png, id=588, 506.89375pt x 403.5075pt>
 File: figures/random.png Graphic file (type png)
 
 <use figures/random.png>
-Package pdftex.def Info: figures/random.png used on input line 611.
-(pdftex.def)             Requested size: 354.02342pt x 281.8253pt.
- <figures/heuristic.png, id=538, 497.86pt x 405.515pt>
+Package pdftex.def Info: figures/random.png used on input line 758.
+(pdftex.def)             Requested size: 341.21954pt x 271.62927pt.
+ <figures/heuristic.png, id=589, 497.86pt x 405.515pt>
 File: figures/heuristic.png Graphic file (type png)
 
 <use figures/heuristic.png>
-Package pdftex.def Info: figures/heuristic.png used on input line 617.
-(pdftex.def)             Requested size: 354.02342pt x 288.36316pt.
- [21 <./figures/inbuilt.png>] [22 <./figures/random.png> <./figures/heuristic.p
+Package pdftex.def Info: figures/heuristic.png used on input line 764.
+(pdftex.def)             Requested size: 341.21954pt x 277.93697pt.
+ [25 <./figures/inbuilt.png>] [26 <./figures/random.png> <./figures/heuristic.p
 ng>]
-<figures/exploration1-3.png, id=555, 483.8075pt x 402.50375pt>
+<figures/roRandom.png, id=604, 487.8225pt x 409.53pt>
+File: figures/roRandom.png Graphic file (type png)
+
+<use figures/roRandom.png>
+Package pdftex.def Info: figures/roRandom.png used on input line 782.
+(pdftex.def)             Requested size: 204.73033pt x 171.8702pt.
+
+<figures/hoRandom.png, id=605, 506.89375pt x 403.5075pt>
+File: figures/hoRandom.png Graphic file (type png)
+
+<use figures/hoRandom.png>
+Package pdftex.def Info: figures/hoRandom.png used on input line 788.
+(pdftex.def)             Requested size: 204.73033pt x 162.97017pt.
+
+<figures/roHeuristic.png, id=606, 502.87875pt x 400.49625pt>
+File: figures/roHeuristic.png Graphic file (type png)
+
+<use figures/roHeuristic.png>
+Package pdftex.def Info: figures/roHeuristic.png used on input line 798.
+(pdftex.def)             Requested size: 204.73033pt x 163.04341pt.
+
+<figures/hoHeuristic.png, id=607, 497.86pt x 405.515pt>
+File: figures/hoHeuristic.png Graphic file (type png)
+
+<use figures/hoHeuristic.png>
+Package pdftex.def Info: figures/hoHeuristic.png used on input line 804.
+(pdftex.def)             Requested size: 204.73033pt x 166.75723pt.
+ [27 <./figures/roRandom.png> <./figures/hoRandom.png>] <figures/roMCTS.png, id
+=615, 499.8675pt x 401.5pt>
+File: figures/roMCTS.png Graphic file (type png)
+
+<use figures/roMCTS.png>
+Package pdftex.def Info: figures/roMCTS.png used on input line 814.
+(pdftex.def)             Requested size: 204.73033pt x 164.43839pt.
+
+<figures/hoMCTS.png, id=616, 504.88625pt x 406.51875pt>
+File: figures/hoMCTS.png Graphic file (type png)
+
+<use figures/hoMCTS.png>
+Package pdftex.def Info: figures/hoMCTS.png used on input line 820.
+(pdftex.def)             Requested size: 204.73033pt x 164.84389pt.
+ [28 <./figures/roHeuristic.png> <./figures/hoHeuristic.png> <./figures/roMCTS.
+png> <./figures/hoMCTS.png>]
+<figures/exploration1-3.png, id=629, 483.8075pt x 402.50375pt>
 File: figures/exploration1-3.png Graphic file (type png)
 
 <use figures/exploration1-3.png>
-Package pdftex.def Info: figures/exploration1-3.png used on input line 643.
-(pdftex.def)             Requested size: 212.4126pt x 176.71526pt.
+Package pdftex.def Info: figures/exploration1-3.png used on input line 842.
+(pdftex.def)             Requested size: 204.73033pt x 170.3279pt.
 
-<figures/exploration10.png, id=556, 498.86375pt x 401.5pt>
+<figures/exploration10.png, id=630, 498.86375pt x 401.5pt>
 File: figures/exploration10.png Graphic file (type png)
 
 <use figures/exploration10.png>
-Package pdftex.def Info: figures/exploration10.png used on input line 649.
-(pdftex.def)             Requested size: 212.4126pt x 170.95686pt.
+Package pdftex.def Info: figures/exploration10.png used on input line 848.
+(pdftex.def)             Requested size: 204.73033pt x 164.76921pt.
 
-<figures/exploration3.png, id=557, 498.86375pt x 401.5pt>
+<figures/exploration3.png, id=631, 498.86375pt x 401.5pt>
 File: figures/exploration3.png Graphic file (type png)
 
 <use figures/exploration3.png>
-Package pdftex.def Info: figures/exploration3.png used on input line 656.
-(pdftex.def)             Requested size: 354.02342pt x 284.93832pt.
- [23 <./figures/exploration1-3.png> <./figures/exploration10.png>] <figures/mct
-s100.png, id=568, 485.815pt x 403.5075pt>
+Package pdftex.def Info: figures/exploration3.png used on input line 855.
+(pdftex.def)             Requested size: 341.21954pt x 274.62762pt.
+ [29 <./figures/exploration1-3.png> <./figures/exploration10.png> <./figures/ex
+ploration3.png>]
+<figures/mcts100.png, id=644, 485.815pt x 403.5075pt>
 File: figures/mcts100.png Graphic file (type png)
 
 <use figures/mcts100.png>
-Package pdftex.def Info: figures/mcts100.png used on input line 677.
-(pdftex.def)             Requested size: 212.4126pt x 176.42326pt.
+Package pdftex.def Info: figures/mcts100.png used on input line 876.
+(pdftex.def)             Requested size: 204.73033pt x 170.04459pt.
 
-<figures/mcts1000.png, id=569, 504.88625pt x 406.51875pt>
+<figures/mcts1000.png, id=645, 504.88625pt x 406.51875pt>
 File: figures/mcts1000.png Graphic file (type png)
 
 <use figures/mcts1000.png>
-Package pdftex.def Info: figures/mcts1000.png used on input line 683.
-(pdftex.def)             Requested size: 212.4126pt x 171.02824pt.
+Package pdftex.def Info: figures/mcts1000.png used on input line 882.
+(pdftex.def)             Requested size: 204.73033pt x 164.84389pt.
 
-<figures/mcts10000.png, id=570, 486.81876pt x 410.53375pt>
+<figures/mcts10000.png, id=646, 486.81876pt x 410.53375pt>
 File: figures/mcts10000.png Graphic file (type png)
 
 <use figures/mcts10000.png>
-Package pdftex.def Info: figures/mcts10000.png used on input line 690.
-(pdftex.def)             Requested size: 354.02342pt x 298.54706pt.
- [24 <./figures/exploration3.png>] [25 <./figures/mcts100.png> <./figures/mcts1
-000.png> <./figures/mcts10000.png>] [26] [27]
-[28
+Package pdftex.def Info: figures/mcts10000.png used on input line 889.
+(pdftex.def)             Requested size: 341.21954pt x 287.74751pt.
+ [30 <./figures/mcts100.png> <./figures/mcts1000.png>] [31 <./figures/mcts10000
+.png>]
 
-] [29] [30
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 934.
+See the caption package documentation for explanation.
+
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 947.
+See the caption package documentation for explanation.
+
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 973.
+See the caption package documentation for explanation.
+
+[32]
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 984.
+See the caption package documentation for explanation.
+
+[33] [34
+
+] [35] [36
+
+] [37] [38
 
 ]
+Missing character: There is no â in font cmr10!
+Missing character: There is no € in font cmr10!
+Missing character: There is no ™ in font cmr10!
 Missing character: There is no â in font cmr10!
 Missing character: There is no € in font cmr10!
 Missing character: There is no ™ in font cmr10!
@@ -680,29 +789,31 @@ Missing character: There is no ˜ in font cmti10!
 Missing character: There is no â in font cmti10!
 Missing character: There is no € in font cmti10!
 Missing character: There is no ™ in font cmti10!
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 853.
- [31
+ [39
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 853.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1079.
+ [40]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1079.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 853.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 853.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1079.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1079.
+
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: ACFCA63F95F2B5ED87719895FFBB787D;4897.
 Package logreq Info: Writing requests to 'report.run.xml'.
 \openout1 = `report.run.xml'.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 853.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1079.
  ) 
 Here is how much of TeX's memory you used:
- 12246 strings out of 493304
- 196321 string characters out of 6139870
- 391339 words of memory out of 5000000
- 15426 multiletter control sequences out of 15000+600000
+ 12919 strings out of 493304
+ 206471 string characters out of 6139870
+ 398419 words of memory out of 5000000
+ 16036 multiletter control sequences out of 15000+600000
  12625 words of font info for 49 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,7n,64p,1313b,1181s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,7n,64p,1316b,1189s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/tex
@@ -717,10 +828,10 @@ onts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></u
 sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/sha
 re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on report.pdf (37 pages, 403300 bytes).
+Output written on report.pdf (47 pages, 479749 bytes).
 PDF statistics:
- 705 PDF objects out of 1000 (max. 8388607)
- 624 compressed objects within 7 object streams
- 143 named destinations out of 1000 (max. 500000)
- 595 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 813 PDF objects out of 1000 (max. 8388607)
+ 709 compressed objects within 8 object streams
+ 185 named destinations out of 1000 (max. 500000)
+ 625 words of extra memory for PDF output out of 10000 (max. 10000000)
 
